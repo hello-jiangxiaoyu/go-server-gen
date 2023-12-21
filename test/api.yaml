@@ -1,0 +1,17 @@
+messages:
+  - LoginReq: {
+        UserName  string  `vd:"(len($) > 2 && len($) < 100)"  des:"用户名"`
+        Password  string  `vd:"(len($) > 2 && len($) < 100)"  des:"密码"`
+    }
+  - OAuthReq:
+
+
+services:
+  - name: App
+    middleware: ["LoginAuth"]
+    prefix: "/v1"
+    apis:
+      - GET("/apps", ctl.GetAppList)
+      - POST("/apps", middleware.AdminAuth, ctl.CreateApp)
+
+
