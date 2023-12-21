@@ -15,8 +15,8 @@ func main() {
 		},
 	}
 	rootCmd.AddCommand(&cobra.Command{
-		Use: "create",
-		Run: cmd.CreateProject,
+		Use: "new",
+		Run: cmd.NewProject,
 	}, &cobra.Command{
 		Use: "update",
 		Run: cmd.UpdateProject,

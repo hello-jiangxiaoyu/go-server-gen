@@ -9,5 +9,5 @@ template:
 
 log:
   type: zero
-  import: ["github.com/rs/zerolog","github.com/rs/zerolog/log"]
+  imports: ["github.com/rs/zerolog","github.com/rs/zerolog/log"]
 

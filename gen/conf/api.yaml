@@ -3,15 +3,15 @@ messages:
         UserName  string  `vd:"(len($) > 2 && len($) < 100)"  des:"用户名"`
         Password  string  `vd:"(len($) > 2 && len($) < 100)"  des:"密码"`
     }
-  - OAuthReq:
+  - UserReq: {
+        UserID int `json:"userID" path:"userID"`
+    }
 
 
 services:
   - name: App
-    middleware: ["LoginAuth"]
-    prefix: "/v1"
+    middlewares: []
     apis:
-      - GET("/apps", ctl.GetAppList)
-      - POST("/apps", middleware.AdminAuth, ctl.CreateApp)
-
+      - GET("/api/login", GetAppList)  // LoginReq
+      - GET("/api/users/:userID", middleware.LoginAuth, CreateUser) // UserReq
 
