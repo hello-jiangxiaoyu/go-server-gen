@@ -1,10 +1,13 @@
-messages:
-  - LoginReq: {
+messages: >
+    type LoginReq struct {
         UserName  string  `vd:"(len($) > 2 && len($) < 100)"  des:"用户名"`
         Password  string  `vd:"(len($) > 2 && len($) < 100)"  des:"密码"`
     }
-  - UserReq: {
+    
+    type UserReq struct {
         UserID int `json:"userID" path:"userID"`
+        Cursor int `json:"cursor" query:"cursor"`
+        Number int `json:"number" query:"number"`
     }
 
 

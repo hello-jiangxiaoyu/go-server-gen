@@ -1,0 +1,16 @@
+server:
+  context-name: "*gin.context"
+  context-import: github.com/gin-gonic/gin
+  engine-name: "*gin.engine"
+  engine-import: github.com/gin-gonic/gin
+  message: []
+
+template:
+  register: pass
+  controller: pass
+  api: pass
+
+log:
+  type: zero
+  imports: ["github.com/rs/zerolog","github.com/rs/zerolog/log"]
+

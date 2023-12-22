@@ -5,27 +5,18 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var (
-	//go:embed api.yaml
-	ApiYaml []byte
-	//go:embed layout.yaml
-	LayoutYaml []byte
-)
-
+// 配置文件
 type (
 	Service struct {
 		Name        string   `yaml:"name"`
 		Middlewares []string `yaml:"middleware"`
 		Apis        []string `yaml:"apis"`
 	}
-	ApiConfig struct {
-		Messages map[string]string `yaml:"messages"`
-		Services []Service         `yaml:"services"`
+	Idl struct {
+		Messages string    `yaml:"messages"`
+		Services []Service `yaml:"services"`
 	}
-	Import struct {
-		Context string `yaml:"context"`
-		Engine  string `yaml:"engine"`
-	}
+
 	Template struct {
 		Register   string `yaml:"register"`
 		Controller string `yaml:"controller"`
@@ -36,23 +27,25 @@ type (
 		Imports []string `yaml:"imports"`
 	}
 	LayoutConfig struct {
-		Import   Import   `yaml:"import"`
+		Server struct {
+			ContextName   string `yaml:"context-name"`
+			ContextImport string `yaml:"context-import"`
+			EngineName    string `yaml:"engine-name"`
+			EngineImport  string `yaml:"engine-import"`
+		} `yaml:"server"`
 		Template Template `yaml:"template"`
 		Log      Log      `yaml:"log"`
 	}
 )
 
-func init() {
-	println(string(ApiYaml), string(LayoutYaml))
-}
-
-func initConfig() {
-	var apiConf ApiConfig
-	if err := yaml.Unmarshal(ApiYaml, &apiConf); err != nil {
-		return
+func GetConfig(layoutYaml, idlYaml []byte) (*LayoutConfig, *Idl, error) {
+	var apiConf Idl
+	if err := yaml.Unmarshal(idlYaml, &apiConf); err != nil {
+		return nil, nil, err
 	}
 	var layoutConf LayoutConfig
-	if err := yaml.Unmarshal(LayoutYaml, &layoutConf); err != nil {
-		return
+	if err := yaml.Unmarshal(layoutYaml, &layoutConf); err != nil {
+		return nil, nil, err
 	}
+	return &layoutConf, &apiConf, nil
 }

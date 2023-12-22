@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"go-server-gen/cmd"
 	"os"
@@ -10,9 +9,7 @@ import (
 func main() {
 	rootCmd := &cobra.Command{
 		Use: "gen",
-		Run: func(cmd *cobra.Command, args []string) {
-			os.Exit(1)
-		},
+		Run: cmd.UpdateProject,
 	}
 	rootCmd.AddCommand(&cobra.Command{
 		Use: "new",
@@ -20,9 +17,12 @@ func main() {
 	}, &cobra.Command{
 		Use: "update",
 		Run: cmd.UpdateProject,
+	}, &cobra.Command{
+		Use: "curd",
+		Run: cmd.CreateCrudGroup,
 	})
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		println(err.Error())
 		os.Exit(1)
 	}
 }
