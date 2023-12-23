@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"runtime"
 	"time"
@@ -24,4 +26,25 @@ func DeferErr(errFunc func() error) {
 	if err := errFunc(); err != nil {
 		fmt.Println("### Defer err: ", err)
 	}
+}
+
+// WithMessage err和msg有一个不为空则返回error
+func WithMessage(err error, msg string) error {
+	if err == nil && msg == "" {
+		return nil
+	} else if err == nil {
+		return errors.New(msg)
+	} else if msg == "" {
+		return err
+	}
+
+	return errors.New(msg + ": " + err.Error())
+}
+
+func StructToString(obj any) string {
+	res, err := make([]byte, 0), errors.New("")
+	if res, err = json.Marshal(&obj); err != nil {
+		return ""
+	}
+	return string(res)
 }

@@ -9,7 +9,7 @@ import (
 func main() {
 	rootCmd := &cobra.Command{
 		Use: "gen",
-		Run: cmd.UpdateProject,
+		Run: cmd.PrintHelp,
 	}
 	rootCmd.AddCommand(&cobra.Command{
 		Use: "new",

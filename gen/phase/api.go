@@ -14,50 +14,56 @@ var (
 )
 
 func getApi(layout *conf.LayoutConfig, apiStr string) (Api, error) {
-	res, err := MatchApiString(apiStr)
+	res, err := matchApiString(apiStr)
 	if err != nil {
 		return Api{}, err
 	}
-	res.Context = layout.Server.ContextName
+	res.Pkg = layout.Pkg
+	res.ProjectName = layout.ProjectName
 	return res, nil
 }
 
-func MatchApiString(obj string) (Api, error) {
+func matchApiString(obj string) (Api, error) {
 	obj = strings.ReplaceAll(obj, " ", "")
 	matches := regApi.FindStringSubmatch(obj)
 	if len(matches) < 5 {
 		return Api{}, errors.New("invalid API string")
 	}
 	res := Api{
-		Method:     matches[1],
-		Path:       matches[2],
-		DocPath:    regDocUri.ReplaceAllString(matches[2], "{$1}"),
-		ReqName:    matches[4],
-		Middleware: make([]string, 0),
-		ReqParam:   GetUriParam(matches[2]),
+		Method:   matches[1],
+		Path:     matches[2],
+		DocPath:  regDocUri.ReplaceAllString(matches[2], "{$1}"),
+		ReqName:  matches[4],
+		Handlers: make([]string, 0),
+		ReqParam: getUriParam(matches[2]),
+	}
+	handlers := strings.Split(matches[3], ",")
+	if len(handlers) == 0 {
+		return Api{}, errors.New("handler should not be empty: " + obj)
 	}
 
-	handlers := strings.Split(matches[3], ",")
-	funcName := ""
+	var controllerFunc string
+	handlers = utils.DeduplicateStrings(handlers)
 	for _, handler := range handlers {
+		res.Handlers = append(res.Handlers, handler)
 		if strings.HasPrefix(handler, "middleware") {
-			res.Middleware = append(res.Middleware, handler)
+			res.HasMiddleware = true
 		} else {
-			funcName = handler
+			controllerFunc = handler
 		}
 	}
-	res.FuncName = funcName
-	res.Summary = utils.ConvertToWord(funcName, " ")
+	res.FuncName = controllerFunc
+	res.Summary = utils.ConvertToWord(controllerFunc, " ")
 	return res, nil
 }
 
-func GetUriParam(path string) []Param {
+func getUriParam(path string) []Param {
 	matches := regDocUri.FindAllStringSubmatch(path, -1)
 	res := make([]Param, 0)
 	for _, match := range matches {
 		res = append(res, Param{
 			Name:        match[1],
-			Type:        GetDocType(match[1]),
+			Type:        getDocType(match[1]),
 			From:        "path",
 			Required:    "true",
 			Description: utils.ConvertToWord(match[1], " "),

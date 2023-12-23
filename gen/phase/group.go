@@ -1,67 +1,50 @@
 package phase
 
-import "go-server-gen/gen/conf"
-
-type (
-	Param struct {
-		Name        string
-		From        string
-		Type        string
-		Required    string
-		Description string
-	}
-	Api struct {
-		Method     string
-		Path       string
-		DocPath    string
-		Summary    string
-		FuncName   string
-		ReqName    string
-		Tag        string
-		Context    string
-		Middleware []string
-		ReqParam   []Param
-	}
-
-	Group struct {
-		Name          string
-		ApiTemplate   string
-		GroupTemplate string
-		Import        []string
-		Middleware    []string
-		Apis          []Api
-	}
+import (
+	"go-server-gen/gen/conf"
+	"go-server-gen/utils"
 )
 
-func ConfigToCode(layout *conf.LayoutConfig, idl *conf.Idl) ([]Group, error) {
-	msg, err := GetMessage(idl.Messages)
+func ConfigToCode(layout *conf.LayoutConfig, idl *conf.Idl) ([]Service, map[string]Message, error) {
+	msg, err := getMessage(idl.Messages)
+	if err != nil {
+		return nil, nil, err
+	}
+	groups, err := getGroup(layout, idl.Services, msg)
+	if err != nil {
+		return nil, nil, err
+	}
+	return groups, msg, nil
+}
+
+func getGroup(layout *conf.LayoutConfig, services []conf.Service, msg map[string]Message) ([]Service, error) {
+	res := make([]Service, 0)
+	projectName, err := utils.GetProjectName()
 	if err != nil {
 		return nil, err
 	}
-	return GenServiceCode(layout, idl.Services, msg)
-}
-
-func GenServiceCode(layoutConfig *conf.LayoutConfig, services []conf.Service, msg map[string]Message) ([]Group, error) {
-	res := make([]Group, 0)
+	layout.ProjectName = projectName
 	for _, svc := range services {
-		group := Group{
-			Name:        svc.Name,
-			Middleware:  svc.Middlewares,
-			Import:      make([]string, 0),
-			Apis:        make([]Api, 0),
-			ApiTemplate: conf.DefaultApiTemplate,
+		group := Service{
+			ServiceName:   svc.Name,
+			Middleware:    svc.Middlewares,
+			Apis:          make([]Api, 0),
+			HasMiddleware: len(svc.Middlewares) != 0,
+			ProjectName:   projectName,
+			Pkg:           layout.Pkg,
 		}
 
 		for _, apiStr := range svc.Apis {
-			api, err := getApi(layoutConfig, apiStr)
+			api, err := getApi(layout, apiStr)
 			if err != nil {
 				return nil, err
 			}
-			api.Tag = svc.Name
-			m, ok := msg[api.ReqName]
-			if ok {
+			api.ServiceName = svc.Name
+			if m, ok := msg[api.ReqName]; ok {
 				api.ReqParam = append(api.ReqParam, m.Param...)
 			}
+
+			group.HasMiddleware = group.HasMiddleware || api.HasMiddleware
 			group.Apis = append(group.Apis, api)
 		}
 		res = append(res, group)

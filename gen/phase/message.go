@@ -12,32 +12,34 @@ var (
 )
 
 type Message struct {
+	Name   string  `json:"name"`
 	Param  []Param `json:"param"`
 	Source string  `json:"source"`
 }
 
-func GetMessage(msg string) (map[string]Message, error) {
+func getMessage(msg string) (map[string]Message, error) {
 	res := make(map[string]Message)
-	sp, err := SplitMessage(msg)
+	sp, err := splitMessage(msg)
 	if err != nil {
 		return nil, err
 	}
 	for k, v := range sp {
 		param := make([]Param, 0)
-		query, err := GetQueryPara(v)
+		query, err := getRequestParam(v)
 		if err != nil {
 			return nil, err
 		}
-		for _, q := range query {
+		for q, typ := range query {
 			param = append(param, Param{
 				Name:        q,
-				From:        "query",
-				Type:        GetDocType(q),
+				From:        typ,
+				Type:        getDocType(q),
 				Required:    "false",
 				Description: q,
 			})
 		}
 		res[k] = Message{
+			Name:   k,
 			Param:  param,
 			Source: v,
 		}
@@ -46,7 +48,7 @@ func GetMessage(msg string) (map[string]Message, error) {
 	return res, nil
 }
 
-func SplitMessage(msgCode string) (map[string]string, error) {
+func splitMessage(msgCode string) (map[string]string, error) {
 	code, err := utils.FormatCode([]byte(msgCode))
 	if err != nil {
 		return nil, err

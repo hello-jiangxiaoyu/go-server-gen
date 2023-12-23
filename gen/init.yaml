@@ -1,0 +1,5 @@
+code:
+  - path: biz/controller/internal/bind.go
+    body: |
+      package internal
+    writer: "override"
