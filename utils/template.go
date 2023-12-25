@@ -6,8 +6,11 @@ import (
 )
 
 // PhaseTemplate 模板解析
-func PhaseTemplate(tpl string, data any) ([]byte, error) {
-	t := template.New("test")
+func PhaseTemplate(tpl string, data any, funcMap ...template.FuncMap) ([]byte, error) {
+	if len(funcMap) == 0 || funcMap == nil {
+		funcMap = []template.FuncMap{defaultFuncMap}
+	}
+	t := template.New("gen").Funcs(funcMap[0])
 	t = template.Must(t.Parse(tpl))
 	var buf bytes.Buffer
 	if err := t.Execute(&buf, data); err != nil {
@@ -17,8 +20,8 @@ func PhaseTemplate(tpl string, data any) ([]byte, error) {
 }
 
 // PhaseAndFormat 解析并格式化go代码
-func PhaseAndFormat(tpl string, data any) (string, error) {
-	buf, err := PhaseTemplate(tpl, data)
+func PhaseAndFormat(tpl string, data any, funcMap ...template.FuncMap) (string, error) {
+	buf, err := PhaseTemplate(tpl, data, funcMap...)
 	if err != nil {
 		return "", err
 	}

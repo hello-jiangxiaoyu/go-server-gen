@@ -13,7 +13,10 @@ package:
     import: biz/service
   req:
     name: model
-    import: biz/model
+    import: pkg/model
+  resp:
+    name: response
+    import: pkg/response
 
 template:
   api:
@@ -35,39 +38,47 @@ template:
       handler-tpl: "New{{.ServiceName}}Router"
       handler: >
         func New{{.ServiceName}}Router(e {{.Pkg.engine.Name}}) {
-            {{.ServiceName}} := e.Group()
-            {
-                {{- range $_, $Api := .Apis}}
-                {{$Api.ServiceName}}.{{$Api.Method}}("{{$Api.Path}}"{{- range $_, $Handler := $Api.Handlers}},{{$Handler}}{{end}})
-                {{- end -}}
-            }
+        	{{.ServiceName | uncapitalizeFirstLetter}} := e.Group()
+        	{
+        		{{- range $_, $Api := .Apis}}
+        		{{$Api.ServiceName | uncapitalizeFirstLetter}}.{{$Api.Method}}("{{$Api.Path}}"
+        		{{- range $_, $Handler := $Api.Handlers -}}
+        		{{- if hasPrefix $Handler "middleware" -}}
+        		, {{$Handler}}
+        		{{- else -}}
+        		, {{$.Pkg.controller.Name}}.{{$Handler}}
+        		{{- end -}}
+        		{{- end}})
+        		{{- end}}
+        	}
         }
         
 
     - name: controller
-      path: "biz/controller/{{.ServiceName}}.go"
+      path: biz/controller/{{convertToWord .ServiceName "_"}}.go
       write: append
       handler: |
         // {{.FuncName}}
-        // @Tags	{{.ServiceName}}
+        // @Tags	{{convertToWord .ServiceName "-"}}
         // @Summary	{{.Summary}}
         {{- range $_, $Para := .ReqParam}}
         // @Param	{{$Para.Name}}	{{$Para.From}}	{{$Para.Type}}	{{$Para.Required}}	"{{$Para.Description}}"
         {{- end }}
         // @Success	200
-        // @Router	{{.DocPath}} [{{.Method}}]
+        // @Router	{{.Path | getDocRouter}} [{{.Method}}]
         func {{.FuncName}}(c {{.Pkg.context.Name}}) {
-        	req := new({{.Pkg.req.Name}}.{{.ReqName}})
-        	if err := c.ShouldBindJSON(req); err != nil {
+        	var req {{.Pkg.req.Name}}.{{.ReqName}}
+        	if err := c.ShouldBindJSON(&req); err != nil {
         		response.ErrorRequest(c, err)
         		return
         	}
-        	service.{{.FuncName}}(c, req)
+        	service.{{.FuncName}}(c, &req)
         }
       body: |
         package controller
         import (
         	"{{.Pkg.context.Import}}"
+        	"{{.ProjectName}}/{{.Pkg.resp.Import}}"
         	"{{.ProjectName}}/{{.Pkg.req.Import}}"
         	"{{.ProjectName}}/{{.Pkg.service.Import}}"
         )
@@ -76,7 +87,7 @@ template:
         {{- end }}
 
     - name: service
-      path: "biz/service/{{.ServiceName}}.go"
+      path: biz/service/{{convertToWord .ServiceName "_"}}.go
       write: append
       handler: |
         func {{.FuncName}}(c {{.Pkg.context.Name}}, req *{{.Pkg.req.Name}}.{{.ReqName}}) {

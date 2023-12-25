@@ -18,7 +18,6 @@ type (
 		ServiceName   string
 		Method        string
 		Path          string
-		DocPath       string
 		Summary       string
 		FuncName      string
 		ReqName       string

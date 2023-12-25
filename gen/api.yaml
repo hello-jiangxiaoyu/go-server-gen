@@ -12,7 +12,7 @@ messages: >
 
 
 services:
-  - name: App
+  - name: AppCrud
     middlewares: []
     apis:
       - GET("/api/login", GetAppList)  // LoginReq

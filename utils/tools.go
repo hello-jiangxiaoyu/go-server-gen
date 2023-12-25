@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"runtime"
@@ -41,10 +40,20 @@ func WithMessage(err error, msg string) error {
 	return errors.New(msg + ": " + err.Error())
 }
 
-func StructToString(obj any) string {
-	res, err := make([]byte, 0), errors.New("")
-	if res, err = json.Marshal(&obj); err != nil {
-		return ""
+// DeduplicateStrings 字符串数组去重并去除空字符串
+func DeduplicateStrings(arr []string) []string {
+	visited := make(map[string]bool)
+	result := make([]string, 0)
+
+	for _, str := range arr {
+		if str == "" {
+			continue
+		}
+		if !visited[str] {
+			visited[str] = true
+			result = append(result, str)
+		}
 	}
-	return string(res)
+
+	return result
 }

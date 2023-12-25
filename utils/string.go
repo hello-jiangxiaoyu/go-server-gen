@@ -1,9 +1,10 @@
 package utils
 
 import (
+	"encoding/json"
+	"errors"
 	"regexp"
 	"strings"
-	"unicode"
 )
 
 // SplitCamelCase 驼峰字符串拆分成单词
@@ -16,51 +17,10 @@ func SplitCamelCase(str string) []string {
 	return words
 }
 
-// ConvertToWord 驼峰字符串拆分成句子
-func ConvertToWord(obj string, mid string) string {
-	sp := SplitCamelCase(obj)
-	res := ""
-	idFlag := false
-	for _, v := range sp {
-		if v == "d" && idFlag {
-			res += v
-		} else {
-			res += mid + v
-		}
-		if v == "i" {
-			idFlag = true
-		} else {
-			idFlag = false
-		}
+func StructToString(obj any) string {
+	res, err := make([]byte, 0), errors.New("")
+	if res, err = json.Marshal(&obj); err != nil {
+		return ""
 	}
-	if res != "" {
-		res = res[1:]
-	}
-
-	return res
-}
-
-// UncapitalizeFirstLetter 首字母小写
-func UncapitalizeFirstLetter(obj string) string {
-	runes := []rune(obj)
-	runes[0] = unicode.ToLower(runes[0])
-	return string(runes)
-}
-
-// DeduplicateStrings 字符串数组去重并去除空字符串
-func DeduplicateStrings(arr []string) []string {
-	visited := make(map[string]bool)
-	result := make([]string, 0)
-
-	for _, str := range arr {
-		if str == "" {
-			continue
-		}
-		if !visited[str] {
-			visited[str] = true
-			result = append(result, str)
-		}
-	}
-
-	return result
+	return string(res)
 }

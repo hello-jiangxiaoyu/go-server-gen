@@ -8,10 +8,7 @@ import (
 	"strings"
 )
 
-var (
-	regApi    = regexp.MustCompile(`(\w+)\("(.+?)"(.*)\)\s*//\s*(.+)`) // GET("/api/login", GetAppList)  // LoginReq
-	regDocUri = regexp.MustCompile(`:(\w+)`)                           // 路由path转文档router
-)
+var regApi = regexp.MustCompile(`(\w+)\("(.+?)"(.*)\)\s*//\s*(.+)`) // GET("/api/login", GetAppList)  // LoginReq
 
 func getApi(layout *conf.LayoutConfig, apiStr string) (Api, error) {
 	res, err := matchApiString(apiStr)
@@ -32,7 +29,6 @@ func matchApiString(obj string) (Api, error) {
 	res := Api{
 		Method:   matches[1],
 		Path:     matches[2],
-		DocPath:  regDocUri.ReplaceAllString(matches[2], "{$1}"),
 		ReqName:  matches[4],
 		Handlers: make([]string, 0),
 		ReqParam: getUriParam(matches[2]),
@@ -56,6 +52,8 @@ func matchApiString(obj string) (Api, error) {
 	res.Summary = utils.ConvertToWord(controllerFunc, " ")
 	return res, nil
 }
+
+var regDocUri = regexp.MustCompile(`:(\w+)`)
 
 func getUriParam(path string) []Param {
 	matches := regDocUri.FindAllStringSubmatch(path, -1)

@@ -4,9 +4,10 @@ import (
 	"go-server-gen/gen/code"
 	"go-server-gen/gen/conf"
 	"go-server-gen/gen/phase"
-	"go-server-gen/utils"
-	"regexp"
+	"os"
+	"strings"
 	"testing"
+	"text/template"
 )
 
 func TestGen(t *testing.T) {
@@ -16,7 +17,7 @@ func TestGen(t *testing.T) {
 		return
 	}
 
-	groups, _, err := phase.ConfigToCode(layout, idl)
+	groups, _, err := phase.ConfigToData(layout, idl)
 	if err != nil {
 		println("phase config err: ", err.Error())
 		return
@@ -32,50 +33,19 @@ func TestGen(t *testing.T) {
 	}
 }
 
-func TestTemplate(t *testing.T) {
-	p := struct {
-		Handlers map[string]string
-	}{Handlers: map[string]string{
-		"a": "1",
-		"b": "2",
-		"c": "3",
-	}}
-	const tpl = `
-{{- range $K, $Handler := .}}
-{{$K}} --> {{$Handler}}
-{{- end }}
-
-{{.a}}
-`
-
-	format, err := utils.PhaseTemplate(tpl, p.Handlers)
-	if err != nil {
-		println(err.Error())
-		return
-	}
-	println(string(format))
-}
-
 func TestTemp(t *testing.T) {
-	src := []string{
-		`func Handler(int a){}`,
-		`func handler () {}`,
-		`func (r *User)handler(){}`,
-		`func (*User) handler(){}`,
-		`func (*User) handler(a string, b int){}`,
-		`func (*User) handler(a string, b int) {}`,
+	tmplStr := `{{if hasPrefix .Var "middleware"}}{{.Var}}{{else}}controller.{{.Var}}{{end}}`
+	tmpl := template.Must(template.New("mytemplate").Funcs(template.FuncMap{
+		"hasPrefix": strings.HasPrefix,
+	}).Parse(tmplStr))
+
+	data := struct {
+		Var string
+	}{
+		Var: "AdminAuth",
 	}
-	for _, h := range src {
-		regFunction := regexp.MustCompile(`func .*handler\(.*\).*{`) // 获取go结构体uri tag
-		fCode, err := utils.FormatCode([]byte(h))
-		if err != nil {
-			println("err: ", err.Error())
-			continue
-		}
-		if regFunction.MatchString(string(fCode)) {
-			println("Yes", string(fCode))
-		} else {
-			println("No")
-		}
+
+	if err := tmpl.Execute(os.Stdout, data); err != nil {
+		panic(err)
 	}
 }
