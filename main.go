@@ -1,28 +1,31 @@
 package main
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"go-server-gen/cmd"
 	"os"
 )
 
 func main() {
-	rootCmd := &cobra.Command{
-		Use: "gen",
-		Run: func(cmd *cobra.Command, args []string) {
-			os.Exit(1)
-		},
+	rootCmd := &cobra.Command{}
+	newCmd := &cobra.Command{
+		Use:   "new",
+		Short: "Create a new project",
+		Run:   cmd.NewProject,
 	}
-	rootCmd.AddCommand(&cobra.Command{
-		Use: "new",
-		Run: cmd.NewProject,
-	}, &cobra.Command{
-		Use: "update",
-		Run: cmd.UpdateProject,
-	})
+	updateCmd := &cobra.Command{
+		Use:   "update",
+		Short: "Update idl config file",
+		Run:   cmd.UpdateProject,
+	}
+	crudCmd := &cobra.Command{
+		Use:   "curd",
+		Short: "Create a new crud api",
+		Run:   cmd.CreateCrudGroup,
+	}
+	cmd.InitCommand(rootCmd, newCmd, updateCmd, crudCmd)
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		println(err.Error())
 		os.Exit(1)
 	}
 }

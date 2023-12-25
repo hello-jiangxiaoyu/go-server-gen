@@ -1,0 +1,116 @@
+package:
+  context:
+    name: "*gin.context"
+    import: github.com/gin-gonic/gin
+  engine:
+    name: "*gin.engine"
+    import: github.com/gin-gonic/gin
+  controller:
+    name: controller
+    import: biz/controller
+  service:
+    name: service
+    import: biz/service
+  req:
+    name: model
+    import: pkg/model
+  resp:
+    name: response
+    import: pkg/response
+
+template:
+  api:
+    - name: router
+      path: "biz/router.go"
+      write: append
+      body: |
+        package biz
+        import (
+        	"{{.Pkg.engine.Import}}"
+        	"{{.ProjectName}}/{{.Pkg.controller.Import}}"
+            {{- if .HasMiddleware }}
+        	"{{.ProjectName}}/biz/middleware"
+            {{- end}}
+        )
+        {{- range $_, $Code := .Handlers }}
+        {{$Code}}
+        {{- end }}
+      handler-tpl: "New{{.ServiceName}}Router"
+      handler: >
+        func New{{.ServiceName}}Router(e {{.Pkg.engine.Name}}) {
+        	{{.ServiceName | uncapitalizeFirstLetter}} := e.Group()
+        	{
+        		{{- range $_, $Api := .Apis}}
+        		{{$Api.ServiceName | uncapitalizeFirstLetter}}.{{$Api.Method}}("{{$Api.Path}}"
+        		{{- range $_, $Handler := $Api.Handlers -}}
+        		{{- if hasPrefix $Handler "middleware" -}}
+        		, {{$Handler}}()
+        		{{- else -}}
+        		, {{$.Pkg.controller.Name}}.{{$Handler}}
+        		{{- end -}}
+        		{{- end}})
+        		{{- end}}
+        	}
+        }
+        
+
+    - name: controller
+      path: biz/controller/{{convertToWord .ServiceName "_"}}.go
+      write: append
+      handler: |
+        // {{.FuncName}}
+        // @Tags	{{convertToWord .ServiceName "-"}}
+        // @Summary	{{.Summary}}
+        {{- range $_, $Para := .ReqParam}}
+        // @Param	{{$Para.Name}}	{{$Para.From}}	{{$Para.Type}}	{{$Para.Required}}	"{{$Para.Description}}"
+        {{- end }}
+        // @Success	200
+        // @Router	{{.Path | getDocRouter}} [{{.Method}}]
+        func {{.FuncName}}(c {{.Pkg.context.Name}}) {
+        	var req {{.Pkg.req.Name}}.{{.ReqName}}
+        	if err := c.ShouldBindJSON(&req); err != nil {
+        		response.ErrorRequest(c, err)
+        		return
+        	}
+        	service.{{.FuncName}}(c, &req)
+        }
+      body: |
+        package controller
+        import (
+        	"{{.Pkg.context.Import}}"
+        	"{{.ProjectName}}/{{.Pkg.resp.Import}}"
+        	"{{.ProjectName}}/{{.Pkg.req.Import}}"
+        	"{{.ProjectName}}/{{.Pkg.service.Import}}"
+        )
+        {{- range $_, $Code := .Handlers }}
+        {{$Code}}
+        {{- end }}
+
+    - name: service
+      path: biz/service/{{convertToWord .ServiceName "_"}}.go
+      write: append
+      handler: |
+        func {{.FuncName}}(c {{.Pkg.context.Name}}, req *{{.Pkg.req.Name}}.{{.ReqName}}) {
+          // you service code hear
+        
+        }
+      body: |
+        package service
+        import (
+        	"{{.Pkg.context.Import}}"
+        	"{{.ProjectName}}/{{.Pkg.req.Import}}"
+        )
+        {{- range $_, $Code := .Handlers }}
+        {{$Code}}
+        {{- end }}
+
+  messages:
+    - name: model
+      path: "biz/model/{{.IdlName}}.go"
+      write: append
+      handler: |
+        package model
+        {{- range $_, $msg := .Messages }}
+        {{$msg.Source}}
+        {{- end }}
+
