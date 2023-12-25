@@ -13,7 +13,7 @@ var (
 		"uncapitalizeFirstLetter": UncapitalizeFirstLetter, // 首字母小写
 		"getDocRouter":            GetDocRouter,            // 路由转文档Router
 		"convertToWord":           ConvertToWord,           // 路由转文档Router
-		"hasPrefix":               strings.HasPrefix,       // 是否为中间件函数
+		"hasPrefix":               strings.HasPrefix,       // 是否包含前缀
 	}
 )
 

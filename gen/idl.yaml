@@ -3,7 +3,7 @@ messages: >
         UserName  string  `vd:"(len($) > 2 && len($) < 100)" formData:"username" des:"用户名"`
         Password  string  `vd:"(len($) > 2 && len($) < 100)" formData:"password" des:"密码"`
     }
-    
+  
     type UserReq struct {
         UserID int `json:"userID" path:"userID"`
         Cursor int `json:"cursor" query:"cursor"`
@@ -12,7 +12,7 @@ messages: >
 
 
 services:
-  - name: AppCrud
+  - name: UserCrud
     middlewares: []
     apis:
       - GET("/api/login", GetAppList)  // LoginReq

@@ -44,7 +44,7 @@ template:
         		{{$Api.ServiceName | uncapitalizeFirstLetter}}.{{$Api.Method}}("{{$Api.Path}}"
         		{{- range $_, $Handler := $Api.Handlers -}}
         		{{- if hasPrefix $Handler "middleware" -}}
-        		, {{$Handler}}
+        		, {{$Handler}}()
         		{{- else -}}
         		, {{$.Pkg.controller.Name}}.{{$Handler}}
         		{{- end -}}
@@ -113,3 +113,4 @@ template:
         {{- range $_, $msg := .Messages }}
         {{$msg.Source}}
         {{- end }}
+

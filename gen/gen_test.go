@@ -1,9 +1,9 @@
 package gen
 
 import (
-	"go-server-gen/gen/code"
 	"go-server-gen/gen/conf"
-	"go-server-gen/gen/phase"
+	"go-server-gen/gen/data"
+	"go-server-gen/gen/parse"
 	"os"
 	"strings"
 	"testing"
@@ -17,13 +17,13 @@ func TestGen(t *testing.T) {
 		return
 	}
 
-	groups, _, err := phase.ConfigToData(layout, idl)
+	groups, _, err := data.ConfigToData(layout, idl)
 	if err != nil {
-		println("phase config err: ", err.Error())
+		println("config to data err: ", err.Error())
 		return
 	}
 
-	res, err := code.GenGroupCode(layout, groups)
+	res, err := parse.GenServiceCode(layout, groups)
 	if err != nil {
 		println("gen code err: ", err.Error())
 		return

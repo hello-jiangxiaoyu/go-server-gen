@@ -1,4 +1,4 @@
-package phase
+package data
 
 import (
 	"go-server-gen/gen/conf"

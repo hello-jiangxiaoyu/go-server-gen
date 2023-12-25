@@ -1,4 +1,4 @@
-package code
+package parse
 
 type WriteCode struct {
 	File     string

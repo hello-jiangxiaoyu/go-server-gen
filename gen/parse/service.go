@@ -1,12 +1,12 @@
-package code
+package parse
 
 import (
 	"go-server-gen/gen/conf"
-	"go-server-gen/gen/phase"
+	"go-server-gen/gen/data"
 	"go-server-gen/utils"
 )
 
-func GenGroupCode(layout *conf.LayoutConfig, groups []phase.Service) (map[string]WriteCode, error) {
+func GenServiceCode(layout *conf.LayoutConfig, groups []data.Service) (map[string]WriteCode, error) {
 	res := make(map[string]WriteCode)
 
 	for _, tpl := range layout.Templates.Api {
@@ -42,7 +42,7 @@ func GenGroupCode(layout *conf.LayoutConfig, groups []phase.Service) (map[string
 				return nil, utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
 			}
 
-			res[tpl.Path] = WriteCode{
+			res[string(file)] = WriteCode{
 				File:     string(file),
 				Write:    tpl.Write,
 				Handlers: handlers,
