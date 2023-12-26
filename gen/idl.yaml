@@ -1,4 +1,4 @@
-messages: >
+messages: |-
     type LoginReq struct {
         UserName  string  `vd:"(len($) > 2 && len($) < 100)" formData:"username" des:"用户名"`
         Password  string  `vd:"(len($) > 2 && len($) < 100)" formData:"password" des:"密码"`

@@ -28,11 +28,9 @@ type (
 		Body       string `yaml:"body"`
 	}
 	LayoutConfig struct {
-		Pkg       map[string]Package `yaml:"package"`
-		Templates struct {
-			Api      []Template `yaml:"api"`
-			Messages []Template `yaml:"messages"`
-		} `yaml:"template"`
-		ProjectName string `yaml:"-"`
+		Pkg         map[string]Package `yaml:"package"`
+		Service     []Template         `yaml:"service"`
+		Messages    []Template         `yaml:"messages"`
+		ProjectName string             `yaml:"-"`
 	}
 )

@@ -9,7 +9,7 @@ import (
 func GenServiceCode(layout *conf.LayoutConfig, groups []data.Service) (map[string]WriteCode, error) {
 	res := make(map[string]WriteCode)
 
-	for _, tpl := range layout.Templates.Api {
+	for _, tpl := range layout.Service {
 		for _, group := range groups {
 			handlers := make(map[string]string)
 			if tpl.HandlerTpl != "" {
