@@ -19,6 +19,9 @@ package:
     import: pkg/response
 
 service:
+  - name: register
+    path: "biz/register.go"
+    write: pointer
   - name: router
     path: "biz/router.go"
     write: append

@@ -11,37 +11,46 @@ var (
 	regMessageSplit = regexp.MustCompile(`type (\w+) struct {([^}]+)}`)
 )
 
-type Message struct {
-	Name   string  `json:"name"`
-	Param  []Param `json:"param"`
-	Source string  `json:"source"`
-}
+type (
+	Param struct {
+		Name        string
+		From        string
+		Type        string
+		Required    string
+		Description string
+	}
+	Message struct {
+		Name   string  `json:"name"`
+		Param  []Param `json:"param"`
+		Source string  `json:"source"`
+	}
+)
 
 func getMessage(msg string) (map[string]Message, error) {
 	res := make(map[string]Message)
-	sp, err := splitMessage(msg)
+	messages, err := splitMessage(msg)
 	if err != nil {
 		return nil, err
 	}
-	for k, v := range sp {
+	for structName, structBody := range messages {
 		param := make([]Param, 0)
-		query, err := getRequestParam(v)
+		queries, err := getRequestParam(structBody)
 		if err != nil {
 			return nil, err
 		}
-		for q, typ := range query {
+		for queryName, queryType := range queries {
 			param = append(param, Param{
-				Name:        q,
-				From:        typ,
-				Type:        getDocType(q),
+				Name:        queryName,
+				From:        queryType,
+				Type:        getDocType(queryName),
 				Required:    "false",
-				Description: q,
+				Description: queryName,
 			})
 		}
-		res[k] = Message{
-			Name:   k,
+		res[structName] = Message{
+			Name:   structName,
 			Param:  param,
-			Source: v,
+			Source: structBody,
 		}
 	}
 

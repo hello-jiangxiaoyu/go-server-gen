@@ -5,6 +5,16 @@ import (
 	"go-server-gen/utils"
 )
 
+type Service struct {
+	ServiceName   string
+	ProjectName   string
+	Pkg           map[string]conf.Package
+	HasMiddleware bool     // api或group是否包含中间件
+	Middleware    []string // group中间件
+	Apis          []Api
+	Handlers      map[string]string // apis 解析后的结果
+}
+
 // ConfigToData 配置转数据
 func ConfigToData(layout *conf.LayoutConfig, idl *conf.Idl) ([]Service, map[string]Message, error) {
 	msg, err := getMessage(idl.Messages)

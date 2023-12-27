@@ -8,6 +8,20 @@ import (
 	"strings"
 )
 
+type Api struct {
+	ServiceName   string
+	Method        string
+	Path          string
+	Summary       string
+	FuncName      string
+	ReqName       string
+	Handlers      []string
+	ReqParam      []Param
+	HasMiddleware bool
+	ProjectName   string
+	Pkg           map[string]conf.Package
+}
+
 var regApi = regexp.MustCompile(`(\w+)\("(.+?)"(.*)\)\s*//\s*(.+)`) // GET("/api/login", GetAppList)  // LoginReq
 
 func getApi(layout *conf.LayoutConfig, apiStr string) (Api, error) {
