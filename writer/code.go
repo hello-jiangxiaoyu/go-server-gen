@@ -31,7 +31,7 @@ func WriteGoCode(dir, file, src string, overwrite bool) error {
 	path := dir + "/" + file + ".go"
 	_, err := os.Stat(path)
 	if err == nil && !overwrite {
-		utils.Logf("path: %s is already exist, skip !!!!!!", path)
+		println(path + " is already exist, skip !!!!!!")
 		return nil
 	}
 
@@ -50,7 +50,7 @@ func WriteGoCode(dir, file, src string, overwrite bool) error {
 	}
 
 	utils.DeferErr(f.Close)
-	utils.Logf("generate %s success!", path)
+	println("generate " + path + " success!")
 
 	return nil
 }

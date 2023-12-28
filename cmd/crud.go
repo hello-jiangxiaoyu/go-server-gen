@@ -17,4 +17,8 @@ func CreateCrudGroup(_ *cobra.Command, _ []string) {
 		println("init config err: ", err.Error())
 		os.Exit(1)
 	}
+	if err := gen.Execute(); err != nil {
+		println("exec err: ", err.Error)
+		os.Exit(1)
+	}
 }
