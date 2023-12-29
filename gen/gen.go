@@ -1,56 +1,47 @@
 package gen
 
 import (
-	_ "embed"
-	"go-server-gen/gen/conf"
+	"go-server-gen/conf"
 	"go-server-gen/gen/data"
 	"go-server-gen/gen/parse"
 	"go-server-gen/utils"
-	"os"
+	"go-server-gen/writer"
 )
 
-var (
-	//go:embed idl.yaml
-	IdlYaml []byte
-	//go:embed layout.yaml
-	LayoutYaml []byte
-)
-
-func InitConfig(layoutPath, idlPath string) error {
-	var err error
-	if len(layoutPath) != 0 {
-		LayoutYaml, err = os.ReadFile(layoutPath)
-		if err != nil {
-			return err
-		}
-	}
-
-	if len(idlPath) != 0 {
-		IdlYaml, err = os.ReadFile(idlPath)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func Execute() error {
-	layout, idl, err := conf.GetConfig(LayoutYaml, IdlYaml)
+func ExecuteUpdate() error {
+	// 获取配置文件
+	layout, idl, err := conf.GetConfig()
 	if err != nil {
-		return utils.WithMessage(err, "unmarshal yaml config err")
+		return utils.WithMessage(err, "failed to unmarshal yaml")
 	}
 
-	groups, _, err := data.ConfigToData(layout, idl)
+	// 生成数据
+	services, messages, err := data.ConfigToData(layout, idl)
 	if err != nil {
 		return utils.WithMessage(err, "config to data err")
 	}
 
-	res, err := parse.GenServiceCode(layout, groups)
+	// 使用数据解析模板
+	serviceCode, err := parse.GenServiceCode(layout, services)
 	if err != nil {
-		return utils.WithMessage(err, "gen code err")
+		return utils.WithMessage(err, "failed to generate service code")
 	}
-	for _, v := range res {
-		println(v.File, "\n"+v.Code)
+	messageCode, err := parse.GenMessageCode(layout, messages)
+	if err != nil {
+		return utils.WithMessage(err, "failed to generate message code")
 	}
+
+	// 将代码写入文件
+	if err = writer.Write(serviceCode); err != nil {
+		return utils.WithMessage(err, "failed to write code")
+	}
+	if err = writer.Write(messageCode); err != nil {
+		return utils.WithMessage(err, "failed to write code")
+	}
+
+	return nil
+}
+
+func ExecuteCreate() error {
 	return nil
 }

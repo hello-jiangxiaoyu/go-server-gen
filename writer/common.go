@@ -21,3 +21,11 @@ func makeDir(folder string) error {
 
 	return nil
 }
+
+func mapStringToSlice(obj map[string]string) []string {
+	res := make([]string, 0, len(obj))
+	for _, v := range obj {
+		res = append(res, v)
+	}
+	return res
+}

@@ -2,41 +2,32 @@ package data
 
 import (
 	"errors"
-	"go-server-gen/gen/conf"
+	"go-server-gen/conf"
 	"go-server-gen/utils"
 	"regexp"
 	"strings"
 )
 
 type Api struct {
-	ServiceName   string
-	Method        string
-	Path          string
-	Summary       string
-	FuncName      string
-	ReqName       string
-	Handlers      []string
-	ReqParam      []Param
-	HasMiddleware bool
-	ProjectName   string
-	Pkg           map[string]conf.Package
+	ServiceName   string                  // API所属service名
+	Method        string                  // HTTP方法
+	Path          string                  // 接口路径
+	Summary       string                  // swagger 文档summary
+	FuncName      string                  // 接口业务处理函数名
+	ReqName       string                  // 请求参数名
+	Handlers      []string                // 接口处理者，包含中间件
+	ReqParam      []Param                 // 请求参数详情
+	HasMiddleware bool                    // 是否包含中间件
+	ProjectName   string                  // 当前项目名称，go mod name
+	IdlName       string                  // idl name
+	Pkg           map[string]conf.Package // layout定义的全局变量
 }
 
 var regApi = regexp.MustCompile(`(\w+)\("(.+?)"(.*)\)\s*//\s*(.+)`) // GET("/api/login", GetAppList)  // LoginReq
 
-func getApi(layout *conf.LayoutConfig, apiStr string) (Api, error) {
-	res, err := matchApiString(apiStr)
-	if err != nil {
-		return Api{}, err
-	}
-	res.Pkg = layout.Pkg
-	res.ProjectName = layout.ProjectName
-	return res, nil
-}
-
-func matchApiString(obj string) (Api, error) {
-	obj = strings.ReplaceAll(obj, " ", "")
-	matches := regApi.FindStringSubmatch(obj)
+// 解析api字符串
+func getApi(layout *conf.LayoutConfig, obj string) (Api, error) {
+	matches := regApi.FindStringSubmatch(utils.RemoveSpace(obj))
 	if len(matches) < 5 {
 		return Api{}, errors.New("invalid API string")
 	}
@@ -64,11 +55,15 @@ func matchApiString(obj string) (Api, error) {
 	}
 	res.FuncName = controllerFunc
 	res.Summary = utils.ConvertToWord(controllerFunc, " ")
+	res.Pkg = layout.Pkg
+	res.ProjectName = layout.ProjectName
+	res.IdlName = layout.IdlName
 	return res, nil
 }
 
 var regDocUri = regexp.MustCompile(`:(\w+)`)
 
+// 提取路由中的参数
 func getUriParam(path string) []Param {
 	matches := regDocUri.FindAllStringSubmatch(path, -1)
 	res := make([]Param, 0)

@@ -3,7 +3,6 @@ package utils
 import (
 	"go/format"
 	"os/exec"
-	"regexp"
 	"strings"
 )
 
@@ -26,36 +25,4 @@ func FormatCode(code []byte) ([]byte, error) {
 	}
 
 	return f, nil
-}
-
-// GoFunctionFilter 过滤已存在的函数
-func GoFunctionFilter(handlers map[string]string, src string) (map[string]string, error) {
-	res := make(map[string]string)
-	fCode, err := FormatCode([]byte(src))
-	if err != nil {
-		return nil, err
-	}
-	for handler, code := range handlers {
-		regFunction := regexp.MustCompile(`func .*` + handler + `\(.*\).*{`)
-		if !regFunction.MatchString(string(fCode)) {
-			res[handler] = code
-		}
-	}
-	return res, nil
-}
-
-// GoStructFilter 过滤已存在的go结构体
-func GoStructFilter(messages map[string]string, src string) (map[string]string, error) {
-	res := make(map[string]string)
-	fCode, err := FormatCode([]byte(src))
-	if err != nil {
-		return nil, err
-	}
-	for msg, code := range messages {
-		regFunction := regexp.MustCompile(msg + ` struct {`)
-		if !regFunction.MatchString(string(fCode)) {
-			res[msg] = code
-		}
-	}
-	return res, nil
 }

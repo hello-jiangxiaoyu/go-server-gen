@@ -6,8 +6,8 @@ import (
 )
 
 func TestGen(t *testing.T) {
-	if err := Execute(); err != nil {
-		println("Failed to execute: ", err.Error())
+	if err := ExecuteUpdate(); err != nil {
+		println(err.Error())
 	} else {
 		println("Success")
 	}

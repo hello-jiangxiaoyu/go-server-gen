@@ -1,18 +1,18 @@
 package data
 
 import (
-	"go-server-gen/gen/conf"
-	"go-server-gen/utils"
+	"go-server-gen/conf"
 )
 
 type Service struct {
-	ServiceName   string
-	ProjectName   string
-	Pkg           map[string]conf.Package
-	HasMiddleware bool     // api或group是否包含中间件
-	Middleware    []string // group中间件
-	Apis          []Api
-	Handlers      map[string]string // apis 解析后的结果
+	ServiceName   string                  // 当前service名称
+	ProjectName   string                  // 当前项目名称，go mod name
+	IdlName       string                  // idl name
+	Pkg           map[string]conf.Package // 全局变量
+	HasMiddleware bool                    // api或group是否包含中间件
+	Middleware    []string                // group中间件
+	Apis          []Api                   // 接口列表
+	Handlers      map[string]string       // apis 解析后的结果
 }
 
 // ConfigToData 配置转数据
@@ -31,18 +31,14 @@ func ConfigToData(layout *conf.LayoutConfig, idl *conf.Idl) ([]Service, map[stri
 // 解析service
 func getService(layout *conf.LayoutConfig, services []conf.Service, msg map[string]Message) ([]Service, error) {
 	res := make([]Service, 0)
-	projectName, err := utils.GetProjectName()
-	if err != nil {
-		return nil, err
-	}
-	layout.ProjectName = projectName
 	for _, svc := range services {
 		group := Service{
 			ServiceName:   svc.Name,
 			Middleware:    svc.Middlewares,
 			Apis:          make([]Api, 0),
 			HasMiddleware: len(svc.Middlewares) != 0,
-			ProjectName:   projectName,
+			ProjectName:   layout.ProjectName,
+			IdlName:       layout.IdlName,
 			Pkg:           layout.Pkg,
 		}
 

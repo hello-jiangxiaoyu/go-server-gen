@@ -3,12 +3,12 @@ package cmd
 import (
 	_ "embed"
 	"github.com/spf13/cobra"
-	"go-server-gen/gen"
+	"go-server-gen/conf"
 	"os"
 )
 
 func NewProject(_ *cobra.Command, _ []string) {
-	if err := gen.InitConfig(LayoutPath, IdlPath); err != nil {
+	if err := conf.InitConfig(LayoutPath, IdlPath); err != nil {
 		println("init config err: ", err.Error())
 		os.Exit(1)
 	}

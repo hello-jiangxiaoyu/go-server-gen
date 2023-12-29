@@ -24,13 +24,16 @@ type (
 		Path       string `yaml:"path"`
 		Write      string `yaml:"write"`
 		Handler    string `yaml:"handler"`
-		HandlerTpl string `yaml:"handler-tpl"`
+		HandlerKey string `yaml:"handler-key"`
 		Body       string `yaml:"body"`
 	}
 	LayoutConfig struct {
-		Pkg         map[string]Package `yaml:"package"`
-		Service     []Template         `yaml:"service"`
-		Messages    []Template         `yaml:"messages"`
-		ProjectName string             `yaml:"-"`
+		Pkg             map[string]Package `yaml:"package"`  // 全局变量
+		ApiTemplate     []Template         `yaml:"api"`      // api模板配置（todo: 实现api级别模板解析）
+		ServiceTemplate []Template         `yaml:"service"`  // service模板配置
+		GlobalTemplate  []Template         `yaml:"global"`   // global模板配置
+		MessageTemplate []Template         `yaml:"messages"` // 请求参数模板配置
+		ProjectName     string             `yaml:"-"`
+		IdlName         string             `yaml:"-"`
 	}
 )
