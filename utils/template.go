@@ -2,30 +2,33 @@ package utils
 
 import (
 	"bytes"
+	"errors"
+	"go/format"
 	"text/template"
 )
 
 // PhaseTemplate 模板解析
-func PhaseTemplate(tpl string, data any, funcMap ...template.FuncMap) ([]byte, error) {
-	if len(funcMap) == 0 || funcMap == nil {
-		funcMap = []template.FuncMap{defaultFuncMap}
-	}
-	t := template.New("gen").Funcs(funcMap[0])
+func PhaseTemplate(tpl string, data any) (string, error) {
+	t := template.New("gen").Funcs(defaultFuncMap)
 	t = template.Must(t.Parse(tpl))
 	var buf bytes.Buffer
 	if err := t.Execute(&buf, data); err != nil {
-		return nil, err
+		return "", err
 	}
-	return buf.Bytes(), nil
+
+	if buf.Len() == 0 {
+		return "", errors.New("code is empty")
+	}
+	return buf.String(), nil
 }
 
 // PhaseAndFormat 解析并格式化go代码
-func PhaseAndFormat(tpl string, data any, funcMap ...template.FuncMap) (string, error) {
-	buf, err := PhaseTemplate(tpl, data, funcMap...)
+func PhaseAndFormat(tpl string, data any) (string, error) {
+	buf, err := PhaseTemplate(tpl, data)
 	if err != nil {
 		return "", err
 	}
-	code, err := FormatCode(buf)
+	code, err := format.Source([]byte(buf))
 	if err != nil {
 		return "", err
 	}

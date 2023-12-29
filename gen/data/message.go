@@ -2,7 +2,7 @@ package data
 
 import (
 	"fmt"
-	"go-server-gen/utils"
+	"go/format"
 	"regexp"
 	"strings"
 )
@@ -58,7 +58,7 @@ func getMessage(msg string) (map[string]Message, error) {
 }
 
 func splitMessage(msgCode string) (map[string]string, error) {
-	code, err := utils.FormatCode([]byte(msgCode))
+	code, err := format.Source([]byte(msgCode))
 	if err != nil {
 		return nil, err
 	}

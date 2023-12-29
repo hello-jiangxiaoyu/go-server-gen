@@ -5,23 +5,16 @@ import (
 	"os"
 )
 
-type Code struct {
-	Dir       string
-	OverWrite bool
-	Files     map[string]string
+type WriteCode struct {
+	File     string
+	Write    string
+	Code     string
+	Handlers map[string]string
 }
 
-func Write(codes map[string]*Code, base string) error {
-	for dir, code := range codes {
-		if err := makeDir(base + dir); err != nil {
-			return err
-		}
-
-		for file, src := range code.Files {
-			if err := WriteGoCode(base+dir, file, src, code.OverWrite); err != nil {
-				return err
-			}
-		}
+func Write(codes map[string]WriteCode) error {
+	for _, code := range codes {
+		println(code.File, "\n"+code.Code)
 	}
 
 	return nil
@@ -31,7 +24,7 @@ func WriteGoCode(dir, file, src string, overwrite bool) error {
 	path := dir + "/" + file + ".go"
 	_, err := os.Stat(path)
 	if err == nil && !overwrite {
-		utils.Logf("path: %s is already exist, skip !!!!!!", path)
+		println(path + " is already exist, skip !!!!!!")
 		return nil
 	}
 
@@ -50,7 +43,7 @@ func WriteGoCode(dir, file, src string, overwrite bool) error {
 	}
 
 	utils.DeferErr(f.Close)
-	utils.Logf("generate %s success!", path)
+	println("generate " + path + " success!")
 
 	return nil
 }

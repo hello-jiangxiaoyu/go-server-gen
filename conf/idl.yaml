@@ -17,4 +17,9 @@ services:
     apis:
       - GET("/api/login", GetAppList)  // LoginReq
       - GET("/api/users/:userID", middleware.LoginAuth, CreateUser) // UserReq
+  - name: AppCrud
+    middlewares: []
+    apis:
+      - GET("/api/app/login", GetAppList)  // LoginReq
+      - GET("/api/app/:userID", middleware.LoginAuth, CreateUser) // UserReq
 
