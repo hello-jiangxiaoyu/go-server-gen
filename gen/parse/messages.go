@@ -7,14 +7,13 @@ import (
 	"go-server-gen/writer"
 )
 
-func GenMessageCode(layout *conf.LayoutConfig, messages map[string]data.Message) (map[string]writer.WriteCode, error) {
-	result := make(map[string]writer.WriteCode)
+func GenMessageCode(layout *conf.LayoutConfig, messages map[string]data.Message, code map[string]writer.WriteCode) error {
 	for _, tpl := range layout.MessageTemplate {
 		handlers := make(map[string]string)
 		for k, msg := range messages {
 			handler, err := utils.PhaseAndFormat(tpl.Handler, msg)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			handlers[k] = handler
 		}
@@ -26,19 +25,19 @@ func GenMessageCode(layout *conf.LayoutConfig, messages map[string]data.Message)
 		}
 		body, err := utils.PhaseAndFormat(tpl.Body, globalData)
 		if err != nil {
-			return nil, utils.WithMessage(err, "failed to phase and format body tpl "+tpl.Name)
+			return utils.WithMessage(err, "failed to phase and format body tpl "+tpl.Name)
 		}
 		file, err := utils.PhaseTemplate(tpl.Path, globalData)
 		if err != nil {
-			return nil, utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
+			return utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
 		}
 
-		result[file] = writer.WriteCode{
+		code[file] = writer.WriteCode{
 			File:     file,
 			Write:    tpl.Write,
 			Handlers: handlers,
 			Code:     body,
 		}
 	}
-	return result, nil
+	return nil
 }

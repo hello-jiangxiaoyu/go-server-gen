@@ -1,0 +1,16 @@
+
+
+
+global:
+  - name: request
+    path: "ts/request.ts"
+    write: overwrite
+    handler-key: "SendHttpRequest"
+    handler: "New{{.ServiceName}}Router(e)"
+
+service:
+  - name: client
+    path: "ts/{{convertToWord .ServiceName `_`}}.ts"
+    write: append
+    handler-key: "{{.FuncName}}"
+

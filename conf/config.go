@@ -3,19 +3,34 @@ package conf
 import (
 	_ "embed"
 	"go-server-gen/utils"
-	"gopkg.in/yaml.v3"
 	"os"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 var (
-	//go:embed idl.yaml
-	IdlYaml []byte
-	//go:embed layout.yaml
+	//go:embed gin.yaml
+	GinYaml []byte
+	//go:embed fiber.yaml
+	FiberYaml []byte
+	//go:embed echo.yaml
+	EchoYaml []byte
+	//go:embed hertz.yaml
+	HertzYaml []byte
+	//go:embed ts-fetch.yaml
+	TsFetchYaml []byte
+
 	LayoutYaml []byte
 
+	//go:embed test-idl.yaml
+	IdlYaml []byte
 	IdlName = "idl"
 )
+
+func init() {
+	LayoutYaml = GinYaml
+}
 
 func InitConfig(layoutPath, idlPath string) error {
 	var err error

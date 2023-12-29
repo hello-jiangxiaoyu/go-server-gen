@@ -15,8 +15,7 @@ type GlobalData struct {
 	Handlers      map[string]string
 }
 
-func GenServiceCode(layout *conf.LayoutConfig, services []data.Service) (map[string]writer.WriteCode, error) {
-	res := make(map[string]writer.WriteCode)
+func GenServiceCode(layout *conf.LayoutConfig, services []data.Service, code map[string]writer.WriteCode) error {
 	// 全局模板解析
 	for _, tpl := range layout.GlobalTemplate {
 		handlers := make(map[string]string)
@@ -24,11 +23,11 @@ func GenServiceCode(layout *conf.LayoutConfig, services []data.Service) (map[str
 		for _, service := range services {
 			funcName, err := utils.PhaseTemplate(tpl.HandlerKey, service)
 			if err != nil {
-				return nil, err
+				return utils.WithMessage(err, "failed to parse service funcName template")
 			}
 			handler, err := utils.PhaseAndFormat(tpl.Handler, service)
 			if err != nil {
-				return nil, err
+				return utils.WithMessage(err, "failed to parse and format service handler template")
 			}
 			handlers[funcName] = handler
 			hasMiddleware = hasMiddleware || service.HasMiddleware
@@ -41,14 +40,14 @@ func GenServiceCode(layout *conf.LayoutConfig, services []data.Service) (map[str
 		}
 		body, err := utils.PhaseAndFormat(tpl.Body, globalData)
 		if err != nil {
-			return nil, utils.WithMessage(err, "failed to phase and format body tpl "+tpl.Name)
+			return utils.WithMessage(err, "failed to phase and format body tpl "+tpl.Name)
 		}
 		file, err := utils.PhaseTemplate(tpl.Path, globalData)
 		if err != nil {
-			return nil, utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
+			return utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
 		}
 
-		res[file] = writer.WriteCode{
+		code[file] = writer.WriteCode{
 			File:     file,
 			Write:    tpl.Write,
 			Handlers: handlers,
@@ -56,31 +55,31 @@ func GenServiceCode(layout *conf.LayoutConfig, services []data.Service) (map[str
 		}
 	}
 
-	// service模板解析
+	// service模板解析，一个service对应一个解析文件
 	for _, tpl := range layout.ServiceTemplate {
 		for _, service := range services {
 			handlers := make(map[string]string)
 			for _, api := range service.Apis {
 				funcName, err := utils.PhaseTemplate(tpl.HandlerKey, api)
 				if err != nil {
-					return nil, err
+					return utils.WithMessage(err, "failed to parse api funcName template")
 				}
 				handler, err := utils.PhaseAndFormat(tpl.Handler, api)
 				if err != nil {
-					return nil, err
+					return utils.WithMessage(err, "failed to parse api handler template")
 				}
 				handlers[funcName] = handler
 			}
 			service.Handlers = handlers
 			body, err := utils.PhaseAndFormat(tpl.Body, service)
 			if err != nil {
-				return nil, utils.WithMessage(err, "failed to phase and format body tpl "+tpl.Name)
+				return utils.WithMessage(err, "failed to phase and format body tpl "+tpl.Name)
 			}
 			file, err := utils.PhaseTemplate(tpl.Path, service)
 			if err != nil {
-				return nil, utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
+				return utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
 			}
-			res[file] = writer.WriteCode{
+			code[file] = writer.WriteCode{
 				File:     file,
 				Write:    tpl.Write,
 				Handlers: handlers,
@@ -89,5 +88,5 @@ func GenServiceCode(layout *conf.LayoutConfig, services []data.Service) (map[str
 		}
 	}
 
-	return res, nil
+	return nil
 }
