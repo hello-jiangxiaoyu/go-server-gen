@@ -16,7 +16,7 @@ type (
 // Layout 配置
 type (
 	Package struct {
-		Name   string `yaml:"name"`
+		Value  string `yaml:"value"`
 		Import string `yaml:"import"`
 	}
 	Template struct {

@@ -42,3 +42,7 @@ func GetDefaultCode() map[string]writer.WriteCode {
 		},
 	}
 }
+
+func ModifyPackageName(src string, name string) string {
+	return src
+}

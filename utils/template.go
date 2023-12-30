@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bytes"
-	"errors"
 	"go/format"
 	"text/template"
 )
@@ -14,10 +13,6 @@ func PhaseTemplate(tpl string, data any) (string, error) {
 	var buf bytes.Buffer
 	if err := t.Execute(&buf, data); err != nil {
 		return "", err
-	}
-
-	if buf.Len() == 0 {
-		return "", errors.New("code is empty")
 	}
 	return buf.String(), nil
 }

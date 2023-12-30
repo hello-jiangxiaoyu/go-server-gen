@@ -1,21 +1,21 @@
 package:
-  context:
-    name: "*gin.context"
+  Context:
+    value: "*gin.context"
     import: github.com/gin-gonic/gin
-  engine:
-    name: "*gin.engine"
+  Engine:
+    value: "*gin.engine"
     import: github.com/gin-gonic/gin
-  controller:
-    name: controller
+  Controller:
+    value: controller
     import: biz/controller
-  service:
-    name: service
+  Service:
+    value: service
     import: biz/service
-  req:
-    name: model
+  Req:
+    value: model
     import: pkg/model
-  resp:
-    name: response
+  Resp:
+    value: response
     import: pkg/response
 
 
@@ -30,9 +30,9 @@ global:
       
       package biz
       import (
-          "{{.Pkg.engine.Import}}"
+          "{{.Pkg.Engine.Import}}"
       )
-      func Register(e {{.Pkg.engine.Name}}) {
+      func Register(e {{.Pkg.Engine.Value}}) {
           //INSERT_POINT: DO NOT DELETE THIS LINE!
           {{- range $_, $Code := .Handlers }}
           {{$Code}}
@@ -45,8 +45,8 @@ global:
     body: |-
       package biz
       import (
-          "{{.Pkg.engine.Import}}"
-          "{{.ProjectName}}/{{.Pkg.controller.Import}}"
+          "{{.Pkg.Engine.Import}}"
+          "{{.ProjectName}}/{{.Pkg.Controller.Import}}"
           {{- if .HasMiddleware }}
           "{{.ProjectName}}/biz/middleware"
           {{- end}}
@@ -56,7 +56,7 @@ global:
       {{- end }}
     handler-key: "New{{.ServiceName}}Router"
     handler: |
-      func New{{.ServiceName}}Router(e {{.Pkg.engine.Name}}) {
+      func New{{.ServiceName}}Router(e {{.Pkg.Engine.Value}}) {
           {{.ServiceName | uncapitalizeFirstLetter}} := e.Group()
           {
               {{- range $_, $Api := .Apis}}
@@ -65,7 +65,7 @@ global:
               {{- if hasPrefix $Handler "middleware" -}}
               , {{$Handler}}()
               {{- else -}}
-              , {{$.Pkg.controller.Name}}.{{$Handler}}
+              , {{$.Pkg.Controller.Value}}.{{$Handler}}
               {{- end -}}
               {{- end}})
               {{- end}}
@@ -87,8 +87,8 @@ service:
       {{- end }}
       // @Success	200
       // @Router	{{.Path | getDocRouter}} [{{.Method}}]
-      func {{.FuncName}}(c {{.Pkg.context.Name}}) {
-          var req {{.Pkg.req.Name}}.{{.ReqName}}
+      func {{.FuncName}}(c {{.Pkg.Context.Value}}) {
+          var req {{.Pkg.Req.Value}}.{{.ReqName}}
           if err := c.ShouldBindJSON(&req); err != nil {
               response.ErrorRequest(c, err)
               return
@@ -98,10 +98,10 @@ service:
     body: |-
       package controller
       import (
-          "{{.Pkg.context.Import}}"
-          "{{.ProjectName}}/{{.Pkg.resp.Import}}"
-          "{{.ProjectName}}/{{.Pkg.req.Import}}"
-          "{{.ProjectName}}/{{.Pkg.service.Import}}"
+          "{{.Pkg.Context.Import}}"
+          "{{.ProjectName}}/{{.Pkg.Resp.Import}}"
+          "{{.ProjectName}}/{{.Pkg.Req.Import}}"
+          "{{.ProjectName}}/{{.Pkg.Service.Import}}"
       )
       {{- range $_, $Code := .Handlers }}
       {{$Code}}
@@ -112,15 +112,15 @@ service:
     write: append
     handler-key: "{{.FuncName}}"
     handler: |-
-      func {{.FuncName}}(c {{.Pkg.context.Name}}, req *{{.Pkg.req.Name}}.{{.ReqName}}) {
+      func {{.FuncName}}(c {{.Pkg.Context.Value}}, req *{{.Pkg.Req.Value}}.{{.ReqName}}) {
         // you service code hear
       
       }
     body: |-
       package service
       import (
-          "{{.Pkg.context.Import}}"
-          "{{.ProjectName}}/{{.Pkg.req.Import}}"
+          "{{.Pkg.Context.Import}}"
+          "{{.ProjectName}}/{{.Pkg.Req.Import}}"
       )
       {{- range $_, $Code := .Handlers }}
       {{$Code}}
