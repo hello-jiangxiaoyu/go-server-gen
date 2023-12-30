@@ -21,11 +21,7 @@ func GenServiceCode(layout *conf.LayoutConfig, services []data.Service, code map
 		handlers := make(map[string]string)
 		hasMiddleware := false
 		for _, service := range services {
-			funcName, err := utils.PhaseTemplate(tpl.HandlerKey, service)
-			if err != nil {
-				return utils.WithMessage(err, "failed to parse service funcName template")
-			}
-			handler, err := utils.PhaseAndFormat(tpl.Handler, service)
+			funcName, handler, err := utils.ParseSorce(tpl.HandlerKey, tpl.Handler, service)
 			if err != nil {
 				return utils.WithMessage(err, "failed to parse and format service handler template")
 			}
@@ -38,13 +34,9 @@ func GenServiceCode(layout *conf.LayoutConfig, services []data.Service, code map
 			Pkg:           layout.Pkg,
 			Handlers:      handlers,
 		}
-		body, err := utils.PhaseAndFormat(tpl.Body, globalData)
+		file, body, err := utils.ParseSorce(tpl.Path, tpl.Body, globalData)
 		if err != nil {
-			return utils.WithMessage(err, "failed to phase and format body tpl "+tpl.Name)
-		}
-		file, err := utils.PhaseTemplate(tpl.Path, globalData)
-		if err != nil {
-			return utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
+			return utils.WithMessage(err, "failed to phase and format service body template "+tpl.Path)
 		}
 
 		code[file] = writer.WriteCode{
@@ -60,24 +52,16 @@ func GenServiceCode(layout *conf.LayoutConfig, services []data.Service, code map
 		for _, service := range services {
 			handlers := make(map[string]string)
 			for _, api := range service.Apis {
-				funcName, err := utils.PhaseTemplate(tpl.HandlerKey, api)
-				if err != nil {
-					return utils.WithMessage(err, "failed to parse api funcName template")
-				}
-				handler, err := utils.PhaseAndFormat(tpl.Handler, api)
+				funcName, handler, err := utils.ParseSorce(tpl.HandlerKey, tpl.Handler, api)
 				if err != nil {
 					return utils.WithMessage(err, "failed to parse api handler template")
 				}
 				handlers[funcName] = handler
 			}
 			service.Handlers = handlers
-			body, err := utils.PhaseAndFormat(tpl.Body, service)
+			file, body, err := utils.ParseSorce(tpl.Path, tpl.Body, service)
 			if err != nil {
-				return utils.WithMessage(err, "failed to phase and format body tpl "+tpl.Name)
-			}
-			file, err := utils.PhaseTemplate(tpl.Path, service)
-			if err != nil {
-				return utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
+				return utils.WithMessage(err, "failed to phase and format api body template "+tpl.Path)
 			}
 			code[file] = writer.WriteCode{
 				File:     file,

@@ -11,7 +11,7 @@ func GenMessageCode(layout *conf.LayoutConfig, messages map[string]data.Message,
 	for _, tpl := range layout.MessageTemplate {
 		handlers := make(map[string]string)
 		for k, msg := range messages {
-			handler, err := utils.PhaseAndFormat(tpl.Handler, msg)
+			_, handler, err := utils.ParseSorce("", tpl.Handler, msg)
 			if err != nil {
 				return err
 			}
@@ -23,11 +23,7 @@ func GenMessageCode(layout *conf.LayoutConfig, messages map[string]data.Message,
 			Pkg:         layout.Pkg,
 			Handlers:    handlers,
 		}
-		body, err := utils.PhaseAndFormat(tpl.Body, globalData)
-		if err != nil {
-			return utils.WithMessage(err, "failed to phase and format body tpl "+tpl.Name)
-		}
-		file, err := utils.PhaseTemplate(tpl.Path, globalData)
+		file, body, err := utils.ParseSorce(tpl.Path, tpl.Body, globalData)
 		if err != nil {
 			return utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
 		}
