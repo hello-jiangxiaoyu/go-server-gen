@@ -1,7 +1,6 @@
 package gen
 
 import (
-	"os"
 	"testing"
 
 	"gopkg.in/yaml.v3"
@@ -10,7 +9,7 @@ import (
 func TestGen(t *testing.T) {
 	if err := ExecuteUpdate(); err != nil {
 		println(err.Error())
-		os.Exit(1)
+		t.FailNow()
 	}
 	println("Success")
 }
