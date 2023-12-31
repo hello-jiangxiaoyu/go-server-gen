@@ -13,8 +13,8 @@ var (
 )
 
 type ResponsePackage struct {
-	BindCode     string
-	ResponseCode string
+	BindCode     conf.Package
+	ResponseCode conf.Package
 	Context      conf.Package
 	Return       conf.Package
 	ReturnType   conf.Package
@@ -23,8 +23,8 @@ type ResponsePackage struct {
 
 var responseMap = map[string]ResponsePackage{
 	"gin": ResponsePackage{
-		BindCode:     GetEmbedContent("internal/gin/bind.go"),
-		ResponseCode: GetEmbedContent("internal/gin/response.go"),
+		BindCode:     conf.Package{Value: GetEmbedContent("internal/gin/bind.go")},
+		ResponseCode: conf.Package{Value: GetEmbedContent("internal/gin/response.go")},
 		Context: conf.Package{
 			Value:  "*gin.Context",
 			Import: `"github.com/gin-gonic/gin"`,
@@ -35,8 +35,8 @@ var responseMap = map[string]ResponsePackage{
 		},
 	},
 	"hertz": ResponsePackage{
-		BindCode:     GetEmbedContent("internal/hertz/bind.go"),
-		ResponseCode: GetEmbedContent("internal/hertz/response.go"),
+		BindCode:     conf.Package{Value: GetEmbedContent("internal/hertz/bind.go")},
+		ResponseCode: conf.Package{Value: GetEmbedContent("internal/hertz/response.go")},
 		Context: conf.Package{
 			Value:  "*app.RequestContext",
 			Import: `"github.com/cloudwego/hertz/pkg/app"`,
@@ -47,8 +47,8 @@ var responseMap = map[string]ResponsePackage{
 		},
 	},
 	"fiber": ResponsePackage{
-		BindCode:     GetEmbedContent("internal/fiber/bind.go"),
-		ResponseCode: GetEmbedContent("internal/fiber/response.go"),
+		BindCode:     conf.Package{Value: GetEmbedContent("internal/fiber/bind.go")},
+		ResponseCode: conf.Package{Value: GetEmbedContent("internal/fiber/response.go")},
 		Context: conf.Package{
 			Value:  "*fiber.Ctx",
 			Import: `"github.com/gofiber/fiber/v2"`,
@@ -58,8 +58,8 @@ var responseMap = map[string]ResponsePackage{
 		ReturnType: conf.Package{Value: "error"},
 	},
 	"echo": ResponsePackage{
-		BindCode:     GetEmbedContent("internal/echo/bind.go"),
-		ResponseCode: GetEmbedContent("internal/echo/response.go"),
+		BindCode:     conf.Package{Value: GetEmbedContent("internal/echo/bind.go")},
+		ResponseCode: conf.Package{Value: GetEmbedContent("internal/echo/response.go")},
 		Context: conf.Package{
 			Value:  "echo.Context",
 			Import: `"github.com/labstack/echo/v4"`,

@@ -1,12 +1,7 @@
 package:
-  Context:
-    value: "*gin.context"
-    import: github.com/gin-gonic/gin
-  Code:
-    value: "http"
-    import: "\"net/http\""
-  Return:
-  ReturnType:
+  Resp:
+    value: response
+    import: pkg/response
 
 
 global:
@@ -44,6 +39,7 @@ global:
       func ErrorNoLogin(c {{.Pkg.Context.Value}}) {{.Pkg.ReturnType.Value}} {
         {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.Code.Value}}.StatusUnauthorized, CodeNotLogin, nil, "user not login")
       }
+
 
   - path: "pkg/response/error_sql.go"
     write: overwrite
@@ -92,6 +88,7 @@ global:
           {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.Code.Value}}.StatusInternalServerError, CodeSqlDelete, err, respMsg)
         }
       }
+
 
   - path: "pkg/response/error_unknow.go"
     write: overwrite
@@ -146,6 +143,7 @@ global:
         {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.Code.Value}}.StatusNotFound, CodeNoSuchRoute, err, "no such route")
       }
 
+
   - path: "pkg/response/success.go"
     write: overwrite
     body: |-
@@ -161,13 +159,13 @@ global:
       }
 
       func Success(c {{.Pkg.Context.Value}}) error {
-        {{.Pkg.Return.Value}} success(c, struct{}{}, 0)
+        {{.Pkg.Return.Value}} response(c, {{.Pkg.Code.Value}}.StatusOK, CodeSuccess, nil, MsgSuccess, struct{}{}, 0)
       }
       func SuccessWithData(c {{.Pkg.Context.Value}}, data any) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} success(c, data, 0)
+        {{.Pkg.Return.Value}} response(c, {{.Pkg.Code.Value}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, 0)
       }
       func SuccessWithArrayData(c {{.Pkg.Context.Value}}, data any, total int) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} success(c, data, total)
+        {{.Pkg.Return.Value}} response(c, {{.Pkg.Code.Value}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
       }
 
 
@@ -177,7 +175,7 @@ global:
       package response
 
       const (
-        MsgSuccess = "ok"
+        MsgSuccess = ""
       )
 
       const (
@@ -220,13 +218,73 @@ global:
         CodeSendRequest               // 发送http请求错误
       )
 
+
+  - path: "pkg/middleware/recover.go"
+    write: overwrite
+    body: |-
+      package middleware
+
+      import (
+        "context"
+        "errors"
+        "fmt"
+        "net"
+        "os"
+        "runtime"
+        "strings"
+        {{.Pkg.Context.Import}}
+        "{{.ProjectName}}/{{.Pkg.Resp.Import}}"
+      )
+
+      func stackInfo(msg string, err any, skip int) string {
+        for i := skip; ; i++ {
+          pc, file, line, ok := runtime.Caller(i)
+          if !ok {
+            break
+          }
+
+          // 不打印第三方库栈信息
+          if !strings.Contains(file, "github.com/") && !strings.Contains(file, "gorm.io/") && !strings.Contains(file, "net/http") {
+            msg += fmt.Sprintf("\n\t%s:%d %s", file, line, runtime.FuncForPC(pc).Name())
+          }
+        }
+        return msg + "\n\n"
+      }
+
+      // RecoveryHandler panic处理
+      func RecoveryHandler(ctx context.Context, c {{.Pkg.Context.Value}}) {
+        defer func() {
+          if err := recover(); err != nil {
+            // Check for a broken connection, as it is not really a
+            var brokenPipe bool
+            if ne, ok := err.(*net.OpError); ok {
+              var se *os.SyscallError
+              if errors.As(ne, &se) {
+                seStr := strings.ToLower(se.Error())
+                if strings.Contains(seStr, "broken pipe") || strings.Contains(seStr, "connection reset by peer") {
+                  brokenPipe = true
+                }
+              }
+            }
+            req := fmt.Sprintf("panic recovered: %s; method:%s path:%s", err, c.Method(), c.Path())
+            println(stackInfo(req, err, 3))
+            if !brokenPipe {
+              {{.Pkg.Resp.Value}}.ErrorPanic(c)
+            }
+          }
+        }()
+        c.Next(ctx)
+      }
+
+
   - path: "pkg/response/response.go"
     write: overwrite
-    body: "{{.Pkg.ResponseCode}}"
+    body: "{{.Pkg.ResponseCode.Value}}"
     first-line: package response
+
 
   - path: "biz/controller/internal/bind.go"
     write: overwrite
-    body: "{{.Pkg.BindCode}}"
+    body: "{{.Pkg.BindCode.Value}}"
     first-line: package internal
 

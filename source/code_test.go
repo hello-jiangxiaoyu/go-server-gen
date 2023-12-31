@@ -25,7 +25,7 @@ func TestCode(t *testing.T) {
 	}
 
 	code := make(map[string]writer.WriteCode)
-	if err := GenPackageCode(layout, responseMap["fiber"], code); err != nil {
+	if err := GenPackageCode(layout, responseMap["hertz"], code); err != nil {
 		println(err.Error())
 		t.FailNow()
 	}

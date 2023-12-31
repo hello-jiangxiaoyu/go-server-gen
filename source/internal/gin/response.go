@@ -19,6 +19,8 @@ func response(c *gin.Context, code int, errCode int, err error, msg string, data
 	c.JSON(code, &ArrayResponse{Code: errCode, Msg: msg, Total: total, Data: data})
 	if err != nil {
 		_ = c.Error(errors.New(msg + ": " + err.Error()))
+	} else {
+		_ = c.Error(errors.New(msg))
 	}
 	c.Set("code", errCode)
 	c.Abort()

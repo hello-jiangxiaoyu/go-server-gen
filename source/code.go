@@ -9,15 +9,22 @@ import (
 
 type GlobalData struct {
 	ProjectName string
-	Pkg         any
+	Pkg         map[string]conf.Package
 }
 
 // GenPackageCode 生成默认代码
-func GenPackageCode(layout conf.LayoutConfig, pkg any, code map[string]writer.WriteCode) error {
+func GenPackageCode(layout conf.LayoutConfig, resp ResponsePackage, code map[string]writer.WriteCode) error {
 	projectName, err := utils.GetProjectName()
 	if err != nil {
 		return err
 	}
+	pkg := layout.Pkg
+	pkg["Context"] = resp.Context
+	pkg["Code"] = resp.Code
+	pkg["Return"] = resp.Return
+	pkg["ReturnType"] = resp.ReturnType
+	pkg["BindCode"] = resp.BindCode
+	pkg["ResponseCode"] = resp.ResponseCode
 	for _, tpl := range layout.GlobalTemplate {
 		file, body, err := utils.ParseSorce(tpl.Path, tpl.Body, GlobalData{ProjectName: projectName, Pkg: pkg})
 		if err != nil {
