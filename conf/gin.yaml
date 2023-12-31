@@ -17,7 +17,9 @@ package:
   Resp:
     value: response
     import: pkg/response
-
+  Bind:
+    value: internal
+    import: biz/controller/internal
 
 global:
   - name: register
@@ -89,7 +91,7 @@ service:
       // @Router	{{.Path | getDocRouter}} [{{.Method}}]
       func {{.FuncName}}(c {{.Pkg.Context.Value}}) {
           var req {{.Pkg.Req.Value}}.{{.ReqName}}
-          if err := c.ShouldBindJSON(&req); err != nil {
+          if err := {{.Pkg.Bind.Value}}.New(c).BindJson(&req).Error; err != nil {
               response.ErrorRequest(c, err)
               return
           }
@@ -99,8 +101,9 @@ service:
       package controller
       import (
           "{{.Pkg.Context.Import}}"
-          "{{.ProjectName}}/{{.Pkg.Resp.Import}}"
           "{{.ProjectName}}/{{.Pkg.Req.Import}}"
+          "{{.ProjectName}}/{{.Pkg.Resp.Import}}"
+          "{{.ProjectName}}/{{.Pkg.Bind.Import}}"
           "{{.ProjectName}}/{{.Pkg.Service.Import}}"
       )
       {{- range $_, $Code := .Handlers }}

@@ -14,7 +14,7 @@ func WrapError(err1 error, err2 error) error {
 	return errors.New(err2.Error() + ": " + err1.Error())
 }
 
-func WithError(err error, msg string) error {
+func WithMessage(err error, msg string) error {
 	if err == nil && msg == "" {
 		return nil
 	} else if err == nil {

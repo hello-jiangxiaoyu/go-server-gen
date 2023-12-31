@@ -12,41 +12,39 @@ var (
 	ErrorTooManyReq     = errors.New("too many req")
 )
 
-func SetReq(c *app.RequestContext, obj ...any) error {
-	if len(obj) > 1 {
-		return ErrorTooManyReq
-	}
-	if len(obj) == 0 {
-		return nil
-	}
-	if err := c.BindAndValidate(obj); err != nil {
-		return err
-	}
-
-	return nil
+type Api struct {
+	c     *app.RequestContext
+	Sub   int64
+	Error error
 }
 
-func SetReqWithSub(c *app.RequestContext, obj ...any) (int64, error) {
-	if len(obj) > 1 {
-		return 0, ErrorTooManyReq
+func New(c *app.RequestContext) *Api {
+	return &Api{c: c}
+}
+
+func (a *Api) BindJson(obj any) *Api {
+	if err := a.c.BindAndValidate(obj); err != nil {
+		return a.setError(err)
+	}
+	return a
+}
+
+func (a *Api) BindJsonWithSub(obj any) *Api {
+	sub := a.c.GetInt64("sub")
+	if sub == 0 {
+		return a.setError(errors.New("sub is nil"))
+	}
+	a.Sub = sub
+	if err := a.c.BindAndValidate(obj); err != nil {
+		return a.setError(err)
 	}
 
-	sub, ok := c.Get("sub")
-	if !ok {
-		return 0, ErrorSubIsNil
-	}
+	return a
+}
 
-	int64Sub, ok := sub.(int64)
-	if !ok {
-		return 0, ErrorInvalidateType
+func (a *Api) setError(err error) *Api {
+	if a.Error == nil {
+		a.Error = err
 	}
-
-	if len(obj) == 0 {
-		return int64Sub, nil
-	}
-	if err := c.BindAndValidate(obj); err != nil {
-		return 0, err
-	}
-
-	return int64Sub, nil
+	return a
 }
