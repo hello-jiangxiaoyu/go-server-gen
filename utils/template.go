@@ -7,7 +7,7 @@ import (
 	"text/template"
 )
 
-// PhaseTemplate 模板解析
+// ParseTemplate 模板解析
 func ParseTemplate(tpl string, data any) (string, error) {
 	t := template.New("gen").Funcs(defaultFuncMap)
 	t = template.Must(t.Parse(tpl))
@@ -18,8 +18,8 @@ func ParseTemplate(tpl string, data any) (string, error) {
 	return buf.String(), nil
 }
 
-// ParseSorce 解析代码
-func ParseSorce(key, body string, data any) (string, string, error) {
+// ParseSource 解析代码
+func ParseSource(key, body string, data any) (string, string, error) {
 	body, err := ParseTemplate(body, data)
 	if err != nil {
 		return "", "", err

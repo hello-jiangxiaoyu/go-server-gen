@@ -25,8 +25,9 @@ func GenPackageCode(layout conf.LayoutConfig, resp ResponsePackage, code map[str
 	pkg["ReturnType"] = resp.ReturnType
 	pkg["BindCode"] = resp.BindCode
 	pkg["ResponseCode"] = resp.ResponseCode
+	pkg["HandleFunc"] = resp.HandleFunc
 	for _, tpl := range layout.GlobalTemplate {
-		file, body, err := utils.ParseSorce(tpl.Path, tpl.Body, GlobalData{ProjectName: projectName, Pkg: pkg})
+		file, body, err := utils.ParseSource(tpl.Path, tpl.Body, GlobalData{ProjectName: projectName, Pkg: pkg})
 		if err != nil {
 			return err
 		}

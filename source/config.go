@@ -18,13 +18,15 @@ type ResponsePackage struct {
 	Context      conf.Package
 	Return       conf.Package
 	ReturnType   conf.Package
+	HandleFunc   conf.Package
 	Code         conf.Package
 }
 
 var responseMap = map[string]ResponsePackage{
-	"gin": ResponsePackage{
+	"gin": {
 		BindCode:     conf.Package{Value: GetEmbedContent("internal/gin/bind.go")},
 		ResponseCode: conf.Package{Value: GetEmbedContent("internal/gin/response.go")},
+		HandleFunc:   conf.Package{Value: "gin.HandlerFunc"},
 		Context: conf.Package{
 			Value:  "*gin.Context",
 			Import: `"github.com/gin-gonic/gin"`,
@@ -34,9 +36,10 @@ var responseMap = map[string]ResponsePackage{
 			Import: `"net/http"`,
 		},
 	},
-	"hertz": ResponsePackage{
+	"hertz": {
 		BindCode:     conf.Package{Value: GetEmbedContent("internal/hertz/bind.go")},
 		ResponseCode: conf.Package{Value: GetEmbedContent("internal/hertz/response.go")},
+		HandleFunc:   conf.Package{Value: "app.HandlerFunc"},
 		Context: conf.Package{
 			Value:  "*app.RequestContext",
 			Import: `"github.com/cloudwego/hertz/pkg/app"`,
@@ -46,9 +49,10 @@ var responseMap = map[string]ResponsePackage{
 			Import: `"github.com/cloudwego/hertz/pkg/protocol/consts"`,
 		},
 	},
-	"fiber": ResponsePackage{
+	"fiber": {
 		BindCode:     conf.Package{Value: GetEmbedContent("internal/fiber/bind.go")},
 		ResponseCode: conf.Package{Value: GetEmbedContent("internal/fiber/response.go")},
+		HandleFunc:   conf.Package{Value: "fiber.Handler"},
 		Context: conf.Package{
 			Value:  "*fiber.Ctx",
 			Import: `"github.com/gofiber/fiber/v2"`,
@@ -57,9 +61,10 @@ var responseMap = map[string]ResponsePackage{
 		Return:     conf.Package{Value: "return"},
 		ReturnType: conf.Package{Value: "error"},
 	},
-	"echo": ResponsePackage{
+	"echo": {
 		BindCode:     conf.Package{Value: GetEmbedContent("internal/echo/bind.go")},
 		ResponseCode: conf.Package{Value: GetEmbedContent("internal/echo/response.go")},
+		HandleFunc:   conf.Package{Value: "echo.HandlerFunc"},
 		Context: conf.Package{
 			Value:  "echo.Context",
 			Import: `"github.com/labstack/echo/v4"`,
