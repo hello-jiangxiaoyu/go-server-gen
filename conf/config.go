@@ -12,12 +12,7 @@ import (
 var (
 	//go:embed gin.yaml
 	GinYaml []byte
-	//go:embed fiber.yaml
-	FiberYaml []byte
-	//go:embed echo.yaml
-	EchoYaml []byte
-	//go:embed hertz.yaml
-	HertzYaml []byte
+
 	//go:embed ts-fetch.yaml
 	TsFetchYaml []byte
 
