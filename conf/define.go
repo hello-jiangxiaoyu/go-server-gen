@@ -16,12 +16,13 @@ type (
 // Layout 配置
 type (
 	Package struct {
-		Name   string `yaml:"name"`
+		Value  string `yaml:"value"`
 		Import string `yaml:"import"`
 	}
 	Template struct {
 		Name       string `yaml:"name"`
 		Path       string `yaml:"path"`
+		FirstLine  string `yaml:"first-line"` // 仅在创建默认代码时使用该字段
 		Write      string `yaml:"write"`
 		Handler    string `yaml:"handler"`
 		HandlerKey string `yaml:"handler-key"`

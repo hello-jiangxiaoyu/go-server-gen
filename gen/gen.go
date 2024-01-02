@@ -10,7 +10,7 @@ import (
 
 func ExecuteUpdate() error {
 	// 获取配置文件
-	layout, idl, err := conf.GetConfig()
+	layout, idl, err := conf.GetConfig("gin")
 	if err != nil {
 		return utils.WithMessage(err, "failed to unmarshal yaml")
 	}
@@ -22,20 +22,16 @@ func ExecuteUpdate() error {
 	}
 
 	// 使用数据解析模板
-	serviceCode, err := parse.GenServiceCode(layout, services)
-	if err != nil {
-		return utils.WithMessage(err, "failed to generate service code")
+	code := make(map[string]writer.WriteCode)
+	if err = parse.GenServiceCode(layout, services, code); err != nil {
+		return err
 	}
-	messageCode, err := parse.GenMessageCode(layout, messages)
-	if err != nil {
-		return utils.WithMessage(err, "failed to generate message code")
+	if err = parse.GenMessageCode(layout, messages, code); err != nil {
+		return err
 	}
 
 	// 将代码写入文件
-	if err = writer.Write(serviceCode); err != nil {
-		return utils.WithMessage(err, "failed to write code")
-	}
-	if err = writer.Write(messageCode); err != nil {
+	if err = writer.Write(code); err != nil {
 		return utils.WithMessage(err, "failed to write code")
 	}
 

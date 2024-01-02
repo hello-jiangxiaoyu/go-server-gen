@@ -2,6 +2,8 @@ package utils
 
 import (
 	"errors"
+	"os/exec"
+	"strings"
 )
 
 // DeferErr handle defer function err
@@ -40,4 +42,21 @@ func DeduplicateStrings(arr []string) []string {
 	}
 
 	return result
+}
+
+var projectName = ""
+
+// GetProjectName 获取当前项目名
+func GetProjectName() (string, error) {
+	if projectName != "" {
+		return projectName, nil
+	}
+	cmd := exec.Command("go", "list", "-m")
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+
+	projectName = strings.TrimSpace(string(output))
+	return projectName, nil
 }

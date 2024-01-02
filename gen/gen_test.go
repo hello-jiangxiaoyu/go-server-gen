@@ -1,16 +1,17 @@
 package gen
 
 import (
-	"gopkg.in/yaml.v3"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 func TestGen(t *testing.T) {
 	if err := ExecuteUpdate(); err != nil {
 		println(err.Error())
-	} else {
-		println("Success")
+		t.FailNow()
 	}
+	println("Success")
 }
 
 func TestTemp(t *testing.T) {

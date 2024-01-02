@@ -14,7 +14,7 @@ type WriteCode struct {
 
 func Write(codes map[string]WriteCode) error {
 	for _, code := range codes {
-		println(code.File, "\n"+code.Code)
+		println(code.File + "\n" + code.Code)
 	}
 
 	return nil

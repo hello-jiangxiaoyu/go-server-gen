@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	_ "embed"
-	"github.com/spf13/cobra"
 	"go-server-gen/conf"
 	"go-server-gen/gen"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 func CreateCrudGroup(_ *cobra.Command, _ []string) {

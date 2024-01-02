@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	_ "embed"
-	"github.com/spf13/cobra"
 	"go-server-gen/conf"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 func NewProject(_ *cobra.Command, _ []string) {

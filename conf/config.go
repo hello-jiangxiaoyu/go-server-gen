@@ -3,19 +3,29 @@ package conf
 import (
 	_ "embed"
 	"go-server-gen/utils"
-	"gopkg.in/yaml.v3"
 	"os"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 var (
-	//go:embed idl.yaml
-	IdlYaml []byte
-	//go:embed layout.yaml
+	//go:embed gin.yaml
+	GinYaml []byte
+
+	//go:embed ts-fetch.yaml
+	TsFetchYaml []byte
+
 	LayoutYaml []byte
 
+	//go:embed test-idl.yaml
+	IdlYaml []byte
 	IdlName = "idl"
 )
+
+func init() {
+	LayoutYaml = GinYaml
+}
 
 func InitConfig(layoutPath, idlPath string) error {
 	var err error
@@ -36,7 +46,7 @@ func InitConfig(layoutPath, idlPath string) error {
 	return nil
 }
 
-func GetConfig() (*LayoutConfig, *Idl, error) {
+func GetConfig(server string) (*LayoutConfig, *Idl, error) {
 	var apiConf Idl
 	if err := yaml.Unmarshal(IdlYaml, &apiConf); err != nil {
 		return nil, nil, err
@@ -52,5 +62,13 @@ func GetConfig() (*LayoutConfig, *Idl, error) {
 	}
 	layoutConf.ProjectName = projectName
 	layoutConf.IdlName = IdlName
+
+	svc, ok := PkgMap[server]
+	if ok {
+		layoutConf.Pkg["Context"] = svc.Context
+		layoutConf.Pkg["Engine"] = svc.Engine
+		layoutConf.Pkg["Return"] = svc.Return
+		layoutConf.Pkg["ReturnType"] = svc.ReturnType
+	}
 	return &layoutConf, &apiConf, nil
 }

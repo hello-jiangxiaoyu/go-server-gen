@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/spf13/cobra"
 	"go-server-gen/cmd"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 func main() {
@@ -23,7 +24,12 @@ func main() {
 		Short: "Create a new crud api",
 		Run:   cmd.CreateCrudGroup,
 	}
-	cmd.InitCommand(rootCmd, newCmd, updateCmd, crudCmd)
+	serverCmd := &cobra.Command{
+		Use:   "webserver",
+		Short: "start webserver",
+		Run:   cmd.StartServer,
+	}
+	cmd.InitCommand(rootCmd, newCmd, updateCmd, crudCmd, serverCmd)
 	if err := rootCmd.Execute(); err != nil {
 		println(err.Error())
 		os.Exit(1)
