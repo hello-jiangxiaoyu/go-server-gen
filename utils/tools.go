@@ -30,7 +30,6 @@ func WithMessage(err error, msg string) error {
 func DeduplicateStrings(arr []string) []string {
 	visited := make(map[string]bool)
 	result := make([]string, 0)
-
 	for _, str := range arr {
 		if str == "" {
 			continue

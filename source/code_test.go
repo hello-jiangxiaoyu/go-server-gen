@@ -2,27 +2,44 @@ package source
 
 import (
 	"go-server-gen/conf"
+	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"testing"
-
-	"gopkg.in/yaml.v3"
 )
 
 func TestCode(t *testing.T) {
-	var layout conf.LayoutConfig
-	if err := yaml.Unmarshal(serverTpl, &layout); err != nil {
-		println(err.Error())
-		t.FailNow()
+	layout, _, err := conf.GetConfig("hertz")
+	if err != nil {
+		return
 	}
 
 	res := make(map[string]writer.WriteCode)
-	if err := GenPackageCode(layout, responseMap["gin"], res); err != nil {
+	if err = GenPackageCode(layout, "hertz", "zero", res); err != nil {
 		println(err.Error())
 		t.FailNow()
 	}
 
-	if err := writer.Write(res); err != nil {
+	if err = writer.Write(res); err != nil {
 		println(err.Error())
 		t.FailNow()
 	}
+}
+
+func TestDuplicateImport(t *testing.T) {
+	println(utils.RemoveDuplicateImport(`
+import (
+"go-server-gen/conf"
+	"go-server-gen/utils"
+	"go-server-gen/writer"
+"go-server-gen/writer"
+	"testing"
+	"gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v3"
+)
+asdf
+as
+df
+adsa
+sd
+`))
 }

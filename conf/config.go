@@ -69,6 +69,8 @@ func GetConfig(server string) (*LayoutConfig, *Idl, error) {
 		layoutConf.Pkg["Engine"] = svc.Engine
 		layoutConf.Pkg["Return"] = svc.Return
 		layoutConf.Pkg["ReturnType"] = svc.ReturnType
+		layoutConf.Pkg["HandleFunc"] = svc.HandleFunc
+		layoutConf.Pkg["StatusCode"] = svc.StatusCode
 	}
 	return &layoutConf, &apiConf, nil
 }

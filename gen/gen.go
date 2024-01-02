@@ -10,7 +10,7 @@ import (
 
 func ExecuteUpdate() error {
 	// 获取配置文件
-	layout, idl, err := conf.GetConfig("gin")
+	layout, idl, err := conf.GetConfig("hertz")
 	if err != nil {
 		return utils.WithMessage(err, "failed to unmarshal yaml")
 	}

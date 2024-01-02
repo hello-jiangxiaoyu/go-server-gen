@@ -2,7 +2,9 @@ package utils
 
 import (
 	"bytes"
+	"fmt"
 	"go/format"
+	"regexp"
 	"strings"
 	"text/template"
 )
@@ -25,7 +27,7 @@ func ParseSource(key, body string, data any) (string, string, error) {
 		return "", "", err
 	}
 	if strings.Contains(key, ".go") { // 格式化go代码
-		codeBody, err := format.Source([]byte(body))
+		codeBody, err := format.Source([]byte(RemoveDuplicateImport(body)))
 		if err != nil {
 			return "", "", err
 		}
@@ -40,4 +42,33 @@ func ParseSource(key, body string, data any) (string, string, error) {
 	}
 
 	return key, body, nil
+}
+
+var (
+	importReg = regexp.MustCompile(`import\s+\(([\s\S]*?)\)`)
+	spaceReg  = regexp.MustCompile(`[\s\t]+`)
+)
+
+// RemoveDuplicateImport 去除源码中多于的import
+func RemoveDuplicateImport(src string) string {
+	matches := importReg.FindAllStringSubmatch(src, -1)
+	if len(matches) == 0 {
+		return src
+	}
+
+	dependencies := make(map[string]bool)
+	replacement := ""
+	for _, match := range matches {
+		importContent := match[1]
+		imports := strings.Split(importContent, "\n")
+		for _, ipt := range imports {
+			ipt = spaceReg.ReplaceAllString(ipt, "")
+			if !dependencies[ipt] {
+				dependencies[ipt] = true
+				replacement += fmt.Sprintf("\t%s\n", ipt)
+			}
+		}
+	}
+
+	return importReg.ReplaceAllString(src, "import ("+replacement+")")
 }

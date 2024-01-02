@@ -1,7 +1,9 @@
 package source
 
 import (
+	"embed"
 	"go-server-gen/conf"
+	"go-server-gen/source/internal"
 	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"strings"
@@ -13,37 +15,50 @@ type GlobalData struct {
 }
 
 // GenPackageCode 生成默认代码
-func GenPackageCode(layout conf.LayoutConfig, resp ResponsePackage, code map[string]writer.WriteCode) error {
+func GenPackageCode(layout *conf.LayoutConfig, server string, log string, code map[string]writer.WriteCode) error {
 	projectName, err := utils.GetProjectName()
 	if err != nil {
 		return err
 	}
 	pkg := layout.Pkg
-	pkg["Context"] = resp.Context
-	pkg["Code"] = resp.Code
-	pkg["Return"] = resp.Return
-	pkg["ReturnType"] = resp.ReturnType
-	pkg["BindCode"] = resp.BindCode
-	pkg["ResponseCode"] = resp.ResponseCode
-	pkg["HandleFunc"] = resp.HandleFunc
-	for _, tpl := range layout.GlobalTemplate {
-		file, body, err := utils.ParseSource(tpl.Path, tpl.Body, GlobalData{ProjectName: projectName, Pkg: pkg})
+
+	tplMap := map[string]string{
+		"main.go":                         internal.MainCodeMap[server],
+		"biz/register.go":                 internal.RegisterCode,
+		"pkg/response/error_request.go":   internal.ErrorRequest,
+		"pkg/response/error_sql.go":       internal.ErrorSql,
+		"pkg/response/error_unknown.go":   internal.ErrorUnknown,
+		"pkg/response/success.go":         internal.Success,
+		"pkg/response/service_code.go":    internal.ServiceCode,
+		"pkg/middleware/recover.go":       internal.MiddlewareMap["recover"],
+		"biz/controller/internal/bind.go": replacePackage(GetEmbedContent("internal/"+server+"/bind.go"), "internal"),
+		"pkg/response/response.go":        replacePackage(GetEmbedContent("internal/"+server+"/response.go"), "response"),
+		"pkg/log/logger.go":               GetEmbedContent("internal/log/" + log + ".go"),
+		"pkg/log/writer.go":               GetEmbedContent("internal/log/writer.go"),
+		"pkg/orm/gorm.go":                 GetEmbedContent("internal/orm/gorm.go"),
+		"pkg/orm/gorm_gen.go":             GetEmbedContent("internal/orm/gorm_gen.go"),
+	}
+	for fileName, body := range tplMap {
+		fileName, body, err = utils.ParseSource(fileName, body, GlobalData{ProjectName: projectName, Pkg: pkg})
 		if err != nil {
 			return err
 		}
-		if tpl.FirstLine != "" && body != "" {
-			lines := strings.SplitN(body, "\n", -1)
-			lines[0] = tpl.FirstLine
-			body = strings.Join(lines, "\n")
-		}
-		code[file] = writer.WriteCode{
-			File:  file,
-			Code:  body,
-			Write: tpl.Write,
+
+		if body != "" {
+			code[fileName] = writer.WriteCode{
+				File:  fileName,
+				Code:  body,
+				Write: "overwrite",
+			}
 		}
 	}
 	return nil
 }
+
+var (
+	//go:embed internal
+	code embed.FS
+)
 
 // GetEmbedContent 从embed中读取文件内容
 func GetEmbedContent(path string) string {
@@ -52,4 +67,11 @@ func GetEmbedContent(path string) string {
 		return ""
 	}
 	return string(res)
+}
+
+func replacePackage(src string, pkgName string) string {
+	lines := strings.SplitN(src, "\n", -1)
+	lines[0] = "package " + pkgName
+
+	return strings.Join(lines, "\n")
 }
