@@ -16,4 +16,6 @@ func UpdateProject(_ *cobra.Command, _ []string) {
 		println("exec err: ", err.Error())
 		os.Exit(1)
 	}
+
+	// gsg update --server gin --idl test-idl.yaml --ts true
 }
