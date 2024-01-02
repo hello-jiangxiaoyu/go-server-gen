@@ -26,7 +26,7 @@ type Api struct {
 var regApi = regexp.MustCompile(`(\w+)\("(.+?)"(.*)\)\s*//\s*(.+)`) // GET("/api/login", GetAppList)  // LoginReq
 
 // 解析api字符串
-func getApi(layout *conf.LayoutConfig, obj string) (Api, error) {
+func getApi(layout conf.LayoutConfig, obj string) (Api, error) {
 	matches := regApi.FindStringSubmatch(utils.RemoveSpace(obj))
 	if len(matches) < 5 {
 		return Api{}, errors.New("invalid API string")

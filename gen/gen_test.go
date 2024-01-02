@@ -7,7 +7,7 @@ import (
 )
 
 func TestGen(t *testing.T) {
-	if err := ExecuteUpdate(); err != nil {
+	if err := ExecuteUpdate("fiber"); err != nil {
 		println(err.Error())
 		t.FailNow()
 	}

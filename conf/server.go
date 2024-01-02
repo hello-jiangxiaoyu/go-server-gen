@@ -5,6 +5,8 @@ type PkgConfig struct {
 	Engine     Package
 	Return     Package
 	ReturnType Package
+	HandleFunc Package
+	StatusCode Package
 }
 
 var PkgMap = map[string]PkgConfig{
@@ -15,15 +17,12 @@ var PkgMap = map[string]PkgConfig{
 		}, Engine: Package{
 			Value:  "*gin.engine",
 			Import: "github.com/gin-gonic/gin",
-		},
-	},
-	"hertz": {
-		Context: Package{
-			Value:  "*app.RequestContext",
-			Import: "github.com/cloudwego/hertz/pkg/app",
-		}, Engine: Package{
-			Value:  "*server.Hertz",
-			Import: "github.com/cloudwego/hertz/pkg/app/server",
+		}, HandleFunc: Package{
+			Value:  "gin.HandlerFunc",
+			Import: "github.com/gin-gonic/gin",
+		}, StatusCode: Package{
+			Value:  "http",
+			Import: "net/http",
 		},
 	},
 	"fiber": {
@@ -34,6 +33,12 @@ var PkgMap = map[string]PkgConfig{
 			Import: "github.com/gofiber/fiber/v2",
 		}, Engine: Package{
 			Value:  "*fiber.App",
+			Import: "github.com/gofiber/fiber/v2",
+		}, HandleFunc: Package{
+			Value:  "fiber.Handler",
+			Import: "github.com/gofiber/fiber/v2",
+		}, StatusCode: Package{
+			Value:  "fiber",
 			Import: "github.com/gofiber/fiber/v2",
 		},
 	},
@@ -46,6 +51,27 @@ var PkgMap = map[string]PkgConfig{
 		}, Engine: Package{
 			Value:  "*echo.Echo",
 			Import: "github.com/labstack/echo/v4",
+		}, HandleFunc: Package{
+			Value:  "echo.HandlerFunc",
+			Import: "github.com/labstack/echo/v4",
+		}, StatusCode: Package{
+			Value:  "http",
+			Import: "net/http",
+		},
+	},
+	"hertz": {
+		Context: Package{
+			Value:  "*app.RequestContext",
+			Import: "github.com/cloudwego/hertz/pkg/app",
+		}, Engine: Package{
+			Value:  "*server.Hertz",
+			Import: "github.com/cloudwego/hertz/pkg/app/server",
+		}, HandleFunc: Package{
+			Value:  "app.HandlerFunc",
+			Import: "github.com/cloudwego/hertz/pkg/app",
+		}, StatusCode: Package{
+			Value:  "consts",
+			Import: "github.com/cloudwego/hertz/pkg/protocol/consts",
 		},
 	},
 }

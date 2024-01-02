@@ -15,4 +15,6 @@ func NewProject(_ *cobra.Command, _ []string) {
 	if IdlPath != "" {
 		CreateProjectTpl = "nil" // 指定idl时，模板无效
 	}
+
+	// gsg new --server gin --log zero --api login
 }
