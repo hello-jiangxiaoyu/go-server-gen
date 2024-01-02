@@ -16,7 +16,7 @@ type Service struct {
 }
 
 // 解析service
-func getService(layout *conf.LayoutConfig, services []conf.Service, msg map[string]Message) ([]Service, error) {
+func getService(layout conf.LayoutConfig, services []conf.Service, msg map[string]Message) ([]Service, error) {
 	res := make([]Service, 0)
 	for _, svc := range services {
 		group := Service{

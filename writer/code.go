@@ -7,7 +7,7 @@ import (
 
 type WriteCode struct {
 	File     string
-	Write    string
+	Write    string // overwrite, skip, append, pointer
 	Code     string
 	Handlers map[string]string
 }

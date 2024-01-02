@@ -13,7 +13,7 @@ func CreateCrudGroup(_ *cobra.Command, _ []string) {
 		println("init config err: ", err.Error())
 		os.Exit(1)
 	}
-	if err := gen.ExecuteUpdate(); err != nil {
+	if err := gen.ExecuteUpdate("hertz"); err != nil {
 		println("exec err: ", err.Error)
 		os.Exit(1)
 	}

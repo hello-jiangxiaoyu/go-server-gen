@@ -7,7 +7,7 @@ import (
 	"go-server-gen/writer"
 )
 
-func GenMessageCode(layout *conf.LayoutConfig, messages map[string]data.Message, code map[string]writer.WriteCode) error {
+func GenMessageCode(layout conf.LayoutConfig, messages map[string]data.Message, code map[string]writer.WriteCode) error {
 	for _, tpl := range layout.MessageTemplate {
 		handlers := make(map[string]string)
 		for k, msg := range messages {

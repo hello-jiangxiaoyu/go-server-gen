@@ -15,7 +15,7 @@ type GlobalData struct {
 }
 
 // GenPackageCode 生成默认代码
-func GenPackageCode(layout *conf.LayoutConfig, server string, log string, code map[string]writer.WriteCode) error {
+func GenPackageCode(layout conf.LayoutConfig, server string, log string, code map[string]writer.WriteCode) error {
 	projectName, err := utils.GetProjectName()
 	if err != nil {
 		return err
@@ -24,6 +24,7 @@ func GenPackageCode(layout *conf.LayoutConfig, server string, log string, code m
 
 	tplMap := map[string]string{
 		"main.go":                         internal.MainCodeMap[server],
+		"README.md":                       internal.Readme,
 		"biz/register.go":                 internal.RegisterCode,
 		"pkg/response/error_request.go":   internal.ErrorRequest,
 		"pkg/response/error_sql.go":       internal.ErrorSql,
@@ -37,6 +38,10 @@ func GenPackageCode(layout *conf.LayoutConfig, server string, log string, code m
 		"pkg/log/writer.go":               GetEmbedContent("internal/log/writer.go"),
 		"pkg/orm/gorm.go":                 GetEmbedContent("internal/orm/gorm.go"),
 		"pkg/orm/gorm_gen.go":             GetEmbedContent("internal/orm/gorm_gen.go"),
+		"pkg/utils/jwks.go":               GetEmbedContent("internal/utils/jwks.go"),
+		"pkg/utils/map_int64.go":          GetEmbedContent("internal/utils/map_int64.go"),
+		"pkg/utils/strings.go":            GetEmbedContent("internal/utils/strings.go"),
+		"pkg/utils/tools.go":              GetEmbedContent("internal/utils/tools.go"),
 	}
 	for fileName, body := range tplMap {
 		fileName, body, err = utils.ParseSource(fileName, body, GlobalData{ProjectName: projectName, Pkg: pkg})
