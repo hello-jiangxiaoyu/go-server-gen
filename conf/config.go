@@ -3,10 +3,8 @@ package conf
 import (
 	_ "embed"
 	"go-server-gen/utils"
-	"os"
-	"strings"
-
 	"gopkg.in/yaml.v3"
+	"os"
 )
 
 var (
@@ -16,43 +14,21 @@ var (
 	//go:embed ts-fetch.yaml
 	TsFetchYaml []byte
 
-	LayoutYaml []byte
-
-	//go:embed test-idl.yaml
-	IdlYaml []byte
-	IdlName = "idl"
+	IdlName    = "idl"
+	layoutYaml []byte
 )
 
-func init() {
-	LayoutYaml = GinYaml
-}
-
-func InitConfig(layoutPath, idlPath string) error {
-	var err error
-	if len(layoutPath) != 0 {
-		IdlName = strings.Split(idlPath, ".")[0]
-		LayoutYaml, err = os.ReadFile(layoutPath)
-		if err != nil {
-			return err
-		}
-	}
-
-	if len(idlPath) != 0 {
-		IdlYaml, err = os.ReadFile(idlPath)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func GetConfig(server string) (LayoutConfig, Idl, error) {
+func GetConfig(server, idlPath, layoutPath string) (LayoutConfig, Idl, error) {
 	var apiConf Idl
-	if err := yaml.Unmarshal(IdlYaml, &apiConf); err != nil {
+	idlYaml, err := os.ReadFile(idlPath)
+	if err != nil {
+		return LayoutConfig{}, Idl{}, err
+	}
+	if err = yaml.Unmarshal(idlYaml, &apiConf); err != nil {
 		return LayoutConfig{}, Idl{}, err
 	}
 
-	layoutConf, err := GetLayoutConfig(server)
+	layoutConf, err := GetLayoutConfig(server, layoutPath)
 	if err != nil {
 		return LayoutConfig{}, Idl{}, err
 	}
@@ -60,9 +36,17 @@ func GetConfig(server string) (LayoutConfig, Idl, error) {
 	return layoutConf, apiConf, nil
 }
 
-func GetLayoutConfig(server string) (LayoutConfig, error) {
-	var layoutConf LayoutConfig
-	if err := yaml.Unmarshal(LayoutYaml, &layoutConf); err != nil {
+func GetLayoutConfig(server, layoutPath string) (layoutConf LayoutConfig, err error) {
+	if layoutPath == "" {
+		layoutYaml = GinYaml
+	} else {
+		layoutYaml, err = os.ReadFile(layoutPath)
+		if err != nil {
+			return LayoutConfig{}, err
+		}
+	}
+
+	if err = yaml.Unmarshal(layoutYaml, &layoutConf); err != nil {
 		return LayoutConfig{}, err
 	}
 

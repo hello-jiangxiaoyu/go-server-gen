@@ -8,9 +8,9 @@ import (
 	"go-server-gen/writer"
 )
 
-func ExecuteUpdate(server string) error {
+func ExecuteUpdate(server, layoutPath, idlPath string) error {
 	// 获取配置文件
-	layout, idl, err := conf.GetConfig(server)
+	layout, idl, err := conf.GetConfig(server, idlPath, layoutPath)
 	if err != nil {
 		return utils.WithMessage(err, "failed to unmarshal yaml")
 	}

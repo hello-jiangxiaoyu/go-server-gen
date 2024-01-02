@@ -8,7 +8,7 @@ import (
 )
 
 func TestCode(t *testing.T) {
-	layout, err := conf.GetLayoutConfig("hertz")
+	layout, err := conf.GetLayoutConfig("hertz", "")
 	if err != nil {
 		return
 	}

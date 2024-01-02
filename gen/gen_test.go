@@ -7,7 +7,7 @@ import (
 )
 
 func TestGen(t *testing.T) {
-	if err := ExecuteUpdate("fiber"); err != nil {
+	if err := ExecuteUpdate("fiber", "", "../conf/test-idl.yaml"); err != nil {
 		println(err.Error())
 		t.FailNow()
 	}
