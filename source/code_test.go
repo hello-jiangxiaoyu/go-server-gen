@@ -8,15 +8,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func TestEmbed(t *testing.T) {
-	src, err := code.ReadFile("internal/gin/bind.go")
-	if err != nil {
-		println(err.Error())
-		t.FailNow()
-	}
-	println(string(src))
-}
-
 func TestCode(t *testing.T) {
 	var layout conf.LayoutConfig
 	if err := yaml.Unmarshal(serverTpl, &layout); err != nil {
@@ -24,13 +15,13 @@ func TestCode(t *testing.T) {
 		t.FailNow()
 	}
 
-	code := make(map[string]writer.WriteCode)
-	if err := GenPackageCode(layout, responseMap["echo"], code); err != nil {
+	res := make(map[string]writer.WriteCode)
+	if err := GenPackageCode(layout, responseMap["gin"], res); err != nil {
 		println(err.Error())
 		t.FailNow()
 	}
 
-	if err := writer.Write(code); err != nil {
+	if err := writer.Write(res); err != nil {
 		println(err.Error())
 		t.FailNow()
 	}

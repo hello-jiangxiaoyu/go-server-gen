@@ -18,8 +18,10 @@ func New(c *gin.Context) *Api {
 	return &Api{c: c}
 }
 
-func (a *Api) SetCtx(c *gin.Context) *Api {
-	a.c = c
+func (a *Api) SetCtx(ctx *gin.Context) *Api {
+	if a.c == nil {
+		a.c = ctx
+	}
 	return a
 }
 

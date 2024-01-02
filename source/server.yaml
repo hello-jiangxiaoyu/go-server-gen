@@ -252,7 +252,7 @@ global:
       }
 
       // RecoveryHandler panic处理
-      func Recover({{- if eq .Pkg.Context.Value "echo.Context" -}}next {{.Pkg.ReturnType.Value}}{{- end }}) {{.Pkg.HandleFunc.Value}} {
+      func Recovery({{- if eq .Pkg.Context.Value "echo.Context" -}}next {{.Pkg.ReturnType.Value}}{{- end }}) {{.Pkg.HandleFunc.Value}} {
         return func(
         {{- if eq .Pkg.Context.Value "*app.RequestContext" -}}
         ctx context.Context, c {{.Pkg.Context.Value}}

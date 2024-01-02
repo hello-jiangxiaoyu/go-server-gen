@@ -22,6 +22,13 @@ func New(c *app.RequestContext) *Api {
 	return &Api{c: c}
 }
 
+func (a *Api) SetCtx(ctx *app.RequestContext) *Api {
+	if a.c == nil {
+		a.c = ctx
+	}
+	return a
+}
+
 func (a *Api) BindJson(obj any) *Api {
 	if err := a.c.BindAndValidate(obj); err != nil {
 		return a.setError(err)

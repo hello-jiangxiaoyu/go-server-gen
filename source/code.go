@@ -45,7 +45,7 @@ func GenPackageCode(layout conf.LayoutConfig, resp ResponsePackage, code map[str
 	return nil
 }
 
-// 从embed中读取文件内容
+// GetEmbedContent 从embed中读取文件内容
 func GetEmbedContent(path string) string {
 	res, err := code.ReadFile(path)
 	if err != nil {

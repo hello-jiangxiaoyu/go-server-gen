@@ -46,7 +46,7 @@ func InitConfig(layoutPath, idlPath string) error {
 	return nil
 }
 
-func GetConfig() (*LayoutConfig, *Idl, error) {
+func GetConfig(server string) (*LayoutConfig, *Idl, error) {
 	var apiConf Idl
 	if err := yaml.Unmarshal(IdlYaml, &apiConf); err != nil {
 		return nil, nil, err
@@ -62,5 +62,13 @@ func GetConfig() (*LayoutConfig, *Idl, error) {
 	}
 	layoutConf.ProjectName = projectName
 	layoutConf.IdlName = IdlName
+
+	svc, ok := PkgMap[server]
+	if ok {
+		layoutConf.Pkg["Context"] = svc.Context
+		layoutConf.Pkg["Engine"] = svc.Engine
+		layoutConf.Pkg["Return"] = svc.Return
+		layoutConf.Pkg["ReturnType"] = svc.ReturnType
+	}
 	return &layoutConf, &apiConf, nil
 }

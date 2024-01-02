@@ -89,13 +89,22 @@ service:
       {{- end }}
       // @Success	200
       // @Router	{{.Path | getDocRouter}} [{{.Method}}]
-      func {{.FuncName}}(c {{.Pkg.Context.Value}}) {
+      func {{.FuncName}}(
+        {{- if eq .Pkg.Context.Value "*app.RequestContext" -}}
+        _ context.Context, c {{.Pkg.Context.Value}}
+        {{- else -}}
+        c {{.Pkg.Context.Value}}
+        {{- end -}}) {{.Pkg.ReturnType.Value}} {
           var req {{.Pkg.Req.Value}}.{{.ReqName}}
           if err := {{.Pkg.Bind.Value}}.New(c).BindJson(&req).Error; err != nil {
-              response.ErrorRequest(c, err)
-              return
+            {{- if eq .Pkg.Return.Value "" -}}
+            response.ErrorRequest(c, err)
+            return
+            {{- else -}}
+            return response.ErrorRequest(c, err)
+            {{- end}}
           }
-          service.{{.FuncName}}(c, &req)
+          {{.Pkg.Return.Value}} service.{{.FuncName}}(c, &req)
       }
     body: |-
       package controller
@@ -105,6 +114,9 @@ service:
           "{{.ProjectName}}/{{.Pkg.Resp.Import}}"
           "{{.ProjectName}}/{{.Pkg.Bind.Import}}"
           "{{.ProjectName}}/{{.Pkg.Service.Import}}"
+          {{ if eq .Pkg.Context.Value "*app.RequestContext" -}}
+          "context"
+          {{- end}}
       )
       {{- range $_, $Code := .Handlers }}
       {{$Code}}
@@ -115,9 +127,11 @@ service:
     write: append
     handler-key: "{{.FuncName}}"
     handler: |-
-      func {{.FuncName}}(c {{.Pkg.Context.Value}}, req *{{.Pkg.Req.Value}}.{{.ReqName}}) {
+      func {{.FuncName}}(c {{.Pkg.Context.Value}}, req *{{.Pkg.Req.Value}}.{{.ReqName}}) {{.Pkg.ReturnType.Value}} {
         // you service code hear
-      
+        {{ if ne .Pkg.Return.Value "" }}
+        return nil
+        {{- end}}
       }
     body: |-
       package service
