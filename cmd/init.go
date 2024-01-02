@@ -12,7 +12,7 @@ var (
 	CrudRouterPrefix  = ""
 )
 
-func InitCommand(rootCmd, newCmd, updateCmd, crudCmd, serverCmd *cobra.Command) {
+func InitCommand(rootCmd, newCmd, updateCmd, crudCmd *cobra.Command) {
 	// 创建项目 new cmd
 	newCmd.PersistentFlags().StringVarP(&LayoutPath, "layout", "l", "", "layout path")
 	newCmd.PersistentFlags().StringVarP(&IdlPath, "idl", "i", "", "idl path")
