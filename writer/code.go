@@ -1,6 +1,9 @@
 package writer
 
-import "errors"
+import (
+	"errors"
+	"go-server-gen/utils"
+)
 
 type WriteCode struct {
 	File     string
@@ -10,18 +13,23 @@ type WriteCode struct {
 }
 
 func Write(codes map[string]WriteCode) error {
+	var err error
 	for _, code := range codes {
+		code.File = "out/" + code.File
 		switch code.Write {
 		case "overwrite":
-			println(code.File + " overwrite\n" + code.Code)
+			err = writeFile(code.File, []byte(code.Code), true)
 		case "skip":
-			println(code.File + " skip\n" + code.Code)
+			err = writeFile(code.File, []byte(code.Code), false)
 		case "append":
-			println(code.File + " append\n" + code.Code)
+			err = FileAppendWriter(code.File, code.Code, code.Handlers)
 		case "pointer":
-			println(code.File + " pointer\n" + code.Code)
+			err = PointerAppendWriter(code.File, "//INSERT_POINT", code.Code, code.Handlers)
 		default:
 			return errors.New("no such writer")
+		}
+		if err != nil {
+			return utils.WithMessage(err, "write "+code.File+" err")
 		}
 	}
 

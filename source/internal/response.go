@@ -41,7 +41,7 @@ const (
         "{{.Pkg.StatusCode.Import}}"
       )
 
-      // ErrorSqlUpdate SQL更新失败
+      // ErrorUpdate SQL更新失败
       func ErrorUpdate(c {{.Pkg.Context.Value}}, err error, respMsg string) {{.Pkg.ReturnType.Value}} {
         if err != nil && strings.Contains(err.Error(), "ERROR: duplicate key value violates unique constraint") {
           {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusConflict, CodeSqlModifyDuplicate, err, respMsg)
@@ -50,7 +50,7 @@ const (
         }
       }
 
-      // ErrorSqlCreate SQL创建失败
+      // ErrorCreate SQL创建失败
       func ErrorCreate(c {{.Pkg.Context.Value}}, err error, respMsg string) {{.Pkg.ReturnType.Value}} {
         if err != nil && strings.Contains(err.Error(), "ERROR: duplicate key value violates unique constraint") {
           {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusConflict, CodeSqlCreateDuplicate, err, respMsg)
@@ -68,7 +68,7 @@ const (
         }
       }
 
-      // ErrorSqlDelete SQL删除失败
+      // ErrorDelete SQL删除失败
       func ErrorDelete(c {{.Pkg.Context.Value}}, err error, respMsg string) {{.Pkg.ReturnType.Value}} {
         if err != nil && strings.Contains(err.Error(), gorm.ErrForeignKeyViolated.Error()) { // 外键依赖导致无法删除
           {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusConflict, CodeSqlDeleteForKey, err, respMsg)
@@ -116,7 +116,7 @@ const (
         {{.Pkg.Return.Value}} response(c, {{.Pkg.StatusCode.Value}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
       }
 
-      func Success(c {{.Pkg.Context.Value}}) error {
+      func Success(c {{.Pkg.Context.Value}}) {{.Pkg.ReturnType.Value}} {
         {{.Pkg.Return.Value}} response(c, {{.Pkg.StatusCode.Value}}.StatusOK, CodeSuccess, nil, MsgSuccess, struct{}{}, 0)
       }
       func SuccessWithData(c {{.Pkg.Context.Value}}, data any) {{.Pkg.ReturnType.Value}} {

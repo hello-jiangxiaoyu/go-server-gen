@@ -6,17 +6,17 @@ import (
 	"path/filepath"
 )
 
-func writeFile(file string, src []byte, overwrite bool) error {
-	_, err := os.Stat(file)
+func writeFile(path string, src []byte, overwrite bool) error {
+	_, err := os.Stat(path)
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
 	if os.IsNotExist(err) {
-		if err = createFile(file); err != nil {
+		if err = createFile(path); err != nil {
 			return err
 		}
-		if err = os.WriteFile(file, src, 0644); err != nil {
+		if err = os.WriteFile(path, src, 0644); err != nil {
 			return err
 		}
 		return nil
@@ -25,7 +25,7 @@ func writeFile(file string, src []byte, overwrite bool) error {
 	if !overwrite {
 		return nil // 文件已存在且不覆盖
 	}
-	f, err := os.OpenFile(file, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
@@ -47,12 +47,4 @@ func createFile(file string) error {
 		return err
 	}
 	return f.Close()
-}
-
-func mapStringToSlice(obj map[string]string) []string {
-	res := make([]string, 0, len(obj))
-	for _, v := range obj {
-		res = append(res, v)
-	}
-	return res
 }

@@ -8,13 +8,14 @@ import (
 )
 
 func TestCode(t *testing.T) {
-	layout, err := conf.GetLayoutConfig("hertz", "")
+	server := "echo"
+	layout, err := conf.GetLayoutConfig(server, "")
 	if err != nil {
 		return
 	}
 
 	res := make(map[string]writer.WriteCode)
-	if err = GenPackageCode(layout, "hertz", "zero", res); err != nil {
+	if err = GenPackageCode(layout, server, "zero", res); err != nil {
 		println(err.Error())
 		t.FailNow()
 	}

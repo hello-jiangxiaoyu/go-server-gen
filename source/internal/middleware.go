@@ -3,7 +3,9 @@ package internal
 const (
 	recoverMiddleware = `package middleware
       import (
+        {{ if eq .Pkg.Context.Value "*app.RequestContext" -}}
         "context"
+        {{- end}}
         "errors"
         "fmt"
         "net"
@@ -14,7 +16,7 @@ const (
         "{{.ProjectName}}/{{.Pkg.Resp.Import}}"
       )
 
-      func stackInfo(msg string, err any, skip int) string {
+      func stackInfo(msg string, skip int) string {
         for i := skip; ; i++ {
           pc, file, line, ok := runtime.Caller(i)
           if !ok {
@@ -29,8 +31,8 @@ const (
         return msg + "\n\n"
       }
 
-      // RecoveryHandler panic处理
-      func Recovery({{- if eq .Pkg.Context.Value "echo.Context" -}}next {{.Pkg.ReturnType.Value}}{{- end }}) {{.Pkg.HandleFunc.Value}} {
+      // Recovery panic处理
+      func Recovery({{- if eq .Pkg.Context.Value "echo.Context" -}}next {{.Pkg.HandleFunc.Value}}{{- end }}) {{.Pkg.HandleFunc.Value}} {
         return func(
         {{- if eq .Pkg.Context.Value "*app.RequestContext" -}}
         ctx context.Context, c {{.Pkg.Context.Value}}
@@ -52,7 +54,7 @@ const (
                 }
               }
               req := fmt.Sprintf("panic recovered: %s; method:%s path:%s", err, c.Method(), c.Path())
-              println(stackInfo(req, err, 3))
+              println(stackInfo(req, 3))
               if !brokenPipe {
                 {{.Pkg.Resp.Value}}.ErrorPanic(c)
               }
