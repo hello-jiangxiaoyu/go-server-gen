@@ -1,13 +1,13 @@
-package parse
+package gen
 
 import (
 	"go-server-gen/conf"
-	"go-server-gen/gen/data"
+	"go-server-gen/data"
 	"go-server-gen/utils"
 	"go-server-gen/writer"
 )
 
-func GenMessageCode(layout conf.LayoutConfig, messages map[string]data.Message, code map[string]writer.WriteCode) error {
+func ParseMessageCode(layout conf.LayoutConfig, messages map[string]data.Message, code map[string]writer.WriteCode) error {
 	for _, tpl := range layout.MessageTemplate {
 		handlers := make(map[string]string)
 		for k, msg := range messages {

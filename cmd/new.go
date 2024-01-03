@@ -11,7 +11,8 @@ import (
 )
 
 func NewProject(_ *cobra.Command, _ []string) {
-	if !isValidServerType(ServerType) {
+	if ServerType != "gin" && ServerType != "fiber" &&
+		ServerType != "echo" && ServerType != "hertz" {
 		println("server type is not valid")
 		os.Exit(1)
 	}

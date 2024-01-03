@@ -36,10 +36,3 @@ func InitCommand(rootCmd, newCmd, updateCmd, crudCmd *cobra.Command) {
 
 	rootCmd.AddCommand(newCmd, updateCmd, crudCmd)
 }
-
-func isValidServerType(svc string) bool {
-	if svc != "gin" && svc != "fiber" && svc != "echo" && svc != "hertz" {
-		return false
-	}
-	return true
-}

@@ -2,8 +2,7 @@ package gen
 
 import (
 	"go-server-gen/conf"
-	"go-server-gen/gen/data"
-	"go-server-gen/gen/parse"
+	"go-server-gen/data"
 	"go-server-gen/utils"
 	"go-server-gen/writer"
 )
@@ -23,10 +22,10 @@ func ExecuteUpdate(server, layoutPath, idlPath string) error {
 
 	// 使用数据解析模板
 	code := make(map[string]writer.WriteCode)
-	if err = parse.GenServiceCode(layout, services, code); err != nil {
+	if err = ParseServiceCode(layout, services, code); err != nil {
 		return err
 	}
-	if err = parse.GenMessageCode(layout, messages, code); err != nil {
+	if err = ParseMessageCode(layout, messages, code); err != nil {
 		return err
 	}
 

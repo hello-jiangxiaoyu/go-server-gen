@@ -1,8 +1,8 @@
-package parse
+package gen
 
 import (
 	"go-server-gen/conf"
-	"go-server-gen/gen/data"
+	"go-server-gen/data"
 	"go-server-gen/utils"
 	"go-server-gen/writer"
 )
@@ -15,7 +15,7 @@ type GlobalData struct {
 	Handlers      map[string]string
 }
 
-func GenServiceCode(layout conf.LayoutConfig, services []data.Service, code map[string]writer.WriteCode) error {
+func ParseServiceCode(layout conf.LayoutConfig, services []data.Service, code map[string]writer.WriteCode) error {
 	// 全局模板解析
 	for _, tpl := range layout.GlobalTemplate {
 		handlers := make(map[string]string)
