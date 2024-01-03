@@ -2,13 +2,14 @@ package source
 
 import (
 	"go-server-gen/conf"
-	"go-server-gen/utils"
+	"go-server-gen/gen"
 	"go-server-gen/writer"
 	"testing"
 )
 
-func TestCode(t *testing.T) {
-	server := "echo"
+var server = "gin"
+
+func TestNewCode(t *testing.T) {
 	layout, err := conf.GetLayoutConfig(server, "")
 	if err != nil {
 		return
@@ -26,21 +27,10 @@ func TestCode(t *testing.T) {
 	}
 }
 
-func TestDuplicateImport(t *testing.T) {
-	println(utils.RemoveDuplicateImport(`
-import (
-"go-server-gen/conf"
-	"go-server-gen/utils"
-	"go-server-gen/writer"
-"go-server-gen/writer"
-	"testing"
-	"gopkg.in/yaml.v3"
-	"gopkg.in/yaml.v3"
-)
-asdf
-as
-df
-adsa
-sd
-`))
+func TestUpdateCode(t *testing.T) {
+	if err := gen.ExecuteUpdate(server, "", "../conf/test-idl.yaml"); err != nil {
+		println(err.Error())
+		t.FailNow()
+	}
+	println("Success")
 }
