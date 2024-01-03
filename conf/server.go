@@ -15,7 +15,7 @@ var PkgMap = map[string]PkgConfig{
 			Value:  "*gin.Context",
 			Import: "github.com/gin-gonic/gin",
 		}, Engine: Package{
-			Value:  "*gin.engine",
+			Value:  "*gin.Engine",
 			Import: "github.com/gin-gonic/gin",
 		}, HandleFunc: Package{
 			Value:  "gin.HandlerFunc",

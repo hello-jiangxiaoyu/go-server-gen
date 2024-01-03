@@ -15,11 +15,11 @@ services:
   - name: UserCrud
     middlewares: []
     apis:
-      - GET("/api/login", GetAppList)  // LoginReq
+      - GET("/api/login", GetUserList)  // LoginReq
       - GET("/api/users/:userID", middleware.LoginAuth, CreateUser) // UserReq
   - name: AppCrud
     middlewares: []
     apis:
       - GET("/api/app/login", GetAppList)  // LoginReq
-      - GET("/api/app/:userID", middleware.LoginAuth, CreateUser) // UserReq
+      - GET("/api/app/:userID", middleware.LoginAuth, CreateApp) // UserReq
 

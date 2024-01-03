@@ -4,17 +4,6 @@ import (
 	"go-server-gen/conf"
 )
 
-type Service struct {
-	ServiceName   string                  // 当前service名称
-	ProjectName   string                  // 当前项目名称，go mod name
-	IdlName       string                  // idl name
-	Pkg           map[string]conf.Package // 全局变量
-	HasMiddleware bool                    // api或group是否包含中间件
-	Middleware    []string                // group中间件
-	Apis          []Api                   // 接口列表
-	Handlers      map[string]string       // apis 解析后的结果
-}
-
 // 解析service
 func getService(layout conf.LayoutConfig, services []conf.Service, msg map[string]Message) ([]Service, error) {
 	res := make([]Service, 0)

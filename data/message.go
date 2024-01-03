@@ -11,21 +11,6 @@ var (
 	regMessageSplit = regexp.MustCompile(`type (\w+) struct {([^}]+)}`)
 )
 
-type (
-	Param struct {
-		Name        string
-		From        string
-		Type        string
-		Required    string
-		Description string
-	}
-	Message struct {
-		Name   string  `json:"name"`
-		Param  []Param `json:"param"`
-		Source string  `json:"source"`
-	}
-)
-
 func getMessage(msg string) (map[string]Message, error) {
 	res := make(map[string]Message)
 	messages, err := splitMessage(msg)

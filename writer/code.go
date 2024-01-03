@@ -1,8 +1,8 @@
 package writer
 
 import (
+	"errors"
 	"go-server-gen/utils"
-	"os"
 )
 
 type WriteCode struct {
@@ -13,37 +13,25 @@ type WriteCode struct {
 }
 
 func Write(codes map[string]WriteCode) error {
+	var err error
 	for _, code := range codes {
-		println(code.File + "\n" + code.Code)
+		code.File = "out/" + code.File
+		switch code.Write {
+		case "overwrite":
+			err = writeFile(code.File, []byte(code.Code), true)
+		case "skip":
+			err = writeFile(code.File, []byte(code.Code), false)
+		case "append":
+			err = FileAppendWriter(code.File, code.Code, code.Handlers)
+		case "pointer":
+			err = PointerAppendWriter(code.File, "//INSERT_POINT", code.Code, code.Handlers)
+		default:
+			return errors.New("no such writer")
+		}
+		if err != nil {
+			return utils.WithMessage(err, "write "+code.File+" err")
+		}
 	}
-
-	return nil
-}
-
-func WriteGoCode(dir, file, src string, overwrite bool) error {
-	path := dir + "/" + file + ".go"
-	_, err := os.Stat(path)
-	if err == nil && !overwrite {
-		println(path + " is already exist, skip !!!!!!")
-		return nil
-	}
-
-	if err != nil && !os.IsNotExist(err) {
-		return err
-	}
-
-	f, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-
-	if _, err = f.Write([]byte(src)); err != nil {
-		utils.DeferErr(f.Close)
-		return err
-	}
-
-	utils.DeferErr(f.Close)
-	println("generate " + path + " success!")
 
 	return nil
 }

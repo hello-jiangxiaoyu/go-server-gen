@@ -25,6 +25,17 @@ func WithMessage(err error, msg string) error {
 
 	return errors.New(msg + ": " + err.Error())
 }
+func WrapError(err1 error, err2 error) error {
+	if err1 == nil && err2 == nil {
+		return nil
+	} else if err1 == nil {
+		return err2
+	} else if err2 == nil {
+		return err1
+	}
+
+	return errors.New(err2.Error() + ": " + err1.Error())
+}
 
 // DeduplicateStrings 字符串数组去重并去除空字符串
 func DeduplicateStrings(arr []string) []string {

@@ -24,6 +24,7 @@ func main() {
 		Short: "Create a new crud api",
 		Run:   cmd.CreateCrudGroup,
 	}
+
 	cmd.InitCommand(rootCmd, newCmd, updateCmd, crudCmd)
 	if err := rootCmd.Execute(); err != nil {
 		println(err.Error())
