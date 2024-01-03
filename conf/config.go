@@ -5,6 +5,8 @@ import (
 	"go-server-gen/utils"
 	"gopkg.in/yaml.v3"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 var (
@@ -28,6 +30,7 @@ func GetConfig(server, idlPath, layoutPath string) (LayoutConfig, Idl, error) {
 		return LayoutConfig{}, Idl{}, err
 	}
 
+	IdlName = getFileName(idlPath)
 	layoutConf, err := GetLayoutConfig(server, layoutPath)
 	if err != nil {
 		return LayoutConfig{}, Idl{}, err
@@ -66,4 +69,11 @@ func GetLayoutConfig(server, layoutPath string) (layoutConf LayoutConfig, err er
 		layoutConf.Pkg["StatusCode"] = svc.StatusCode
 	}
 	return layoutConf, nil
+}
+
+func getFileName(path string) string {
+	filenameWithExtension := filepath.Base(path)
+	fileExtension := filepath.Ext(filenameWithExtension)
+	filename := strings.TrimSuffix(filenameWithExtension, fileExtension)
+	return filename
 }
