@@ -4,10 +4,10 @@ import (
 	"github.com/spf13/cobra"
 	"go-server-gen/conf"
 	"go-server-gen/source"
-	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 func NewProject(_ *cobra.Command, _ []string) {
@@ -17,20 +17,24 @@ func NewProject(_ *cobra.Command, _ []string) {
 		os.Exit(1)
 	}
 
-	name, err := utils.GetProjectName()
-	if err != nil {
+	if matches, _ := filepath.Glob("go.mod"); len(matches) == 0 {
+		if CreateProjectName == "" {
+			println("create project name is not valid")
+			os.Exit(1)
+		}
 		cmd := exec.Command("go", "mod", "init", CreateProjectName)
-		if _, err = cmd.Output(); err != nil {
+		if _, err := cmd.Output(); err != nil {
 			println("create project err: ", err.Error())
 			os.Exit(1)
 		}
 	} else {
-		CreateProjectName = name // 项目已创建
+		println("Warning: go.mod is already exists!")
 	}
 
 	// 获取全局配置
 	layout, err := conf.GetLayoutConfig(ServerType, LayoutPath)
 	if err != nil {
+		println("get layout config err: ", err.Error())
 		os.Exit(1)
 	}
 
@@ -42,7 +46,7 @@ func NewProject(_ *cobra.Command, _ []string) {
 	}
 
 	// 将代码写入文件
-	if err = writer.Write(res); err != nil {
+	if err = writer.Write(res, ""); err != nil {
 		println("write err: ", err.Error())
 		os.Exit(1)
 	}

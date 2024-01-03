@@ -12,7 +12,7 @@ func UpdateProject(_ *cobra.Command, _ []string) {
 		os.Exit(1)
 	}
 
-	if err := gen.ExecuteUpdate(ServerType, LayoutPath, IdlPath); err != nil {
+	if err := gen.ExecuteUpdate(ServerType, LayoutPath, IdlPath, ""); err != nil {
 		println(err.Error())
 		os.Exit(1)
 	}
