@@ -8,7 +8,7 @@ var (
 	ServerType = "gin"
 	LogType    = "zap"
 
-	CreateProjectName = ""
+	CreateProjectName = "server"
 	CrudServiceName   = ""
 	CrudRouterPrefix  = ""
 )

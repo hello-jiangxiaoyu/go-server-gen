@@ -27,6 +27,8 @@ func NewProject(_ *cobra.Command, _ []string) {
 			println("create project err: ", err.Error())
 			os.Exit(1)
 		}
+	} else {
+		println("Warning: go.mod is already exists!")
 	}
 
 	// 获取全局配置
