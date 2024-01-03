@@ -21,14 +21,14 @@ func TestNewCode(t *testing.T) {
 		t.FailNow()
 	}
 
-	if err = writer.Write(res); err != nil {
+	if err = writer.Write(res, "out/"); err != nil {
 		println(err.Error())
 		t.FailNow()
 	}
 }
 
 func TestUpdateCode(t *testing.T) {
-	if err := gen.ExecuteUpdate(server, "", "../conf/test-idl.yaml"); err != nil {
+	if err := gen.ExecuteUpdate(server, "", "../conf/test-idl.yaml", "out/"); err != nil {
 		println(err.Error())
 		t.FailNow()
 	}

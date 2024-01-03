@@ -7,7 +7,7 @@ import (
 	"go-server-gen/writer"
 )
 
-func ExecuteUpdate(server, layoutPath, idlPath string) error {
+func ExecuteUpdate(server, layoutPath, idlPath string, prefix string) error {
 	// 获取配置文件
 	layout, idl, err := conf.GetConfig(server, idlPath, layoutPath)
 	if err != nil {
@@ -30,7 +30,7 @@ func ExecuteUpdate(server, layoutPath, idlPath string) error {
 	}
 
 	// 将代码写入文件
-	if err = writer.Write(code); err != nil {
+	if err = writer.Write(code, prefix); err != nil {
 		return utils.WithMessage(err, "failed to write code")
 	}
 

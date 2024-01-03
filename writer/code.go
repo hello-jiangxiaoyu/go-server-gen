@@ -12,10 +12,10 @@ type WriteCode struct {
 	Handlers map[string]string
 }
 
-func Write(codes map[string]WriteCode) error {
+func Write(codes map[string]WriteCode, prefix string) error {
 	var err error
 	for _, code := range codes {
-		code.File = "out/" + code.File
+		code.File = prefix + code.File
 		switch code.Write {
 		case "overwrite":
 			err = writeFile(code.File, []byte(code.Code), true)
