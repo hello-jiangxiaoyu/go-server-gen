@@ -13,7 +13,7 @@ package:
     import: biz/service
   Req:
     value: model
-    import: pkg/model
+    import: biz/model
   Resp:
     value: response
     import: pkg/response
