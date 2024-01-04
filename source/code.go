@@ -53,7 +53,7 @@ func GenPackageCode(layout conf.LayoutConfig, server string, log string, code ma
 			code[fileName] = writer.WriteCode{
 				File:  fileName,
 				Code:  body,
-				Write: "skip",
+				Write: writer.Skip,
 			}
 		}
 	}

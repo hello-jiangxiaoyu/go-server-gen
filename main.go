@@ -20,7 +20,7 @@ func main() {
 		Run:   cmd.UpdateProject,
 	}
 	crudCmd := &cobra.Command{
-		Use:   "curd",
+		Use:   "crud",
 		Short: "Create a new crud api",
 		Run:   cmd.CreateCrudGroup,
 	}

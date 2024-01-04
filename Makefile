@@ -6,7 +6,7 @@ default: build
 
 # 构建目标
 build:
-	go build -o $(BINARY_NAME) .
+	go build -ldflags="-s -w" -o $(BINARY_NAME) .
 
 # 清理目标
 clean:

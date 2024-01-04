@@ -1,0 +1,16 @@
+messages: |-
+  type {{uppercaseFirst .ServiceName}}Req struct {
+      {{.ServiceName}}ID  int64  `uri:"{{lowercaseFirst .ServiceName}}ID" path:"{{lowercaseFirst .ServiceName}}ID"`
+      Name  string  `json:"name"`
+  }
+
+
+services:
+  - name: {{.ServiceName}}
+    middlewares: []
+    apis:
+      - GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", Get{{uppercaseFirst .ServiceName}}List)  // {{uppercaseFirst .ServiceName}}Req
+      - POST("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", Create{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
+      - GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Get{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
+      - PUT("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Update{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
+      - DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}:/{{lowercaseFirst .ServiceName}}ID", Delete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req

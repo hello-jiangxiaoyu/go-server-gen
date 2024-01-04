@@ -18,7 +18,7 @@ func InitCommand(rootCmd, newCmd, updateCmd, crudCmd *cobra.Command) {
 	newCmd.PersistentFlags().StringVarP(&LayoutPath, "layout", "l", "", "layout path")
 	newCmd.PersistentFlags().StringVarP(&IdlPath, "idl", "i", "", "idl path")
 	newCmd.PersistentFlags().StringVarP(&CreateProjectName, "module", "m", "server", "go mod name")
-	newCmd.PersistentFlags().StringVar(&ServerType, "server", "gin", "server type")
+	newCmd.PersistentFlags().StringVarP(&ServerType, "server", "s", "gin", "server type")
 	newCmd.PersistentFlags().StringVar(&LogType, "log", "zap", "log type")
 
 	// 更新接口 update cmd
@@ -29,9 +29,9 @@ func InitCommand(rootCmd, newCmd, updateCmd, crudCmd *cobra.Command) {
 
 	// 添加crud
 	crudCmd.PersistentFlags().StringVarP(&LayoutPath, "layout", "l", "", "layout path")
-	crudCmd.PersistentFlags().StringVarP(&CrudServiceName, "service", "s", "", "crud service name")
-	crudCmd.PersistentFlags().StringVarP(&CrudRouterPrefix, "prefix", "p", "", "crud router prefix")
-	crudCmd.PersistentFlags().StringVar(&ServerType, "server", "gin", "server type")
+	crudCmd.PersistentFlags().StringVarP(&ServerType, "server", "s", "gin", "server type")
+	crudCmd.PersistentFlags().StringVar(&CrudRouterPrefix, "prefix", "", "crud router prefix")
+	crudCmd.PersistentFlags().StringVar(&CrudServiceName, "service", "", "crud service name")
 	crudCmd.PersistentFlags().StringVar(&LogType, "log", "zap", "log type")
 
 	rootCmd.AddCommand(newCmd, updateCmd, crudCmd)

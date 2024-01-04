@@ -1,0 +1,16 @@
+messages: |-
+  type SmsReq struct {
+      smsID  int64  `uri:"smsID" path:"smsID"`
+      Name  string  `json:"name"`
+  }
+
+
+services:
+  - name: sms
+    middlewares: []
+    apis:
+      - GET("/api/im/sms", GetSmsList)  // SmsReq
+      - POST("/api/im/sms", CreateSms)  // SmsReq
+      - GET("/api/im/sms/:smsID", GetSms)  // SmsReq
+      - PUT("/api/im/sms/:smsID", UpdateSms)  // SmsReq
+      - DELETE("/api/im/sms:/smsID", DeleteSms)  // SmsReq
