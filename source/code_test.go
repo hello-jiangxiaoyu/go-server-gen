@@ -30,7 +30,7 @@ func TestNewCode(t *testing.T) {
 }
 
 func TestUpdateCode(t *testing.T) {
-	layout, idl, err := conf.GetConfig(serverType, "test-idl.yaml", "")
+	layout, idl, err := conf.GetConfig(serverType, "", "test-idl.yaml")
 	if err != nil {
 		t.FailNow()
 	}

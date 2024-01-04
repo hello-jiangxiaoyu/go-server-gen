@@ -12,23 +12,29 @@ import (
 //go:embed crud-tpl.yaml
 var CrudTemplate string
 
-func CreateCrudGroup(_ *cobra.Command, _ []string) {
-	if CrudServiceName == "" {
-		println("service name is empty")
+func checkCreateCmdArgs(args []string) {
+	if len(args) == 0 {
+		utils.Log("service name is empty")
 		os.Exit(1)
 	}
+	CrudServiceName = args[0]
+}
+
+func CreateCrudGroup(_ *cobra.Command, args []string) {
+	checkCreateCmdArgs(args)
 	projectName, err := utils.GetProjectName()
 	if err != nil {
-		println("Failed to get project name: ", err.Error())
+		utils.Log("Failed to get project name: ", err.Error())
 		os.Exit(1)
 	}
+
 	body, err := utils.ParseTemplate(CrudTemplate, map[string]any{
 		"ProjectName": projectName,
 		"ServiceName": CrudServiceName,
 		"Prefix":      CrudRouterPrefix,
 	})
 	if err != nil {
-		println("Failed to parse crud template: ", err.Error())
+		utils.Log("Failed to parse crud template: ", err.Error())
 		os.Exit(1)
 	}
 
@@ -41,7 +47,7 @@ func CreateCrudGroup(_ *cobra.Command, _ []string) {
 		},
 	}, "")
 	if err != nil {
-		println("Failed to write curd config file: ", err.Error())
+		utils.Log("Failed to write curd config file: ", err.Error())
 		os.Exit(1)
 	}
 	println("Success")

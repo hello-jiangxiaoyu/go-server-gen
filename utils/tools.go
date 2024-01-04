@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
-	"time"
 )
 
 // DeferErr handle defer function err
@@ -59,13 +58,13 @@ func GetProjectName() (string, error) {
 
 func Log(a ...any) {
 	_, file, line, _ := runtime.Caller(1)
-	res := []any{fmt.Sprintf("%v %s:%d", time.Now().Format("2006-01-02 15:04:05"), file, line)}
+	res := []any{fmt.Sprintf("%s:%d\t", file, line)}
 	res = append(res, a...)
 	fmt.Println(res...)
 }
 
 func Logf(format string, a ...any) {
 	_, file, line, _ := runtime.Caller(1)
-	prefix := fmt.Sprintf("%v %s:%d", time.Now().Format("2006-01-02 15:04:05"), file, line)
+	prefix := fmt.Sprintf("%s:%d\t", file, line)
 	fmt.Println(prefix, fmt.Sprintf(format, a...))
 }

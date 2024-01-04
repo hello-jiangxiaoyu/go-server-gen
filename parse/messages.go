@@ -13,6 +13,7 @@ func GenMessageCode(layout conf.LayoutConfig, messages map[string]data.Message, 
 		for k, msg := range messages {
 			_, handler, err := utils.ParseSource("", tpl.Handler, msg)
 			if err != nil {
+				utils.Log("parse message handler err: ", err.Error())
 				return err
 			}
 			handlers[k] = handler
@@ -24,7 +25,8 @@ func GenMessageCode(layout conf.LayoutConfig, messages map[string]data.Message, 
 			"Handlers":    handlers,
 		})
 		if err != nil {
-			return utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
+			utils.Log("parse message body err: ", err.Error())
+			return err
 		}
 
 		code[file] = writer.WriteCode{

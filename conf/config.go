@@ -20,7 +20,7 @@ var (
 	layoutYaml []byte
 )
 
-func GetConfig(server, idlPath, layoutPath string) (LayoutConfig, Idl, error) {
+func GetConfig(server, layoutPath, idlPath string) (LayoutConfig, Idl, error) {
 	var apiConf Idl
 	idlYaml, err := os.ReadFile(idlPath)
 	if err != nil {
