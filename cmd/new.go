@@ -4,52 +4,71 @@ import (
 	"github.com/spf13/cobra"
 	"go-server-gen/conf"
 	"go-server-gen/source"
+	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"os"
 	"os/exec"
-	"path/filepath"
+	"strings"
 )
 
-func NewProject(_ *cobra.Command, _ []string) {
-	if ServerType != "gin" && ServerType != "fiber" &&
-		ServerType != "echo" && ServerType != "hertz" {
-		println("server type is not valid")
+func NewProject(_ *cobra.Command, args []string) {
+	checkNewCmdArgs(args)
+
+	// 新建项目
+	if !utils.FileExists(OutputDir + "go.mod") {
+		cmd := exec.Command("go", "mod", "init", CreateProjectName)
+		if OutputDir != "" {
+			if err := os.MkdirAll(OutputDir, os.ModePerm); err != nil {
+				utils.Log("make dir err:", err.Error())
+				os.Exit(1)
+			}
+			cmd.Dir = OutputDir
+		}
+		if _, err := cmd.Output(); err != nil {
+			utils.Log("create project err: ", err.Error())
+			os.Exit(1)
+		}
+	} else if !ForceWrite {
+		utils.Log("go.mod is already exists! use --force to overwrite")
 		os.Exit(1)
 	}
 
-	if matches, _ := filepath.Glob("go.mod"); len(matches) == 0 {
-		if CreateProjectName == "" {
-			println("create project name is not valid")
-			os.Exit(1)
-		}
-		cmd := exec.Command("go", "mod", "init", CreateProjectName)
-		if _, err := cmd.Output(); err != nil {
-			println("create project err: ", err.Error())
-			os.Exit(1)
-		}
-	} else {
-		println("Warning: go.mod is already exists!")
-	}
-
 	// 获取全局配置
-	layout, err := conf.GetLayoutConfig(ServerType, LayoutPath)
+	CreateProjectName, _ = utils.GetProjectName(OutputDir) // 首次获取
+	layout, err := conf.GetLayoutConfig(ServerType, LogType, LayoutPath)
 	if err != nil {
-		println("get layout config err: ", err.Error())
+		utils.Log("get layout config err: ", err.Error())
 		os.Exit(1)
 	}
 
 	// 生成代码
-	res := make(map[string]writer.WriteCode)
-	if err = source.GenPackageCode(layout, ServerType, LogType, res); err != nil {
-		println("gen default code err: ", err.Error())
+	res, err := source.GenPackageCode(layout, OutputDir, ForceWrite)
+	if err != nil {
+		utils.Log("gen default code err: ", err.Error())
 		os.Exit(1)
 	}
 
 	// 将代码写入文件
-	if err = writer.Write(res, ""); err != nil {
-		println("write err: ", err.Error())
+	if err = writer.Write(res); err != nil {
+		utils.Log("write err: ", err.Error())
 		os.Exit(1)
 	}
 
 	println("Success")
+}
+
+func checkNewCmdArgs(args []string) {
+	if ServerType != "gin" && ServerType != "fiber" &&
+		ServerType != "echo" && ServerType != "hertz" {
+		utils.Log("server type is not valid")
+		os.Exit(1)
+	}
+	if len(args) == 0 || args[0] == "" {
+		utils.Log("new project name should not be empty")
+		os.Exit(1)
+	}
+	CreateProjectName = args[0]
+	if OutputDir != "" && !strings.HasSuffix(OutputDir, "/") && !strings.HasSuffix(OutputDir, "\\") {
+		OutputDir += "/"
+	}
 }

@@ -4,7 +4,7 @@ package conf
 type (
 	Service struct {
 		Name        string   `yaml:"name"`
-		Middlewares []string `yaml:"middleware"`
+		Middlewares []string `yaml:"middlewares"`
 		Apis        []string `yaml:"apis"`
 	}
 	Idl struct {
@@ -29,12 +29,14 @@ type (
 		Body       string `yaml:"body"`
 	}
 	LayoutConfig struct {
-		Pkg             map[string]Package `yaml:"package"`  // 全局变量
+		Pkg             map[string]Package `yaml:"pkg"`      // 全局变量
 		ApiTemplate     []Template         `yaml:"api"`      // api模板配置（todo: 实现api级别模板解析）
 		ServiceTemplate []Template         `yaml:"service"`  // service模板配置
 		GlobalTemplate  []Template         `yaml:"global"`   // global模板配置
 		MessageTemplate []Template         `yaml:"messages"` // 请求参数模板配置
 		ProjectName     string             `yaml:"-"`
 		IdlName         string             `yaml:"-"`
+		LogType         string             `yaml:"-"`
+		ServerType      string             `yaml:"-"`
 	}
 )

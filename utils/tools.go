@@ -2,7 +2,10 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -25,43 +28,18 @@ func WithMessage(err error, msg string) error {
 
 	return errors.New(msg + ": " + err.Error())
 }
-func WrapError(err1 error, err2 error) error {
-	if err1 == nil && err2 == nil {
-		return nil
-	} else if err1 == nil {
-		return err2
-	} else if err2 == nil {
-		return err1
-	}
-
-	return errors.New(err2.Error() + ": " + err1.Error())
-}
-
-// DeduplicateStrings 字符串数组去重并去除空字符串
-func DeduplicateStrings(arr []string) []string {
-	visited := make(map[string]bool)
-	result := make([]string, 0)
-	for _, str := range arr {
-		if str == "" {
-			continue
-		}
-		if !visited[str] {
-			visited[str] = true
-			result = append(result, str)
-		}
-	}
-
-	return result
-}
 
 var projectName = ""
 
 // GetProjectName 获取当前项目名
-func GetProjectName() (string, error) {
+func GetProjectName(dir ...string) (string, error) {
 	if projectName != "" {
 		return projectName, nil
 	}
 	cmd := exec.Command("go", "list", "-m")
+	if len(dir) > 0 && dir[0] != "" {
+		cmd.Dir = dir[0]
+	}
 	output, err := cmd.Output()
 	if err != nil {
 		return "", err
@@ -69,4 +47,25 @@ func GetProjectName() (string, error) {
 
 	projectName = strings.TrimSpace(string(output))
 	return projectName, nil
+}
+
+func Log(a ...any) {
+	_, file, line, _ := runtime.Caller(1)
+	res := []any{fmt.Sprintf("%s:%d\t", file, line)}
+	res = append(res, a...)
+	fmt.Println(res...)
+}
+
+func Logf(format string, a ...any) {
+	_, file, line, _ := runtime.Caller(1)
+	prefix := fmt.Sprintf("%s:%d\t", file, line)
+	fmt.Println(prefix, fmt.Sprintf(format, a...))
+}
+
+func FileExists(path string) bool {
+	matches, err := filepath.Glob(path)
+	if err != nil {
+		return false
+	}
+	return len(matches) != 0
 }

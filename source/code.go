@@ -15,49 +15,55 @@ type GlobalData struct {
 }
 
 // GenPackageCode 生成默认代码
-func GenPackageCode(layout conf.LayoutConfig, server string, log string, code map[string]writer.WriteCode) error {
+func GenPackageCode(layout conf.LayoutConfig, prefix string, overwrite bool) (map[string]writer.WriteCode, error) {
+	writeType := writer.Overwrite
+	if !overwrite {
+		writeType = writer.Skip
+	}
 	projectName, err := utils.GetProjectName()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	pkg := layout.Pkg
 
+	server := layout.ServerType
+	log := layout.LogType
+	initCode := make(map[string]writer.WriteCode)
 	tplMap := map[string]string{
-		"main.go":                         internal.MainCodeMap[server],
-		"README.md":                       internal.Readme,
-		"biz/register.go":                 internal.RegisterCode,
-		"pkg/response/error_request.go":   internal.ErrorRequest,
-		"pkg/response/error_sql.go":       internal.ErrorSql,
-		"pkg/response/error_unknown.go":   internal.ErrorUnknown,
-		"pkg/response/success.go":         internal.Success,
-		"pkg/response/service_code.go":    internal.ServiceCode,
-		"pkg/middleware/recover.go":       internal.MiddlewareMap["recover"],
-		"biz/controller/internal/bind.go": replacePackage(GetEmbedContent("internal/"+server+"/bind.go"), "internal"),
-		"pkg/response/response.go":        replacePackage(GetEmbedContent("internal/"+server+"/response.go"), "response"),
-		"pkg/log/logger.go":               GetEmbedContent("internal/log/" + log + ".go"),
-		"pkg/log/writer.go":               GetEmbedContent("internal/log/writer.go"),
-		"pkg/orm/gorm.go":                 GetEmbedContent("internal/orm/gorm.go"),
-		"pkg/orm/gorm_gen.go":             GetEmbedContent("internal/orm/gorm_gen.go"),
-		"pkg/utils/jwks.go":               GetEmbedContent("internal/utils/jwks.go"),
-		"pkg/utils/map_int64.go":          GetEmbedContent("internal/utils/map_int64.go"),
-		"pkg/utils/strings.go":            GetEmbedContent("internal/utils/strings.go"),
-		"pkg/utils/tools.go":              GetEmbedContent("internal/utils/tools.go"),
+		prefix + "main.go":                         internal.MainCodeMap[server],
+		prefix + "README.md":                       internal.Readme,
+		prefix + "biz/register.go":                 internal.RegisterCode,
+		prefix + "pkg/response/error_request.go":   internal.ErrorRequest,
+		prefix + "pkg/response/error_sql.go":       internal.ErrorSql,
+		prefix + "pkg/response/error_unknown.go":   internal.ErrorUnknown,
+		prefix + "pkg/response/success.go":         internal.Success,
+		prefix + "pkg/response/service_code.go":    internal.ServiceCode,
+		prefix + "pkg/middleware/recover.go":       internal.MiddlewareMap["recover"],
+		prefix + "biz/controller/internal/bind.go": replacePackage(GetEmbedContent("internal/"+server+"/bind.go"), "internal"),
+		prefix + "pkg/response/response.go":        replacePackage(GetEmbedContent("internal/"+server+"/response.go"), "response"),
+		prefix + "pkg/log/logger.go":               GetEmbedContent("internal/log/" + log + ".go"),
+		prefix + "pkg/log/writer.go":               GetEmbedContent("internal/log/writer.go"),
+		prefix + "pkg/orm/gorm.go":                 GetEmbedContent("internal/orm/gorm.go"),
+		prefix + "pkg/orm/gorm_gen.go":             GetEmbedContent("internal/orm/gorm_gen.go"),
+		prefix + "pkg/utils/jwks.go":               GetEmbedContent("internal/utils/jwks.go"),
+		prefix + "pkg/utils/map_int64.go":          GetEmbedContent("internal/utils/map_int64.go"),
+		prefix + "pkg/utils/strings.go":            GetEmbedContent("internal/utils/strings.go"),
+		prefix + "pkg/utils/tools.go":              GetEmbedContent("internal/utils/tools.go"),
 	}
 	for fileName, body := range tplMap {
-		fileName, body, err = utils.ParseSource(fileName, body, GlobalData{ProjectName: projectName, Pkg: pkg})
+		fileName, body, err = utils.ParseSource(fileName, body, GlobalData{ProjectName: projectName, Pkg: layout.Pkg})
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		if body != "" {
-			code[fileName] = writer.WriteCode{
+			initCode[fileName] = writer.WriteCode{
 				File:  fileName,
 				Code:  body,
-				Write: "skip",
+				Write: writeType,
 			}
 		}
 	}
-	return nil
+	return initCode, nil
 }
 
 var (

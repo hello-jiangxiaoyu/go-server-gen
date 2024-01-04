@@ -8,17 +8,25 @@ import (
 )
 
 var defaultFuncMap = template.FuncMap{
-	"uncapitalizeFirstLetter": UncapitalizeFirstLetter, // 首字母小写
-	"getDocRouter":            GetDocRouter,            // 路由转文档Router
-	"convertToWord":           ConvertToWord,           // 路由转文档Router
-	"hasPrefix":               strings.HasPrefix,       // 是否包含前缀
-	"removeSpace":             RemoveSpace,             // 去除空格
+	"lowercaseFirst": LowercaseFirst,    // 首字母小写
+	"uppercaseFirst": UppercaseFirst,    // 首字母小写
+	"getDocRouter":   GetDocRouter,      // 路由转文档Router
+	"convertToWord":  ConvertToWord,     // 路由转文档Router
+	"hasPrefix":      strings.HasPrefix, // 是否包含前缀
+	"removeSpace":    RemoveSpace,       // 去除空格
 }
 
-// UncapitalizeFirstLetter 首字母小写
-func UncapitalizeFirstLetter(obj string) string {
+// LowercaseFirst 首字母小写
+func LowercaseFirst(obj string) string {
 	runes := []rune(obj)
 	runes[0] = unicode.ToLower(runes[0])
+	return string(runes)
+}
+
+// UppercaseFirst 首字母大写
+func UppercaseFirst(obj string) string {
+	runes := []rune(obj)
+	runes[0] = unicode.ToUpper(runes[0])
 	return string(runes)
 }
 

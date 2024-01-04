@@ -5,10 +5,12 @@ import (
 	"go-server-gen/utils"
 	"gopkg.in/yaml.v3"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 var (
-	//go:embed gin.yaml
+	//go:embed layout.yaml
 	GinYaml []byte
 
 	//go:embed ts-fetch.yaml
@@ -18,7 +20,7 @@ var (
 	layoutYaml []byte
 )
 
-func GetConfig(server, idlPath, layoutPath string) (LayoutConfig, Idl, error) {
+func GetConfig(serverType, logType, layoutPath, idlPath string) (LayoutConfig, Idl, error) {
 	var apiConf Idl
 	idlYaml, err := os.ReadFile(idlPath)
 	if err != nil {
@@ -28,7 +30,8 @@ func GetConfig(server, idlPath, layoutPath string) (LayoutConfig, Idl, error) {
 		return LayoutConfig{}, Idl{}, err
 	}
 
-	layoutConf, err := GetLayoutConfig(server, layoutPath)
+	IdlName = getFileName(idlPath)
+	layoutConf, err := GetLayoutConfig(serverType, logType, layoutPath)
 	if err != nil {
 		return LayoutConfig{}, Idl{}, err
 	}
@@ -36,7 +39,7 @@ func GetConfig(server, idlPath, layoutPath string) (LayoutConfig, Idl, error) {
 	return layoutConf, apiConf, nil
 }
 
-func GetLayoutConfig(server, layoutPath string) (layoutConf LayoutConfig, err error) {
+func GetLayoutConfig(serverType, logType, layoutPath string) (layoutConf LayoutConfig, err error) {
 	if layoutPath == "" {
 		layoutYaml = GinYaml
 	} else {
@@ -56,7 +59,9 @@ func GetLayoutConfig(server, layoutPath string) (layoutConf LayoutConfig, err er
 	}
 	layoutConf.ProjectName = projectName
 	layoutConf.IdlName = IdlName
-	svc, ok := PkgMap[server]
+	layoutConf.ServerType = serverType
+	layoutConf.LogType = logType
+	svc, ok := PkgMap[serverType]
 	if ok {
 		layoutConf.Pkg["Context"] = svc.Context
 		layoutConf.Pkg["Engine"] = svc.Engine
@@ -66,4 +71,11 @@ func GetLayoutConfig(server, layoutPath string) (layoutConf LayoutConfig, err er
 		layoutConf.Pkg["StatusCode"] = svc.StatusCode
 	}
 	return layoutConf, nil
+}
+
+func getFileName(path string) string {
+	filenameWithExtension := filepath.Base(path)
+	fileExtension := filepath.Ext(filenameWithExtension)
+	filename := strings.TrimSuffix(filenameWithExtension, fileExtension)
+	return filename
 }

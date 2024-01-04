@@ -5,6 +5,13 @@ import (
 	"go-server-gen/utils"
 )
 
+const (
+	Overwrite = "overwrite"
+	Skip      = "skip"
+	Append    = "append"
+	Pointer   = "pointer"
+)
+
 type WriteCode struct {
 	File     string
 	Write    string // overwrite, skip, append, pointer
@@ -12,18 +19,17 @@ type WriteCode struct {
 	Handlers map[string]string
 }
 
-func Write(codes map[string]WriteCode, prefix string) error {
+func Write(codes map[string]WriteCode) error {
 	var err error
 	for _, code := range codes {
-		code.File = prefix + code.File
 		switch code.Write {
-		case "overwrite":
+		case Overwrite:
 			err = writeFile(code.File, []byte(code.Code), true)
-		case "skip":
+		case Skip:
 			err = writeFile(code.File, []byte(code.Code), false)
-		case "append":
+		case Append:
 			err = FileAppendWriter(code.File, code.Code, code.Handlers)
-		case "pointer":
+		case Pointer:
 			err = PointerAppendWriter(code.File, "//INSERT_POINT", code.Code, code.Handlers)
 		default:
 			return errors.New("no such writer")

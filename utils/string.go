@@ -24,3 +24,20 @@ func StructToString(obj any) string {
 	}
 	return string(res)
 }
+
+// DeduplicateStrings 字符串数组去重并去除空字符串
+func DeduplicateStrings(arr []string) []string {
+	visited := make(map[string]bool)
+	result := make([]string, 0)
+	for _, str := range arr {
+		if str == "" {
+			continue
+		}
+		if !visited[str] {
+			visited[str] = true
+			result = append(result, str)
+		}
+	}
+
+	return result
+}
