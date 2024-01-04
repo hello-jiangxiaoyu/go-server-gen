@@ -1,4 +1,4 @@
-package:
+pkg:
   Context:
     value: "*gin.context"
     import: github.com/gin-gonic/gin

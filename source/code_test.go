@@ -4,6 +4,7 @@ import (
 	"go-server-gen/conf"
 	"go-server-gen/data"
 	"go-server-gen/parse"
+	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"testing"
 )
@@ -14,13 +15,13 @@ var (
 )
 
 func TestNewCode(t *testing.T) {
-	layout, err := conf.GetLayoutConfig(serverType, "")
+	layout, err := conf.GetLayoutConfig(serverType, logType, "")
 	if err != nil {
 		t.FailNow()
 	}
 
-	res := make(map[string]writer.WriteCode)
-	if err = GenPackageCode(layout, serverType, logType, res); err != nil {
+	res, err := GenPackageCode(layout, "", false)
+	if err != nil {
 		t.FailNow()
 	}
 
@@ -30,7 +31,7 @@ func TestNewCode(t *testing.T) {
 }
 
 func TestUpdateCode(t *testing.T) {
-	layout, idl, err := conf.GetConfig(serverType, "", "test-idl.yaml")
+	layout, idl, err := conf.GetConfig(serverType, logType, "", "test-idl.yaml")
 	if err != nil {
 		t.FailNow()
 	}
@@ -48,4 +49,8 @@ func TestUpdateCode(t *testing.T) {
 	for _, r := range res {
 		println(r.File + "\n" + r.Code)
 	}
+}
+
+func TestTemp(t *testing.T) {
+	println(utils.FileExists("code.go"))
 }

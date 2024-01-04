@@ -10,14 +10,11 @@ import (
 	"os"
 )
 
-func UpdateProject(_ *cobra.Command, _ []string) {
-	if IdlPath == "" {
-		utils.Log("idl path is empty")
-		os.Exit(1)
-	}
+func UpdateProject(_ *cobra.Command, args []string) {
+	checkUpdateCmdArgs(args)
 
 	// 获取配置文件
-	layout, idl, err := conf.GetConfig(ServerType, LayoutPath, IdlPath)
+	layout, idl, err := conf.GetConfig(ServerType, LogType, LayoutPath, IdlPath)
 	if err != nil {
 		utils.Log("get config err: ", err.Error())
 		os.Exit(1)
@@ -39,10 +36,18 @@ func UpdateProject(_ *cobra.Command, _ []string) {
 	}
 
 	// 将代码写入文件
-	if err = writer.Write(code, ""); err != nil {
+	if err = writer.Write(code); err != nil {
 		utils.Log("write error: ", err.Error())
 		os.Exit(1)
 	}
 
 	println("Success")
+}
+
+func checkUpdateCmdArgs(args []string) {
+	if len(args) == 0 || args[0] == "" {
+		utils.Log("idl path should not be empty")
+		os.Exit(1)
+	}
+	IdlPath = args[0]
 }

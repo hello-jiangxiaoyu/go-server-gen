@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -27,26 +28,18 @@ func WithMessage(err error, msg string) error {
 
 	return errors.New(msg + ": " + err.Error())
 }
-func WrapError(err1 error, err2 error) error {
-	if err1 == nil && err2 == nil {
-		return nil
-	} else if err1 == nil {
-		return err2
-	} else if err2 == nil {
-		return err1
-	}
-
-	return errors.New(err2.Error() + ": " + err1.Error())
-}
 
 var projectName = ""
 
 // GetProjectName 获取当前项目名
-func GetProjectName() (string, error) {
+func GetProjectName(dir ...string) (string, error) {
 	if projectName != "" {
 		return projectName, nil
 	}
 	cmd := exec.Command("go", "list", "-m")
+	if len(dir) > 0 && dir[0] != "" {
+		cmd.Dir = dir[0]
+	}
 	output, err := cmd.Output()
 	if err != nil {
 		return "", err
@@ -67,4 +60,12 @@ func Logf(format string, a ...any) {
 	_, file, line, _ := runtime.Caller(1)
 	prefix := fmt.Sprintf("%s:%d\t", file, line)
 	fmt.Println(prefix, fmt.Sprintf(format, a...))
+}
+
+func FileExists(path string) bool {
+	matches, err := filepath.Glob(path)
+	if err != nil {
+		return false
+	}
+	return len(matches) != 0
 }
