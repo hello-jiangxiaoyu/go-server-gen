@@ -1,4 +1,4 @@
-package gen
+package parse
 
 import (
 	"go-server-gen/conf"
@@ -7,7 +7,7 @@ import (
 	"go-server-gen/writer"
 )
 
-func ParseMessageCode(layout conf.LayoutConfig, messages map[string]data.Message, code map[string]writer.WriteCode) error {
+func GenMessageCode(layout conf.LayoutConfig, messages map[string]data.Message, code map[string]writer.WriteCode) error {
 	for _, tpl := range layout.MessageTemplate {
 		handlers := make(map[string]string)
 		for k, msg := range messages {
@@ -17,13 +17,12 @@ func ParseMessageCode(layout conf.LayoutConfig, messages map[string]data.Message
 			}
 			handlers[k] = handler
 		}
-		globalData := GlobalData{
-			ProjectName: layout.ProjectName,
-			IdlName:     layout.IdlName,
-			Pkg:         layout.Pkg,
-			Handlers:    handlers,
-		}
-		file, body, err := utils.ParseSource(tpl.Path, tpl.Body, globalData)
+		file, body, err := utils.ParseSource(tpl.Path, tpl.Body, map[string]any{
+			"ProjectName": layout.ProjectName,
+			"IdlName":     layout.IdlName,
+			"Pkg":         layout.Pkg,
+			"Handlers":    handlers,
+		})
 		if err != nil {
 			return utils.WithMessage(err, "failed to phase and format path tpl "+tpl.Path)
 		}

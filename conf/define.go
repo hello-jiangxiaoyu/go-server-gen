@@ -4,7 +4,7 @@ package conf
 type (
 	Service struct {
 		Name        string   `yaml:"name"`
-		Middlewares []string `yaml:"middleware"`
+		Middlewares []string `yaml:"middlewares"`
 		Apis        []string `yaml:"apis"`
 	}
 	Idl struct {

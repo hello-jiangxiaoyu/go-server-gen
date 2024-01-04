@@ -2,8 +2,11 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"os/exec"
+	"runtime"
 	"strings"
+	"time"
 )
 
 // DeferErr handle defer function err
@@ -37,23 +40,6 @@ func WrapError(err1 error, err2 error) error {
 	return errors.New(err2.Error() + ": " + err1.Error())
 }
 
-// DeduplicateStrings 字符串数组去重并去除空字符串
-func DeduplicateStrings(arr []string) []string {
-	visited := make(map[string]bool)
-	result := make([]string, 0)
-	for _, str := range arr {
-		if str == "" {
-			continue
-		}
-		if !visited[str] {
-			visited[str] = true
-			result = append(result, str)
-		}
-	}
-
-	return result
-}
-
 var projectName = ""
 
 // GetProjectName 获取当前项目名
@@ -69,4 +55,17 @@ func GetProjectName() (string, error) {
 
 	projectName = strings.TrimSpace(string(output))
 	return projectName, nil
+}
+
+func Log(a ...any) {
+	_, file, line, _ := runtime.Caller(1)
+	res := []any{fmt.Sprintf("%v %s:%d", time.Now().Format("2006-01-02 15:04:05"), file, line)}
+	res = append(res, a...)
+	fmt.Println(res...)
+}
+
+func Logf(format string, a ...any) {
+	_, file, line, _ := runtime.Caller(1)
+	prefix := fmt.Sprintf("%v %s:%d", time.Now().Format("2006-01-02 15:04:05"), file, line)
+	fmt.Println(prefix, fmt.Sprintf(format, a...))
 }

@@ -18,7 +18,7 @@ services:
       - GET("/api/login", GetUserList)  // LoginReq
       - GET("/api/users/:userID", middleware.LoginAuth, CreateUser) // UserReq
   - name: AppCrud
-    middlewares: []
+    middlewares: ["middleware.Recovery()"]
     apis:
       - GET("/api/app/login", GetAppList)  // LoginReq
       - GET("/api/app/:userID", middleware.LoginAuth, CreateApp) // UserReq

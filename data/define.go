@@ -38,7 +38,7 @@ type (
 		IdlName       string                  // idl name
 		Pkg           map[string]conf.Package // 全局变量
 		HasMiddleware bool                    // api或group是否包含中间件
-		Middleware    []string                // group中间件
+		Middlewares   []string                // group中间件
 		Apis          []Api                   // 接口列表
 		Handlers      map[string]string       // apis 解析后的结果
 	}

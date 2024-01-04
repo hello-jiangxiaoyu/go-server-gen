@@ -59,7 +59,11 @@ global:
     handler-key: "New{{.ServiceName}}Router"
     handler: |
       func New{{.ServiceName}}Router(e {{.Pkg.Engine.Value}}) {
-          {{.ServiceName | lowercaseFirst}} := e.Group("")
+          {{.ServiceName | lowercaseFirst}} := e.Group(""
+      {{- range $_, $md := .Middlewares -}}
+      , {{$md}}
+      {{- end -}}
+      )
           {
               {{- range $_, $Api := .Apis}}
               {{$Api.ServiceName | lowercaseFirst}}.{{$Api.Method}}("{{$Api.Path}}"
