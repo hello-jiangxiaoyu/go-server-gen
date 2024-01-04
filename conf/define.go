@@ -4,7 +4,7 @@ package conf
 type (
 	Service struct {
 		Name        string   `yaml:"name"`
-		Middlewares []string `yaml:"middlewares"`
+		Middlewares []string `yaml:"middlewares"` // 中间件名称
 		Apis        []string `yaml:"apis"`
 	}
 	Idl struct {
@@ -20,13 +20,12 @@ type (
 		Import string `yaml:"import"`
 	}
 	Template struct {
-		Name       string `yaml:"name"`
-		Path       string `yaml:"path"`
-		FirstLine  string `yaml:"first-line"` // 仅在创建默认代码时使用该字段
-		Write      string `yaml:"write"`
-		Handler    string `yaml:"handler"`
-		HandlerKey string `yaml:"handler-key"`
-		Body       string `yaml:"body"`
+		Name       string `yaml:"name"`        // 模板名
+		Path       string `yaml:"path"`        // 文件写入路径
+		Write      string `yaml:"write"`       // 写入方式
+		Handler    string `yaml:"handler"`     // 函数或结构体
+		HandlerKey string `yaml:"handler-key"` // 写文件关键字
+		Body       string `yaml:"body"`        // 文件内容
 	}
 	LayoutConfig struct {
 		Pkg             map[string]Package `yaml:"pkg"`      // 全局变量
@@ -34,9 +33,10 @@ type (
 		ServiceTemplate []Template         `yaml:"service"`  // service模板配置
 		GlobalTemplate  []Template         `yaml:"global"`   // global模板配置
 		MessageTemplate []Template         `yaml:"messages"` // 请求参数模板配置
-		ProjectName     string             `yaml:"-"`
-		IdlName         string             `yaml:"-"`
-		LogType         string             `yaml:"-"`
-		ServerType      string             `yaml:"-"`
+
+		ProjectName string `yaml:"-"` // 项目名
+		IdlName     string `yaml:"-"` // idl名
+		LogType     string `yaml:"-"` // 日志类型zap或zero
+		ServerType  string `yaml:"-"` // server类型, gin, echo, fiber, hertz
 	}
 )

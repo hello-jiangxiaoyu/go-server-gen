@@ -80,6 +80,7 @@ func GetEmbedContent(path string) string {
 	return string(res)
 }
 
+// 替换go文件包名
 func replacePackage(src string, pkgName string) string {
 	lines := strings.SplitN(src, "\n", -1)
 	lines[0] = "package " + pkgName

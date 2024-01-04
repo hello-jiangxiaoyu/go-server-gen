@@ -78,6 +78,7 @@ func parseService(service data.Service, tpl conf.Template) (writer.WriteCode, er
 		utils.Log("failed to parse api body template: "+tpl.Path+": ", err.Error())
 		return writer.WriteCode{}, err
 	}
+
 	return writer.WriteCode{
 		File:     file,
 		Write:    tpl.Write,

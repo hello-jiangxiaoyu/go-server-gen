@@ -18,6 +18,7 @@ func ConfigToData(layout conf.LayoutConfig, idl conf.Idl) ([]Service, map[string
 	return groups, msg, nil
 }
 
+// 根据变量名推测变量类型
 func getDocType(name string) string {
 	if strings.Contains(name, "ID") || strings.Contains(name, "Id") {
 		return "integer"
