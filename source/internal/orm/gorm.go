@@ -28,26 +28,26 @@ func Init(dsn string) error {
 }
 
 // CursorPage 游标翻页
-func CursorPage(cursor, num int64) func(db *gorm.DB) *gorm.DB {
+func CursorPage(cursor, limit int64) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Where("id > ?", cursor).Limit(int(num))
+		return db.Where("id > ?", cursor).Limit(int(limit))
 	}
 }
-func CursorPageWithIDName(cursor, num int64, idName string) func(db *gorm.DB) *gorm.DB {
+func CursorPageWithIDName(cursor, limit int64, idName string) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Where(idName+" > ?", cursor).Limit(int(num))
+		return db.Where(idName+" > ?", cursor).Limit(int(limit))
 	}
 }
 
 // BigCursorPage 大端模式游标翻页
-func BigCursorPage(cursor, num int64) func(db *gorm.DB) *gorm.DB {
-	return BigCursorPageWithIDName(cursor, num, "id")
+func BigCursorPage(cursor, limit int64) func(db *gorm.DB) *gorm.DB {
+	return BigCursorPageWithIDName(cursor, limit, "id")
 }
-func BigCursorPageWithIDName(cursor, num int64, idName string) func(db *gorm.DB) *gorm.DB {
+func BigCursorPageWithIDName(cursor, limit int64, idName string) func(db *gorm.DB) *gorm.DB {
 	if cursor > 0 {
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Where(idName+" < ?", cursor).Limit(int(num))
+			return db.Where(idName+" < ?", cursor).Limit(int(limit))
 		}
 	}
-	return func(db *gorm.DB) *gorm.DB { return db.Limit(int(num)) }
+	return func(db *gorm.DB) *gorm.DB { return db.Limit(int(limit)) }
 }

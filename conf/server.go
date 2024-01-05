@@ -3,12 +3,13 @@ package conf
 type PkgConfig struct {
 	Context    Package
 	Engine     Package
-	Return     Package
-	ReturnType Package
-	HandleFunc Package
-	StatusCode Package
+	Return     Package // handler是否包含返回值
+	ReturnType Package // handler返回值类型
+	HandleFunc Package // 中间件HandlerFunc
+	StatusCode Package // 状态码，fiber和hertz有自己的状态码
 }
 
+// PkgMap Pkg全局变量，不同服务端框架对应的包描述，默认为gin
 var PkgMap = map[string]PkgConfig{
 	"gin": {
 		Context: Package{

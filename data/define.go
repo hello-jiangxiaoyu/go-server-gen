@@ -6,16 +6,16 @@ import (
 
 type (
 	Param struct {
-		Name        string
-		From        string
-		Type        string
-		Required    string
-		Description string
+		Name        string // 参数名
+		From        string // 参数来源: path, query, body
+		Type        string // 类型
+		Required    string // 是否必填
+		Description string // 参数描述
 	}
 	Message struct {
 		Name   string  `json:"name"`
 		Param  []Param `json:"param"`
-		Source string  `json:"source"`
+		Source string  `json:"source"` // 具体message内容
 	}
 
 	Api struct {
