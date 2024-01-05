@@ -1,5 +1,5 @@
 # 设置变量
-BINARY_NAME = gsg
+BINARY_NAME = ~/GolandProjects/bin/gsg
 
 # 构建目标
 build:
