@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
-	"errors"
 	"regexp"
 	"strings"
 )
@@ -17,12 +15,23 @@ func SplitCamelCase(str string) []string {
 	return words
 }
 
-func StructToString(obj any) string {
-	res, err := make([]byte, 0), errors.New("")
-	if res, err = json.Marshal(&obj); err != nil {
-		return ""
+// ConvertToWord 驼峰字符串拆分成句子
+func ConvertToWord(obj string, mid string) string {
+	words := SplitCamelCase(obj)
+	content := ""
+	idFlag := false // ID不拆分
+	for _, word := range words {
+		if word == "d" && idFlag {
+			content += word
+		} else {
+			content += mid + word
+		}
+		idFlag = word == "i"
 	}
-	return string(res)
+	if content != "" {
+		content = content[1:]
+	}
+	return content
 }
 
 // DeduplicateStrings 字符串数组去重并去除空字符串
@@ -40,4 +49,9 @@ func DeduplicateStrings(arr []string) []string {
 	}
 
 	return result
+}
+
+// RemoveSpace 删除字符串中的空格
+func RemoveSpace(obj string) string {
+	return strings.ReplaceAll(obj, " ", "")
 }

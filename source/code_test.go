@@ -4,7 +4,6 @@ import (
 	"go-server-gen/conf"
 	"go-server-gen/data"
 	"go-server-gen/parse"
-	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"testing"
 )
@@ -52,5 +51,5 @@ func TestUpdateCode(t *testing.T) {
 }
 
 func TestTemp(t *testing.T) {
-	println(utils.FileExists("code.go"))
+
 }
