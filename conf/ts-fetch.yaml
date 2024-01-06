@@ -1,16 +1,108 @@
 
-
-
 global:
   - name: request
     path: "ts/request.ts"
-    write: overwrite
-    handler-key: "SendHttpRequest"
-    handler: "New{{.ServiceName}}Router(e)"
+    write: skip
+    body: |-
+      import { format } from "util";
+      
+      export interface Root<T> {
+        code: number;
+        msg: string;
+        data: T;
+      }
+      
+      const host = "";
+      async function SendHttpRequest<T>(
+        method: "GET" | "POST" | "PUT" | "DELETE",
+        uri: string,
+        data?: string | FormData,
+      ): Promise<Root<T>> {
+        const url = host + uri;
+        let err = "";
+        const response: Root<T> = await fetch(url, {
+          method,
+          headers: {
+            "content-type": "application/json",
+          },
+          body: data,
+        })
+          .then((resp) => resp.json())
+          .catch((e) => {
+            err = e.toString();
+          });
+        if (err !== "") {
+          return Promise.reject("fetch error");
+        }
+      
+        if (typeof response !== "object") {
+          return Promise.reject("Invalid server response type");
+        }
+      
+        if (response?.code > 308) {
+          response.msg = format("%s (%d)", response?.msg, response?.code);
+          return Promise.reject(response.msg);
+        }
+      
+        return response;
+      }
+      
+      export async function GET<T>(uri: string): Promise<Root<T>> {
+        return await SendHttpRequest<T>("GET", uri);
+      }
+      
+      export async function POST<T>(uri: string, data: object): Promise<Root<T>> {
+        return await SendHttpRequest<T>("POST", uri, JSON.stringify(data));
+      }
+      
+      export async function PUT(uri: string, data: object): Promise<Root<object>> {
+        return await SendHttpRequest<object>("PUT", uri, JSON.stringify(data));
+      }
+      
+      export async function DELETE(uri: string): Promise<Root<object>> {
+        return await SendHttpRequest<object>("DELETE", uri);
+      }
+      
+      export async function POSTForm<T>(uri: string, data: object): Promise<Root<T>> {
+        const formData = new FormData();
+        for (const key in data) {
+          if (data.hasOwnProperty(key)) {
+            formData.append(key, data[key as keyof object]);
+          }
+        }
+        return await SendHttpRequest<T>("POST", uri, formData);
+      }
+
+
 
 service:
   - name: client
     path: "ts/{{convertToWord .ServiceName `_`}}.ts"
     write: append
     handler-key: "{{.FuncName}}"
+    handler: |-
+      {{ if eq .Method "GET" }}
+      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " false }}): Promise<Root<object>> {
+        return await {{.Method}}<object>(`{{.Path | getTsRouter}}`);
+      }
+      {{ else if eq .Method "PUT" }}
+      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}data: object): Promise<Root<object>> {
+        return await {{.Method}}(`{{.Path | getTsRouter}}`, data);
+      }
+      {{ else if eq .Method "POST" }}
+      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}data: object): Promise<Root<object>> {
+        return await {{.Method}}<object>(`{{.Path | getTsRouter}}`, data);
+      }
+      {{ else if eq .Method "DELETE" }}
+      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " false }}): Promise<Root<object>> {
+        return await {{.Method}}(`{{.Path | getTsRouter}}`);
+      }
+      {{ else }}
+      {{ end }}
+    body: |-
+      import {Root, GET, POST, PUT, DELETE} from "./request"
+      
+      {{- range $_, $Code := .Handlers }}
+      {{$Code}}
+      {{- end }}
 

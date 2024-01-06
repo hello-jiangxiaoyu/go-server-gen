@@ -42,6 +42,8 @@ func GetConfig(serverType, logType, layoutPath, idlPath string) (LayoutConfig, I
 func GetLayoutConfig(serverType, logType, layoutPath string) (layoutConf LayoutConfig, err error) {
 	if layoutPath == "" {
 		layoutYaml = GinYaml
+	} else if layoutPath == "__ts" {
+		layoutYaml = TsFetchYaml
 	} else {
 		layoutYaml, err = os.ReadFile(layoutPath)
 		if err != nil {
@@ -51,6 +53,10 @@ func GetLayoutConfig(serverType, logType, layoutPath string) (layoutConf LayoutC
 
 	if err = yaml.Unmarshal(layoutYaml, &layoutConf); err != nil {
 		return LayoutConfig{}, err
+	}
+
+	if layoutConf.Pkg == nil {
+		layoutConf.Pkg = make(map[string]Package)
 	}
 
 	projectName, err := utils.GetProjectName()

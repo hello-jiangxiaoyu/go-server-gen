@@ -50,4 +50,7 @@ func checkUpdateCmdArgs(args []string) {
 		os.Exit(1)
 	}
 	IdlPath = args[0]
+	if WithTs {
+		LayoutPath = "__ts"
+	}
 }

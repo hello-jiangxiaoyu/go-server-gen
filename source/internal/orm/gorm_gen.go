@@ -39,7 +39,7 @@ func GenerateGormModel() {
 }
 
 func getGenerator() (*gen.Generator, error) {
-	db, err := gorm.Open(mysql.Open("gorm:gorm@tcp(127.0.0.1:3306)/im?charset=utf8&parseTime=True&loc=Local"), &gorm.Config{})
+	genDb, err := gorm.Open(mysql.Open("gorm:gorm@tcp(127.0.0.1:3306)/im?charset=utf8&parseTime=True&loc=Local"), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +55,6 @@ func getGenerator() (*gen.Generator, error) {
 		FieldWithTypeTag:  true,
 	})
 
-	g.UseDB(db)
+	g.UseDB(genDb)
 	return g, err
 }

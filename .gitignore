@@ -9,3 +9,10 @@
 biz/
 pkg/
 out/
+
+gsg
+gsg.exe
+
+ts/
+*.ts
+
