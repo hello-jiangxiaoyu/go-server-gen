@@ -84,3 +84,30 @@ func Register(e {{.Pkg.Engine.Value}}) {
 const Readme = `# {{.ProjectName}}
 
 ` + "生成文档\n\n```bash\nswag init -o pkg/docs\n```\n"
+
+const DockerFile = `##
+## build
+##
+FROM golang:1.21-alpine as builder
+ENV GOPROXY https://goproxy.cn,direct
+
+WORKDIR /app
+COPY . .
+RUN go mod download
+
+RUN  go build -ldflags="-s -w" -o server .
+
+
+##
+## deploy
+##
+FROM alpine:latest
+
+WORKDIR /app
+
+COPY --from=builder /app/server ./
+
+EXPOSE 8000
+ENTRYPOINT ./server
+
+`
