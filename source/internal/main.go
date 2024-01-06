@@ -111,3 +111,12 @@ EXPOSE 8000
 ENTRYPOINT ./server
 
 `
+
+const GitIgnore = `.DS_Store
+.idea
+.vscode
+
+*.log
+*.exe
+*.so
+`

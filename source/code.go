@@ -32,6 +32,7 @@ func GenPackageCode(layout conf.LayoutConfig, prefix string, overwrite bool) (ma
 		prefix + "main.go":                         internal.MainCodeMap[server],
 		prefix + "README.md":                       internal.Readme,
 		prefix + "Dockerfile":                      internal.DockerFile,
+		prefix + ".gitignore":                      internal.GitIgnore,
 		prefix + "biz/register.go":                 internal.RegisterCode,
 		prefix + "pkg/response/error_request.go":   internal.ErrorRequest,
 		prefix + "pkg/response/error_sql.go":       internal.ErrorSql,
