@@ -61,12 +61,13 @@ func checkCreateCmdArgs(args []string) {
 		os.Exit(1)
 	}
 	CrudServiceName = args[0]
+	goMod, err := os.ReadFile("go.mod")
+	if err != nil {
+		utils.Log("failed to read go.mod: ", err.Error())
+		os.Exit(1)
+	}
 
 	if ServerType == "" {
-		goMod, err := os.ReadFile("go.mod")
-		if err != nil {
-			return
-		}
 		if strings.Contains(string(goMod), "github.com/gin-gonic/gin") {
 			ServerType = "gin"
 		} else if strings.Contains(string(goMod), "github.com/gofiber/fiber") {
