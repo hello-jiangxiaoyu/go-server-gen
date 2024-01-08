@@ -58,9 +58,12 @@ func NewProject(_ *cobra.Command, args []string) {
 }
 
 func checkNewCmdArgs(args []string) {
+	if ServerType == "" {
+		ServerType = "gin"
+	}
 	if ServerType != "gin" && ServerType != "fiber" &&
 		ServerType != "echo" && ServerType != "hertz" {
-		utils.Log("server type is not valid")
+		utils.Log("server type" + ServerType + " is not valid")
 		os.Exit(1)
 	}
 	if len(args) == 0 || args[0] == "" {

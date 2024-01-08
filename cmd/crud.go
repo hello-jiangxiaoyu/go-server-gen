@@ -78,4 +78,8 @@ func checkCreateCmdArgs(args []string) {
 			ServerType = "hertz"
 		}
 	}
+	if ServerType == "" && LayoutPath == "" {
+		utils.Log("server type is empty")
+		os.Exit(1)
+	}
 }

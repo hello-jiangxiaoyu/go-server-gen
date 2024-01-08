@@ -31,7 +31,7 @@ func ParseSource(key, body string, data any) (string, string, error) {
 	if strings.Contains(key, ".go") { // 格式化go代码
 		codeBody, err := format.Source([]byte(RemoveDuplicateImport(body)))
 		if err != nil {
-			return "", "", err
+			return "", "", WithMessage(err, "go syntax err: "+body)
 		}
 		body = string(codeBody)
 	}
