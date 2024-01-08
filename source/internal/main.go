@@ -107,16 +107,30 @@ WORKDIR /app
 
 COPY --from=builder /app/server ./
 
-EXPOSE 8000
+EXPOSE 1234
 ENTRYPOINT ./server
+`
 
+const Makefile = `
+BINARY_NAME = server
+
+build:
+	go build -ldflags="-s -w" -o $(BINARY_NAME) .
+
+clean:
+	rm -f $(BINARY_NAME)
+
+.PHONY: build clean
 `
 
 const GitIgnore = `.DS_Store
 .idea
 .vscode
+.DS_Store
 
 *.log
 *.exe
 *.so
+*.dll
+*.lib
 `
