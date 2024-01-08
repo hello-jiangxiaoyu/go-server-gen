@@ -9,7 +9,7 @@ import (
 
 var defaultFuncMap = template.FuncMap{
 	"lowercaseFirst": LowercaseFirst,    // 首字母小写
-	"uppercaseFirst": UppercaseFirst,    // 首字母小写
+	"uppercaseFirst": UppercaseFirst,    // 首字母大写
 	"convertToWord":  ConvertToWord,     // 路由转文档Router
 	"hasPrefix":      strings.HasPrefix, // 是否包含前缀
 	"removeSpace":    RemoveSpace,       // 去除空格

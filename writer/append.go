@@ -2,6 +2,7 @@ package writer
 
 import (
 	"go-server-gen/utils"
+	"io"
 	"os"
 	"strings"
 )
@@ -11,14 +12,18 @@ func FileAppendWriter(path string, src string, handlers map[string]string) error
 		return writeFile(path, []byte(src), false)
 	}
 
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_RDWR, 0644)
 	if err != nil {
 		return err
 	}
 
 	defer utils.DeferErr(f.Close)
+	oldCode, err := io.ReadAll(f)
+	if err != nil {
+		return err
+	}
 	for key, handler := range handlers {
-		if !strings.Contains(src, key) {
+		if !strings.Contains(string(oldCode), key) {
 			if _, err = f.WriteString(handler); err != nil {
 				return err
 			}
@@ -39,7 +44,7 @@ func PointerAppendWriter(path string, pointer string, src string, handlers map[s
 		return err
 	}
 
-	handlerSlice := mapStringToSlice(handlers)
+	handlerSlice := filterPointerHandlerSlice(handlers, string(content))
 	lines := strings.Split(string(content), "\n")
 	for i, line := range lines {
 		if strings.Contains(line, pointer) {
@@ -56,10 +61,12 @@ func PointerAppendWriter(path string, pointer string, src string, handlers map[s
 	return nil
 }
 
-func mapStringToSlice(obj map[string]string) []string {
+func filterPointerHandlerSlice(obj map[string]string, src string) []string {
 	res := make([]string, 0, len(obj))
-	for _, v := range obj {
-		res = append(res, v)
+	for k, v := range obj {
+		if !strings.Contains(src, k) {
+			res = append(res, v)
+		}
 	}
 	return res
 }

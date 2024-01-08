@@ -4,6 +4,7 @@ import (
 	"go-server-gen/conf"
 	"go-server-gen/data"
 	"go-server-gen/parse"
+	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"testing"
 )
@@ -45,11 +46,11 @@ func TestUpdateCode(t *testing.T) {
 		t.FailNow()
 	}
 
-	for _, r := range res {
-		println(r.File + "\n" + r.Code)
+	if writer.Write(res) != nil {
+		t.FailNow()
 	}
 }
 
 func TestTemp(t *testing.T) {
-
+	println(utils.UppercaseFirst("project"))
 }
