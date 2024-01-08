@@ -5,7 +5,7 @@ import "github.com/spf13/cobra"
 var (
 	LayoutPath = ""
 	IdlPath    = ""
-	ServerType = "gin"
+	ServerType = ""
 	LogType    = "zap"
 	OutputDir  = ""
 	ForceWrite = false
@@ -27,14 +27,14 @@ func InitCommand(rootCmd, newCmd, updateCmd, crudCmd *cobra.Command) {
 
 	// 更新接口 update cmd
 	updateCmd.PersistentFlags().StringVarP(&IdlPath, "idl", "i", "", "idl path")
-	updateCmd.PersistentFlags().StringVarP(&ServerType, "server", "s", "gin", "server type")
+	updateCmd.PersistentFlags().StringVarP(&ServerType, "server", "s", "", "server type")
 	updateCmd.PersistentFlags().StringVarP(&OutputDir, "output", "o", "", "output dir")
 	updateCmd.PersistentFlags().StringVar(&LayoutPath, "layout", "", "layout path")
 	updateCmd.PersistentFlags().StringVar(&LogType, "log", "zap", "log type")
 	updateCmd.PersistentFlags().BoolVar(&WithTs, "ts", false, "gen ts client code")
 
 	// 添加crud
-	crudCmd.PersistentFlags().StringVarP(&ServerType, "server", "s", "gin", "server type")
+	crudCmd.PersistentFlags().StringVarP(&ServerType, "server", "s", "", "server type")
 	crudCmd.PersistentFlags().StringVarP(&CrudRouterPrefix, "prefix", "p", "", "crud router prefix")
 	crudCmd.PersistentFlags().StringVarP(&OutputDir, "output", "o", "", "output dir")
 	crudCmd.PersistentFlags().StringVar(&LayoutPath, "layout", "", "layout path")
