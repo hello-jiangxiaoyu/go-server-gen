@@ -66,10 +66,10 @@ func MapJoin(obj map[string]string, mid, sep string, withEnd bool) string {
 	return res
 }
 func GetTsType(name string) string {
-	if strings.Contains(name, "ID") || strings.Contains(name, "Id") {
+	if strings.HasSuffix(name, "ID") || strings.HasSuffix(name, "Id") {
 		return "number"
 	}
-	if strings.Contains(name, "is") {
+	if strings.HasPrefix(name, "is") {
 		return "boolean"
 	}
 	return "string"

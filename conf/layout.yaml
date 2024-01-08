@@ -1,10 +1,4 @@
 pkg:
-  Context:
-    value: "*gin.context"
-    import: github.com/gin-gonic/gin
-  Engine:
-    value: "*gin.engine"
-    import: github.com/gin-gonic/gin
   Controller:
     value: controller
     import: biz/controller
@@ -20,10 +14,14 @@ pkg:
   Bind:
     value: internal
     import: biz/controller/internal
+  Biz:
+    value: biz
+
+
 
 global:
   - name: register
-    path: "biz/register.go"
+    path: "{{.Pkg.Biz.Value}}/register.go"
     write: pointer
     handler-key: "New{{.ServiceName}}Router"
     handler: "\tNew{{.ServiceName}}Router(e)"
@@ -42,7 +40,7 @@ global:
       }
 
   - name: router
-    path: "biz/router.go"
+    path: "{{.Pkg.Biz.Value}}/router.go"
     write: append
     body: |-
       package biz
@@ -81,7 +79,7 @@ global:
 
 service:
   - name: controller
-    path: "biz/controller/{{convertToWord .ServiceName `_`}}.go"
+    path: "{{.Pkg.Controller.Import}}/{{convertToWord .ServiceName `_`}}.go"
     write: append
     handler-key: "{{.FuncName}}"
     handler: |-
@@ -127,7 +125,7 @@ service:
       {{- end }}
 
   - name: service
-    path: "biz/service/{{convertToWord .ServiceName `_`}}.go"
+    path: "{{.Pkg.Service.Import}}/{{convertToWord .ServiceName `_`}}.go"
     write: append
     handler-key: "{{.FuncName}}"
     handler: |-

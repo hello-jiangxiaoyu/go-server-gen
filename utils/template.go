@@ -11,10 +11,12 @@ import (
 
 // ParseTemplate 模板解析
 func ParseTemplate(tpl string, data any) (string, error) {
-	t := template.New("gen").Funcs(defaultFuncMap)
-	t = template.Must(t.Parse(tpl))
 	var buf bytes.Buffer
-	if err := t.Execute(&buf, data); err != nil {
+	t, err := template.New("gen").Funcs(defaultFuncMap).Parse(tpl)
+	if err != nil {
+		return "", WithMessage(err, "invalid template config")
+	}
+	if err = t.Execute(&buf, data); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
