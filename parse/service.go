@@ -47,7 +47,9 @@ func parseGlobal(services []data.Service, tpl conf.Template) (writer.WriteCode, 
 		handlers[funcName] = handler
 	}
 
-	file, body, err := utils.ParseSource(tpl.Path, tpl.Body, services[0])
+	globalData := services[0]
+	globalData.Handlers = handlers
+	file, body, err := utils.ParseSource(tpl.Path, tpl.Body, globalData)
 	if err != nil {
 		utils.Log("failed to phase "+tpl.Path+" body: ", err.Error())
 		return writer.WriteCode{}, err
