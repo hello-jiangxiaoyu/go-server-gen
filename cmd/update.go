@@ -8,6 +8,7 @@ import (
 	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"os"
+	"strings"
 )
 
 func UpdateProject(_ *cobra.Command, args []string) {
@@ -52,5 +53,21 @@ func checkUpdateCmdArgs(args []string) {
 	IdlPath = args[0]
 	if WithTs {
 		LayoutPath = "__ts"
+	}
+
+	if ServerType == "" {
+		goMod, err := os.ReadFile("go.mod")
+		if err != nil {
+			return
+		}
+		if strings.Contains(string(goMod), "github.com/gin-gonic/gin") {
+			ServerType = "gin"
+		} else if strings.Contains(string(goMod), "github.com/gofiber/fiber") {
+			ServerType = "fiber"
+		} else if strings.Contains(string(goMod), "github.com/labstack/echo") {
+			ServerType = "echo"
+		} else if strings.Contains(string(goMod), "github.com/cloudwego/hertz") {
+			ServerType = "hertz"
+		}
 	}
 }
