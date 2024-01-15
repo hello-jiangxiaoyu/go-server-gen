@@ -1,13 +1,32 @@
 package main
 
 import (
+	"fmt"
+	"github.com/spf13/cobra"
 	"go-server-gen/cmd"
 	"os"
-
-	"github.com/spf13/cobra"
+	"runtime"
+	"strings"
 )
 
 func main() {
+	// panic handler
+	defer func() {
+		if err := recover(); err != nil {
+			panicInfo := fmt.Sprintf("%v", err)
+			for i := 3; i < 30; i++ {
+				pc, file, line, ok := runtime.Caller(i)
+				if !ok {
+					break
+				}
+				if strings.Contains(file, "go-server-gen") {
+					panicInfo += fmt.Sprintf("\n\t%s:%d %s", file, line, runtime.FuncForPC(pc).Name())
+				}
+			}
+			fmt.Println("\npanic!!!", panicInfo)
+		}
+	}()
+
 	rootCmd := &cobra.Command{}
 	newCmd := &cobra.Command{
 		Use:   "new",

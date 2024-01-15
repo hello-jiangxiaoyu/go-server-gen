@@ -17,7 +17,7 @@ const (
       )
 
       func stackInfo(msg string, skip int) string {
-        for i := skip; ; i++ {
+        for i := skip; i < 30; i++ {
           pc, file, line, ok := runtime.Caller(i)
           if !ok {
             break
