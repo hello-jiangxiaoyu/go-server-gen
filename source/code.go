@@ -26,7 +26,6 @@ func GenPackageCode(layout conf.LayoutConfig, prefix string, overwrite bool) (ma
 	}
 
 	server := layout.ServerType
-	log := layout.LogType
 	initCode := make(map[string]writer.WriteCode)
 	tplMap := map[string]string{
 		prefix + "main.go":                         internal.MainCodeMap[server],
@@ -43,7 +42,7 @@ func GenPackageCode(layout conf.LayoutConfig, prefix string, overwrite bool) (ma
 		prefix + "pkg/middleware/recover.go":       internal.MiddlewareMap["recover"],
 		prefix + "biz/controller/internal/bind.go": replacePackage(GetEmbedContent("internal/"+server+"/bind.go"), "internal"),
 		prefix + "pkg/response/response.go":        replacePackage(GetEmbedContent("internal/"+server+"/response.go"), "response"),
-		prefix + "pkg/log/logger.go":               GetEmbedContent("internal/log/" + log + ".go"),
+		prefix + "pkg/log/logger.go":               GetEmbedContent("internal/log/" + layout.LogType + ".go"),
 		prefix + "pkg/log/writer.go":               GetEmbedContent("internal/log/writer.go"),
 		prefix + "pkg/orm/gorm.go":                 GetEmbedContent("internal/orm/gorm.go"),
 		prefix + "pkg/orm/gorm_gen.go":             GetEmbedContent("internal/orm/gorm_gen.go"),

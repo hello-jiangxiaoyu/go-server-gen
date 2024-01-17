@@ -76,4 +76,7 @@ func checkUpdateCmdArgs(args []string) {
 		utils.Log("server type is empty")
 		os.Exit(1)
 	}
+	if OutputDir != "" && !strings.HasSuffix(OutputDir, "/") && !strings.HasSuffix(OutputDir, "\\") {
+		OutputDir += "/"
+	}
 }
