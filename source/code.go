@@ -40,6 +40,7 @@ func GenPackageCode(layout conf.LayoutConfig, prefix string, overwrite bool) (ma
 		prefix + "pkg/response/success.go":         internal.Success,
 		prefix + "pkg/response/service_code.go":    internal.ServiceCode,
 		prefix + "pkg/middleware/recover.go":       internal.MiddlewareMap["recover"],
+		prefix + "pkg/middleware/request_id.go":    internal.MiddlewareMap["request"],
 		prefix + "biz/controller/internal/bind.go": replacePackage(GetEmbedContent("internal/"+server+"/bind.go"), "internal"),
 		prefix + "pkg/response/response.go":        replacePackage(GetEmbedContent("internal/"+server+"/response.go"), "response"),
 		prefix + "pkg/log/logger.go":               GetEmbedContent("internal/log/" + layout.LogType + ".go"),

@@ -69,8 +69,52 @@ const (
           {{- end }}
         }
       }`
+
+	requestMiddleware = `package middleware
+	import (
+        {{ if eq .Pkg.Context.Value "*app.RequestContext" -}}
+        "context"
+        {{- end}}
+        "{{.Pkg.Context.Import}}"
+		"math/rand"
+		"strconv"
+	)
+	
+	func GenerateRequestID({{- if eq .Pkg.Context.Value "echo.Context" -}}next {{.Pkg.HandleFunc.Value}}{{- end }}) {{.Pkg.HandleFunc.Value}} {
+		return func(
+			{{- if eq .Pkg.Context.Value "*app.RequestContext" -}}
+			ctx context.Context, c {{.Pkg.Context.Value}}
+			{{- else -}}
+			c {{.Pkg.Context.Value}}
+			{{- end -}}
+			) {{.Pkg.ReturnType.Value}} {
+			{{ if eq .Pkg.Context.Value "*gin.Context" -}}
+			requestID := c.GetHeader("X-Request-ID")
+			{{- else if eq .Pkg.Context.Value "*fiber.Ctx" -}}
+			requestID := ""
+			requestIDs := c.GetReqHeaders()["X-Request-Id"]
+			if len(requestIDs) == 0 {
+				requestID = requestIDs[0]
+			}
+			{{- else if eq .Pkg.Context.Value "echo.Context" -}}
+			requestID := c.Request().Header.Get("X-Request-Id")
+			{{- else if eq .Pkg.Context.Value "*app.RequestContext" -}}
+			requestID := c.Request.Header.Get("X-Request-Id")
+			{{- else -}}
+			panic(nil)
+			{{- end }}
+			if requestID == "" {
+				requestID = strconv.FormatInt(rand.Int63(), 10)
+			}
+			c.Set("requestID", requestID)
+			{{- if .Pkg.Return.Value }}
+			return nil
+			{{- end }}
+		}
+	}`
 )
 
 var MiddlewareMap = map[string]string{
 	"recover": recoverMiddleware,
+	"request": requestMiddleware,
 }

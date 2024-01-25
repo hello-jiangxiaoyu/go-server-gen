@@ -29,7 +29,7 @@ func WrapError(err1 error, err2 error) error {
 func response(c *fiber.Ctx, code int, errCode int, err error, msg string, data any, total int) error {
 	c.Response().Header.Add("X-Request-Id", c.Get("requestID"))
 	c.Locals("code", errCode)
-	return WrapError(err, c.Status(code).JSON(&ArrayResponse{Code: errCode, Msg: msg, Data: data}))
+	return WrapError(err, c.Status(code).JSON(&ArrayResponse{Code: errCode, Msg: msg, Data: data, Total: total}))
 }
 
 func errorResponse(c *fiber.Ctx, code int, errCode int, err error, msg string) error {

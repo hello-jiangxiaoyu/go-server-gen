@@ -30,7 +30,7 @@ func WrapError(err1 error, err2 error) error {
 func response(c echo.Context, code int, errCode int, err error, msg string, data any, total int) error {
 	c.Response().Header().Add("X-Request-Id", fmt.Sprintf("%v", c.Get("requestID")))
 	c.Set("code", errCode)
-	return WrapError(err, c.JSON(code, &ArrayResponse{Code: errCode, Msg: msg, Data: data}))
+	return WrapError(err, c.JSON(code, &ArrayResponse{Code: errCode, Msg: msg, Data: data, Total: total}))
 }
 
 func errorResponse(c echo.Context, code int, errCode int, err error, msg string) error {
