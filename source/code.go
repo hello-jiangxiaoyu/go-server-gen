@@ -11,7 +11,7 @@ import (
 
 type GlobalData struct {
 	ProjectName string
-	Pkg         map[string]conf.Package
+	Pkg         map[string]string
 }
 
 // GenPackageCode 生成默认代码

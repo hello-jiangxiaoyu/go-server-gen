@@ -3,7 +3,7 @@ package internal
 const (
 	recoverMiddleware = `package middleware
       import (
-        {{ if eq .Pkg.Context.Value "*app.RequestContext" -}}
+        {{ if eq .Pkg.ContextType "*app.RequestContext" -}}
         "context"
         {{- end}}
         "errors"
@@ -12,8 +12,8 @@ const (
         "os"
         "runtime"
         "strings"
-        "{{.Pkg.Context.Import}}"
-        "{{.ProjectName}}/{{.Pkg.Resp.Import}}"
+        "{{.Pkg.ContextImport}}"
+        "{{.ProjectName}}/{{.Pkg.Resp}}"
       )
 
       func stackInfo(msg string, skip int) string {
@@ -32,14 +32,14 @@ const (
       }
 
       // Recovery panic处理
-      func Recovery({{- if eq .Pkg.Context.Value "echo.Context" -}}next {{.Pkg.HandleFunc.Value}}{{- end }}) {{.Pkg.HandleFunc.Value}} {
+      func Recovery({{- if eq .Pkg.ContextType "echo.Context" -}}next {{.Pkg.HandleFuncType}}{{- end }}) {{.Pkg.HandleFuncType}} {
         return func(
-        {{- if eq .Pkg.Context.Value "*app.RequestContext" -}}
-        ctx context.Context, c {{.Pkg.Context.Value}}
+        {{- if eq .Pkg.ContextType "*app.RequestContext" -}}
+        ctx context.Context, c {{.Pkg.ContextType}}
         {{- else -}}
-        c {{.Pkg.Context.Value}}
+        c {{.Pkg.ContextType}}
         {{- end -}}
-        ) {{.Pkg.ReturnType.Value}} {
+        ) {{.Pkg.ReturnType}} {
           defer func() {
             if err := recover(); err != nil {
               // Check for a broken connection, as it is not really a
@@ -56,49 +56,49 @@ const (
               req := fmt.Sprintf("panic recovered: %s; method:%s path:%s", err, c.Method(), c.Path())
               println(stackInfo(req, 3))
               if !brokenPipe {
-                {{.Pkg.Resp.Value}}.ErrorPanic(c)
+                {{.Pkg.Resp}}.ErrorPanic(c)
               }
             }
           }()
-          {{ if eq .Pkg.Context.Value "*app.RequestContext" -}}
+          {{ if eq .Pkg.ContextType "*app.RequestContext" -}}
           c.Next(ctx)
-          {{- else if eq .Pkg.Context.Value "echo.Context" -}}
+          {{- else if eq .Pkg.ContextType "echo.Context" -}}
           return next(c)
           {{- else -}}
-          {{.Pkg.Return.Value}} c.Next()
+          {{.Pkg.Return}} c.Next()
           {{- end }}
         }
       }`
 
 	requestMiddleware = `package middleware
 	import (
-        {{ if eq .Pkg.Context.Value "*app.RequestContext" -}}
+        {{ if eq .Pkg.ContextType "*app.RequestContext" -}}
         "context"
         {{- end}}
-        "{{.Pkg.Context.Import}}"
+        "{{.Pkg.ContextImport}}"
 		"math/rand"
 		"strconv"
 	)
 	
-	func GenerateRequestID({{- if eq .Pkg.Context.Value "echo.Context" -}}next {{.Pkg.HandleFunc.Value}}{{- end }}) {{.Pkg.HandleFunc.Value}} {
+	func GenerateRequestID({{- if eq .Pkg.ContextType "echo.Context" -}}next {{.Pkg.HandleFuncType}}{{- end }}) {{.Pkg.HandleFuncType}} {
 		return func(
-			{{- if eq .Pkg.Context.Value "*app.RequestContext" -}}
-			ctx context.Context, c {{.Pkg.Context.Value}}
+			{{- if eq .Pkg.ContextType "*app.RequestContext" -}}
+			ctx context.Context, c {{.Pkg.ContextType}}
 			{{- else -}}
-			c {{.Pkg.Context.Value}}
+			c {{.Pkg.ContextType}}
 			{{- end -}}
-			) {{.Pkg.ReturnType.Value}} {
-			{{ if eq .Pkg.Context.Value "*gin.Context" -}}
+			) {{.Pkg.ReturnType}} {
+			{{ if eq .Pkg.ContextType "*gin.Context" -}}
 			requestID := c.GetHeader("X-Request-ID")
-			{{- else if eq .Pkg.Context.Value "*fiber.Ctx" -}}
+			{{- else if eq .Pkg.ContextType "*fiber.Ctx" -}}
 			requestID := ""
 			requestIDs := c.GetReqHeaders()["X-Request-Id"]
 			if len(requestIDs) == 0 {
 				requestID = requestIDs[0]
 			}
-			{{- else if eq .Pkg.Context.Value "echo.Context" -}}
+			{{- else if eq .Pkg.ContextType "echo.Context" -}}
 			requestID := c.Request().Header.Get("X-Request-Id")
-			{{- else if eq .Pkg.Context.Value "*app.RequestContext" -}}
+			{{- else if eq .Pkg.ContextType "*app.RequestContext" -}}
 			requestID := c.Request.Header.Get("X-Request-Id")
 			{{- else -}}
 			panic(nil)
@@ -107,7 +107,7 @@ const (
 				requestID = strconv.FormatInt(rand.Int63(), 10)
 			}
 			c.Set("requestID", requestID)
-			{{- if .Pkg.Return.Value }}
+			{{- if .Pkg.Return }}
 			return nil
 			{{- end }}
 		}

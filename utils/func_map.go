@@ -19,6 +19,8 @@ var defaultFuncMap = template.FuncMap{
 	"getTsType":      GetTsType,         // 根据名字推测ts类型
 	"join":           strings.Join,      // 切片
 	"mapJoin":        MapJoin,           // map拼接
+	"getGoLastSplit": GetGoLastSplit,    // 获取最后一个单词
+	"getFirstSplit":  GetFirstSplit,     // 获取第一个单词
 }
 
 // LowercaseFirst 首字母小写
@@ -33,6 +35,24 @@ func UppercaseFirst(obj string) string {
 	runes := []rune(obj)
 	runes[0] = unicode.ToUpper(runes[0])
 	return string(runes)
+}
+
+var versionReg = regexp.MustCompile(`(^v\d+(\.\d+)*$)`)
+
+func GetGoLastSplit(obj, sep string) string {
+	res := strings.Split(obj, sep)
+	if len(res) == 0 {
+		return ""
+	}
+	if match := versionReg.FindStringSubmatch(res[len(res)-1]); len(match) > 0 && len(res) > 1 {
+		return res[len(res)-2]
+	}
+	return res[len(res)-1]
+}
+
+func GetFirstSplit(obj, sep string) string {
+	res := strings.Split(obj, sep)
+	return res[0]
 }
 
 var regDocUri = regexp.MustCompile(`:(\w+)`) // 路由path转文档router

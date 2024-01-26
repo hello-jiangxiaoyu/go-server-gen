@@ -41,7 +41,7 @@ func parseGlobal(services []data.Service, tpl conf.Template) (writer.WriteCode, 
 	for _, service := range services {
 		funcName, handler, err := utils.ParseSource(tpl.HandlerKey, tpl.Handler, service)
 		if err != nil {
-			utils.Log("failed to parse service handler: ", err.Error())
+			utils.Logf("failed to parse service handler: %s\n%s\n%s", err.Error(), tpl.HandlerKey, tpl.Handler)
 			return writer.WriteCode{}, err
 		}
 		handlers[funcName] = handler

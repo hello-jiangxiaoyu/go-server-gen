@@ -15,10 +15,6 @@ type (
 
 // Layout 配置
 type (
-	Package struct {
-		Value  string `yaml:"value"`
-		Import string `yaml:"import"`
-	}
 	Template struct {
 		Name       string `yaml:"name"`        // 模板名
 		Path       string `yaml:"path"`        // 文件写入路径
@@ -28,11 +24,11 @@ type (
 		Body       string `yaml:"body"`        // 文件内容
 	}
 	LayoutConfig struct {
-		Pkg             map[string]Package `yaml:"pkg"`      // 全局变量
-		ApiTemplate     []Template         `yaml:"api"`      // api模板配置（todo: 实现api级别模板解析）
-		ServiceTemplate []Template         `yaml:"service"`  // service模板配置
-		GlobalTemplate  []Template         `yaml:"global"`   // global模板配置
-		MessageTemplate []Template         `yaml:"messages"` // 请求参数模板配置
+		Pkg             map[string]string `yaml:"pkg"`      // 全局变量
+		ApiTemplate     []Template        `yaml:"api"`      // api模板配置（todo: 实现api级别模板解析）
+		ServiceTemplate []Template        `yaml:"service"`  // service模板配置
+		GlobalTemplate  []Template        `yaml:"global"`   // global模板配置
+		MessageTemplate []Template        `yaml:"messages"` // 请求参数模板配置
 
 		ProjectName string `yaml:"-"` // 项目名
 		IdlName     string `yaml:"-"` // idl名

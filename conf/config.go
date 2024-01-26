@@ -56,7 +56,7 @@ func GetLayoutConfig(serverType, logType, layoutPath string) (layoutConf LayoutC
 	}
 
 	if layoutConf.Pkg == nil {
-		layoutConf.Pkg = make(map[string]Package)
+		layoutConf.Pkg = make(map[string]string)
 	}
 
 	projectName, err := utils.GetProjectName()
@@ -69,12 +69,9 @@ func GetLayoutConfig(serverType, logType, layoutPath string) (layoutConf LayoutC
 	layoutConf.LogType = logType
 	svc, ok := PkgMap[serverType]
 	if ok {
-		layoutConf.Pkg["Context"] = svc.Context
-		layoutConf.Pkg["Engine"] = svc.Engine
-		layoutConf.Pkg["Return"] = svc.Return
-		layoutConf.Pkg["ReturnType"] = svc.ReturnType
-		layoutConf.Pkg["HandleFunc"] = svc.HandleFunc
-		layoutConf.Pkg["StatusCode"] = svc.StatusCode
+		for key, value := range svc {
+			layoutConf.Pkg[key] = value
+		}
 	}
 	return layoutConf, nil
 }

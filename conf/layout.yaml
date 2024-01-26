@@ -1,27 +1,14 @@
 pkg:
-  Controller:
-    value: controller
-    import: biz/controller
-  Service:
-    value: service
-    import: biz/service
-  Req:
-    value: model
-    import: biz/model
-  Resp:
-    value: response
-    import: pkg/response
-  Bind:
-    value: internal
-    import: biz/controller/internal
-  Biz:
-    value: biz
-
-
+  Controller: biz/controller
+  Service: biz/service
+  Req:  biz/model
+  Resp: pkg/response
+  Bind: biz/controller/internal
+  Biz:  biz
 
 global:
   - name: register
-    path: "{{.Pkg.Biz.Value}}/register.go"
+    path: "{{.Pkg.Biz}}/register.go"
     write: pointer
     handler-key: "New{{uppercaseFirst .ServiceName}}Router"
     handler: "\tNew{{uppercaseFirst .ServiceName}}Router(e)"
@@ -30,9 +17,9 @@ global:
       
       package biz
       import (
-          "{{.Pkg.Engine.Import}}"
+          "{{.Pkg.EngineImport}}"
       )
-      func Register(e {{.Pkg.Engine.Value}}) {
+      func Register(e {{.Pkg.EngineType}}) {
           //INSERT_POINT: DO NOT DELETE THIS LINE!
           {{- range $_, $Code := .Handlers }}
           {{$Code}}
@@ -40,13 +27,13 @@ global:
       }
 
   - name: router
-    path: "{{.Pkg.Biz.Value}}/router.go"
+    path: "{{.Pkg.Biz}}/router.go"
     write: append
     body: |-
       package biz
       import (
-          "{{.Pkg.Engine.Import}}"
-          "{{.ProjectName}}/{{.Pkg.Controller.Import}}"
+          "{{.Pkg.EngineImport}}"
+          "{{.ProjectName}}/{{.Pkg.Controller}}"
           {{- if .HasMiddleware }}
           "{{.ProjectName}}/biz/middleware"
           {{- end}}
@@ -56,7 +43,7 @@ global:
       {{- end }}
     handler-key: "New{{uppercaseFirst .ServiceName}}Router"
     handler: |
-      func New{{uppercaseFirst .ServiceName}}Router(e {{.Pkg.Engine.Value}}) {
+      func New{{uppercaseFirst .ServiceName}}Router(e {{.Pkg.EngineType}}) {
           {{.ServiceName | lowercaseFirst}} := e.Group(""
       {{- range $_, $md := .Middlewares -}}
       , {{$md}}
@@ -69,7 +56,7 @@ global:
               {{- if hasPrefix $Handler "middleware" -}}
               , {{$Handler}}()
               {{- else -}}
-              , {{$.Pkg.Controller.Value}}.{{$Handler}}
+              , {{getGoLastSplit $.Pkg.Controller "/"}}.{{$Handler}}
               {{- end -}}
               {{- end}})
               {{- end}}
@@ -79,7 +66,7 @@ global:
 
 service:
   - name: controller
-    path: "{{.Pkg.Controller.Import}}/{{convertToWord .ServiceName `_`}}.go"
+    path: "{{.Pkg.Controller}}/{{convertToWord .ServiceName `_`}}.go"
     write: append
     handler-key: "{{.FuncName}}"
     handler: |-
@@ -92,31 +79,31 @@ service:
       // @Success	200
       // @Router	{{.Path | getDocRouter}} [{{.Method}}]
       func {{.FuncName}}(
-        {{- if eq .Pkg.Context.Value "*app.RequestContext" -}}
-        _ context.Context, c {{.Pkg.Context.Value}}
+        {{- if eq .Pkg.ContextType "*app.RequestContext" -}}
+        _ context.Context, c {{.Pkg.ContextType}}
         {{- else -}}
-        c {{.Pkg.Context.Value}}
-        {{- end -}}) {{.Pkg.ReturnType.Value}} {
-          var req {{.Pkg.Req.Value}}.{{.ReqName}}
-          if err := {{.Pkg.Bind.Value}}.New(c).BindJson(&req).Error; err != nil {
-            {{- if eq .Pkg.Return.Value "" -}}
+        c {{.Pkg.ContextType}}
+        {{- end -}}) {{.Pkg.ReturnType}} {
+          var req {{getGoLastSplit .Pkg.Req "/"}}.{{.ReqName}}
+          if err := {{getGoLastSplit .Pkg.Bind "/"}}.New(c).BindJson(&req).Error; err != nil {
+            {{- if eq .Pkg.Return "" -}}
             response.ErrorRequest(c, err)
             return
             {{- else -}}
             return response.ErrorRequest(c, err)
             {{- end}}
           }
-          {{.Pkg.Return.Value}} service.{{.FuncName}}(c, &req)
+          {{.Pkg.Return}} service.{{.FuncName}}(c, &req)
       }
     body: |-
       package controller
       import (
-          "{{.Pkg.Context.Import}}"
-          "{{.ProjectName}}/{{.Pkg.Req.Import}}"
-          "{{.ProjectName}}/{{.Pkg.Resp.Import}}"
-          "{{.ProjectName}}/{{.Pkg.Bind.Import}}"
-          "{{.ProjectName}}/{{.Pkg.Service.Import}}"
-          {{ if eq .Pkg.Context.Value "*app.RequestContext" -}}
+          "{{.Pkg.ContextImport}}"
+          "{{.ProjectName}}/{{.Pkg.Req}}"
+          "{{.ProjectName}}/{{.Pkg.Resp}}"
+          "{{.ProjectName}}/{{.Pkg.Bind}}"
+          "{{.ProjectName}}/{{.Pkg.Service}}"
+          {{ if eq .Pkg.Context "*app.RequestContext" -}}
           "context"
           {{- end}}
       )
@@ -125,21 +112,21 @@ service:
       {{- end }}
 
   - name: service
-    path: "{{.Pkg.Service.Import}}/{{convertToWord .ServiceName `_`}}.go"
+    path: "{{.Pkg.Service}}/{{convertToWord .ServiceName `_`}}.go"
     write: append
     handler-key: "{{.FuncName}}"
     handler: |-
-      func {{.FuncName}}(c {{.Pkg.Context.Value}}, req *{{.Pkg.Req.Value}}.{{.ReqName}}) {{.Pkg.ReturnType.Value}} {
+      func {{.FuncName}}(c {{.Pkg.ContextType}}, req *{{getGoLastSplit .Pkg.Req "/"}}.{{.ReqName}}) {{.Pkg.ReturnType}} {
         // you service code hear
-        {{ if ne .Pkg.Return.Value "" }}
+        {{ if ne .Pkg.Return "" }}
         return nil
         {{- end}}
       }
     body: |-
       package service
       import (
-          "{{.Pkg.Context.Import}}"
-          "{{.ProjectName}}/{{.Pkg.Req.Import}}"
+          "{{.Pkg.ContextImport}}"
+          "{{.ProjectName}}/{{.Pkg.Req}}"
       )
       {{- range $_, $Code := .Handlers }}
       {{$Code}}
@@ -148,7 +135,7 @@ service:
 
 messages:
   - name: model
-    path: "{{.Pkg.Req.Import}}/{{.IdlName}}.go"
+    path: "{{.Pkg.Req}}/{{.IdlName}}.go"
     write: append
     body: |-
       package model

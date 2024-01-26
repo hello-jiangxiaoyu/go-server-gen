@@ -4,102 +4,102 @@ package internal
 const (
 	ErrorRequest = `package response
       import (
-        "{{.Pkg.Context.Import}}"
-        "{{.Pkg.StatusCode.Import}}"
+        "{{.Pkg.ContextImport}}"
+        "{{.Pkg.StatusCodeImport}}"
       )
 
       // ErrorRequest 请求参数错误
-      func ErrorRequest(c {{.Pkg.Context.Value}}, err error) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusBadRequest, CodeRequestPara, err, "invalidate para")
+      func ErrorRequest(c {{.Pkg.ContextType}}, err error) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusBadRequest, CodeRequestPara, err, "invalidate para")
       }
 
       // ErrorRequestWithMsg 请求参数错误
-      func ErrorRequestWithMsg(c {{.Pkg.Context.Value}}, err error, msg string) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusBadRequest, CodeRequestPara, err, msg)
+      func ErrorRequestWithMsg(c {{.Pkg.ContextType}}, err error, msg string) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusBadRequest, CodeRequestPara, err, msg)
       }
 
       // ErrorForbidden 无权访问
-      func ErrorForbidden(c {{.Pkg.Context.Value}}, msg string) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusForbidden, CodeForbidden, nil, msg)
+      func ErrorForbidden(c {{.Pkg.ContextType}}, msg string) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusForbidden, CodeForbidden, nil, msg)
       }
 
       // ErrorInvalidateToken token 无效
-      func ErrorInvalidateToken(c {{.Pkg.Context.Value}}, err error) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusForbidden, CodeInvalidToken, err, "invalidate token")
+      func ErrorInvalidateToken(c {{.Pkg.ContextType}}, err error) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusForbidden, CodeInvalidToken, err, "invalidate token")
       }
 
       // ErrorNoLogin 用户未登录
-      func ErrorNoLogin(c {{.Pkg.Context.Value}}) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusUnauthorized, CodeNotLogin, nil, "user not login")
+      func ErrorNoLogin(c {{.Pkg.ContextType}}) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusUnauthorized, CodeNotLogin, nil, "user not login")
       }`
 
 	ErrorSql = `package response
       import (
         "strings"
         "gorm.io/gorm"
-        "{{.Pkg.Context.Import}}"
-        "{{.Pkg.StatusCode.Import}}"
+        "{{.Pkg.ContextImport}}"
+        "{{.Pkg.StatusCodeImport}}"
       )
 
       // ErrorUpdate SQL更新失败
-      func ErrorUpdate(c {{.Pkg.Context.Value}}, err error, respMsg string) {{.Pkg.ReturnType.Value}} {
+      func ErrorUpdate(c {{.Pkg.ContextType}}, err error, respMsg string) {{.Pkg.ReturnType}} {
         if err != nil && strings.Contains(err.Error(), "ERROR: duplicate key value violates unique constraint") {
-          {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusConflict, CodeSqlModifyDuplicate, err, respMsg)
+          {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusConflict, CodeSqlModifyDuplicate, err, respMsg)
         } else {
-          {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusInternalServerError, CodeSqlModify, err, respMsg)
+          {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeSqlModify, err, respMsg)
         }
       }
 
       // ErrorCreate SQL创建失败
-      func ErrorCreate(c {{.Pkg.Context.Value}}, err error, respMsg string) {{.Pkg.ReturnType.Value}} {
+      func ErrorCreate(c {{.Pkg.ContextType}}, err error, respMsg string) {{.Pkg.ReturnType}} {
         if err != nil && strings.Contains(err.Error(), "ERROR: duplicate key value violates unique constraint") {
-          {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusConflict, CodeSqlCreateDuplicate, err, respMsg)
+          {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusConflict, CodeSqlCreateDuplicate, err, respMsg)
         } else {
-          {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusInternalServerError, CodeSqlCreate, err, respMsg)
+          {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeSqlCreate, err, respMsg)
         }
       }
 
       // ErrorSelect 数据库查询错误
-      func ErrorSelect(c {{.Pkg.Context.Value}}, err error, respMsg string) {{.Pkg.ReturnType.Value}} {
+      func ErrorSelect(c {{.Pkg.ContextType}}, err error, respMsg string) {{.Pkg.ReturnType}} {
         if err != nil && strings.Contains(err.Error(), gorm.ErrRecordNotFound.Error()) { // gorm First操作record not found
-          {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusNotFound, CodeSqlSelectNotFound, err, respMsg)
+          {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusNotFound, CodeSqlSelectNotFound, err, respMsg)
         } else {
-          {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusInternalServerError, CodeSqlSelect, err, respMsg)
+          {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeSqlSelect, err, respMsg)
         }
       }
 
       // ErrorDelete SQL删除失败
-      func ErrorDelete(c {{.Pkg.Context.Value}}, err error, respMsg string) {{.Pkg.ReturnType.Value}} {
+      func ErrorDelete(c {{.Pkg.ContextType}}, err error, respMsg string) {{.Pkg.ReturnType}} {
         if err != nil && strings.Contains(err.Error(), gorm.ErrForeignKeyViolated.Error()) { // 外键依赖导致无法删除
-          {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusConflict, CodeSqlDeleteForKey, err, respMsg)
+          {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusConflict, CodeSqlDeleteForKey, err, respMsg)
         } else {
-          {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusInternalServerError, CodeSqlDelete, err, respMsg)
+          {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeSqlDelete, err, respMsg)
         }
       }`
 
 	ErrorUnknown = `package response
       import (
-        "{{.Pkg.Context.Import}}"
-        "{{.Pkg.StatusCode.Import}}"
+        "{{.Pkg.ContextImport}}"
+        "{{.Pkg.StatusCodeImport}}"
       )
 
       // ErrorUnknown 未知错误
-      func ErrorUnknown(c {{.Pkg.Context.Value}}, err error, respMsg string) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusInternalServerError, CodeUnknown, err, respMsg)
+      func ErrorUnknown(c {{.Pkg.ContextType}}, err error, respMsg string) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeUnknown, err, respMsg)
       }
 
       // ErrorNotFound 资源未找到
-      func ErrorNotFound(c {{.Pkg.Context.Value}}, err error, respMsg string) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusInternalServerError, CodeNotFound, err, respMsg)
+      func ErrorNotFound(c {{.Pkg.ContextType}}, err error, respMsg string) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeNotFound, err, respMsg)
       }
 
-      func ErrorSaveSession(c {{.Pkg.Context.Value}}, err error) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusInternalServerError, CodeSaveSession, err, "failed to save session")
+      func ErrorSaveSession(c {{.Pkg.ContextType}}, err error) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeSaveSession, err, "failed to save session")
       }
 
       // ErrorSendRequest 发送 fast http 请求失败
-      func ErrorSendRequest(c {{.Pkg.Context.Value}}, err error, respMsg string) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} errorResponse(c, {{.Pkg.StatusCode.Value}}.StatusInternalServerError, CodeSendRequest, err, respMsg)
+      func ErrorSendRequest(c {{.Pkg.ContextType}}, err error, respMsg string) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeSendRequest, err, respMsg)
       }`
 )
 
@@ -108,22 +108,22 @@ const (
 	Success = `package response
 
       import (
-        "{{.Pkg.Context.Import}}"
-        "{{.Pkg.StatusCode.Import}}"
+        "{{.Pkg.ContextImport}}"
+        "{{.Pkg.StatusCodeImport}}"
       )
 
-      func success(c {{.Pkg.Context.Value}}, data any, total int) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} response(c, {{.Pkg.StatusCode.Value}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
+      func success(c {{.Pkg.ContextType}}, data any, total int) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
       }
 
-      func Success(c {{.Pkg.Context.Value}}) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} response(c, {{.Pkg.StatusCode.Value}}.StatusOK, CodeSuccess, nil, MsgSuccess, struct{}{}, 0)
+      func Success(c {{.Pkg.ContextType}}) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, struct{}{}, 0)
       }
-      func SuccessWithData(c {{.Pkg.Context.Value}}, data any) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} response(c, {{.Pkg.StatusCode.Value}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, 0)
+      func SuccessWithData(c {{.Pkg.ContextType}}, data any) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, 0)
       }
-      func SuccessWithArrayData(c {{.Pkg.Context.Value}}, data any, total int) {{.Pkg.ReturnType.Value}} {
-        {{.Pkg.Return.Value}} response(c, {{.Pkg.StatusCode.Value}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
+      func SuccessWithArrayData(c {{.Pkg.ContextType}}, data any, total int) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
       }`
 
 	ServiceCode = `package response
