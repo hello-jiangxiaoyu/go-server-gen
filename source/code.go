@@ -51,6 +51,7 @@ func GenPackageCode(layout conf.LayoutConfig, prefix string, overwrite bool) (ma
 		prefix + "pkg/utils/map_int64.go":          GetEmbedContent("internal/utils/map_int64.go"),
 		prefix + "pkg/utils/strings.go":            GetEmbedContent("internal/utils/strings.go"),
 		prefix + "pkg/utils/tools.go":              GetEmbedContent("internal/utils/tools.go"),
+		prefix + "pkg/utils/uuid.go":               GetEmbedContent("internal/utils/uuid.go"),
 	}
 	for fileName, body := range tplMap {
 		fileName, body, err = utils.ParseSource(fileName, body, GlobalData{ProjectName: projectName, Pkg: layout.Pkg})
@@ -87,6 +88,5 @@ func GetEmbedContent(path string) string {
 func replacePackage(src string, pkgName string) string {
 	lines := strings.SplitN(src, "\n", -1)
 	lines[0] = "package " + pkgName
-
 	return strings.Join(lines, "\n")
 }
