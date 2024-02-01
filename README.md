@@ -17,7 +17,7 @@
 ```bash
 git clone https://gitee.com/giteejiangzhaofeng/go-server-gen.git
 cd go-server-gen
-make
+sh install.sh
 ```
 
 
