@@ -2,7 +2,7 @@
 
 这是一个代码生成工具，它的核心理念是基于test/template解析。这款工具专为快速开发而设计，使开发者能够根据预设模板自动生成代码，从而节省大量时间。
 
-![gsg](source/gsg.gif)
+![gsg](conf/cmd-use.gif)
 
 ## 功能
 
