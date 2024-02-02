@@ -8,19 +8,21 @@ import (
 )
 
 var defaultFuncMap = template.FuncMap{
+	"hasPrefix":      strings.HasPrefix, // 是否包含前缀
+	"join":           strings.Join,      // 切片
 	"lowercaseFirst": LowercaseFirst,    // 首字母小写
 	"uppercaseFirst": UppercaseFirst,    // 首字母大写
-	"convertToWord":  ConvertToWord,     // 路由转文档Router
-	"hasPrefix":      strings.HasPrefix, // 是否包含前缀
 	"removeSpace":    RemoveSpace,       // 去除空格
-	"getDocRouter":   GetDocRouter,      // 转文档Router
-	"getTsRouter":    GetTsRouter,       // 转ts路径
+	"convertToWord":  ConvertToWord,     // 字符串拆分拼接
 	"getPathPara":    GetPathPara,       // 获取路径中的参数
-	"getTsType":      GetTsType,         // 根据名字推测ts类型
-	"join":           strings.Join,      // 切片
-	"mapJoin":        MapJoin,           // map拼接
-	"getGoLastSplit": GetGoLastSplit,    // 获取最后一个单词
 	"getFirstSplit":  GetFirstSplit,     // 获取第一个单词
+	"mapJoin":        MapJoin,           // map拼接
+
+	"getDocRouter":   GetDocRouter,   // 转文档Router
+	"getTsRouter":    GetTsRouter,    // 转ts路径
+	"getTsType":      GetTsType,      // 根据名字推测ts类型
+	"getGoLastSplit": GetGoLastSplit, // 获取最后一个单词
+	"method":         Method,         // method方法特殊处理
 }
 
 // LowercaseFirst 首字母小写
@@ -35,6 +37,13 @@ func UppercaseFirst(obj string) string {
 	runes := []rune(obj)
 	runes[0] = unicode.ToUpper(runes[0])
 	return string(runes)
+}
+
+func Method(method string, ctxName string) string {
+	if ctxName != "*fiber.Ctx" {
+		return method
+	}
+	return UppercaseFirst(strings.ToLower(method))
 }
 
 var versionReg = regexp.MustCompile(`(^v\d+(\.\d+)*$)`)

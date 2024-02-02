@@ -51,7 +51,7 @@ global:
       )
           {
               {{- range $_, $Api := .Apis}}
-              {{$Api.ServiceName | lowercaseFirst}}.{{$Api.Method}}("{{$Api.Path}}"
+              {{$Api.ServiceName | lowercaseFirst}}.{{method $Api.Method $Api.Pkg.ContextType}}("{{$Api.Path}}"
               {{- range $_, $Handler := $Api.Handlers -}}
               {{- if hasPrefix $Handler "middleware" -}}
               , {{$Handler}}()
