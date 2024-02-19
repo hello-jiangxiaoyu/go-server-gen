@@ -47,9 +47,9 @@ gsg crud user --prefix /api
 gsg update user.yaml
 ```
 
-默认服务端模板：[layout.yaml](https://gitee.com/giteejiangzhaofeng/go-server-gen/blob/main/conf/layout.yaml)
+默认服务端模板：[layout.yaml](conf/layout.yaml)
 
-默认ts模板：[ts-fetch.yaml](https://gitee.com/giteejiangzhaofeng/go-server-gen/blob/main/conf/ts-fetch.yaml)
+默认ts模板：[ts-fetch.yaml](conf/ts-fetch.yaml)
 
 
 Flags参数说明
