@@ -97,7 +97,11 @@ const (
         {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeSaveSession, err, "failed to save session")
       }
 
-      // ErrorSendRequest 发送 fast http 请求失败
+      func ErrorPanic(c {{.Pkg.ContextType}}, err error) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodePanic, err, "server panic")
+      }
+
+      // ErrorSendRequest 发送 http 请求失败
       func ErrorSendRequest(c {{.Pkg.ContextType}}, err error, respMsg string) {{.Pkg.ReturnType}} {
         {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeSendRequest, err, respMsg)
       }`
@@ -166,6 +170,7 @@ const (
       const (
         CodeServerPanic = iota + 5000 // 发生panic
         CodeUnknown                   // 未知错误
+		CodePanic                     // panic
         CodeNotFound                  // 未找到
         CodeSaveSession               // session保存错误
         CodeSendRequest               // 发送http请求错误

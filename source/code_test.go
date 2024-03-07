@@ -4,8 +4,9 @@ import (
 	"go-server-gen/conf"
 	"go-server-gen/data"
 	"go-server-gen/parse"
-	"go-server-gen/utils"
 	"go-server-gen/writer"
+	"html/template"
+	"os"
 	"testing"
 )
 
@@ -52,5 +53,7 @@ func TestUpdateCode(t *testing.T) {
 }
 
 func TestTemp(t *testing.T) {
-	println(utils.UppercaseFirst("project"))
+	item := map[string]any{"Name": "zhangsan"}
+	tmpl := template.Must(template.New("test").Parse(`Hello {{.Name}}, this is a string: {{printf "{{item.name}}"}}`))
+	_ = tmpl.Execute(os.Stdout, item) // 原样输出字符串{{item.name}}
 }

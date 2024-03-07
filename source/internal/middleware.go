@@ -56,7 +56,7 @@ const (
               req := fmt.Sprintf("panic recovered: %s; method:%s path:%s", err, c.Method(), c.Path())
               println(stackInfo(req, 3))
               if !brokenPipe {
-                {{.Pkg.Resp}}.ErrorPanic(c)
+                response.ErrorPanic(c)
               }
             }
           }()
