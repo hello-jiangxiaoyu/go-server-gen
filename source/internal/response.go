@@ -31,6 +31,11 @@ const (
       // ErrorNoLogin 用户未登录
       func ErrorNoLogin(c {{.Pkg.ContextType}}) {{.Pkg.ReturnType}} {
         {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusUnauthorized, CodeNotLogin, nil, "user not login")
+      }
+      
+      // ErrorNoRoute 
+      func ErrorNoRoute(c {{.Pkg.ContextType}}) {{.Pkg.ReturnType}} {
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusNotFound, CodeNoSuchRoute, nil, "no such router")
       }`
 
 	ErrorSql = `package response

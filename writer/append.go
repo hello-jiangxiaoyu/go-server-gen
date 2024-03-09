@@ -24,7 +24,7 @@ func FileAppendWriter(path string, src string, handlers map[string]string) error
 	}
 	for key, handler := range handlers {
 		if !strings.Contains(string(oldCode), key) {
-			if _, err = f.WriteString(handler); err != nil {
+			if _, err = f.WriteString("\n" + handler); err != nil {
 				return err
 			}
 		}
