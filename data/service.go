@@ -57,6 +57,7 @@ func getApi(layout conf.LayoutConfig, obj string) (Api, error) {
 		Method:   matches[1],
 		Path:     matches[2],
 		ReqName:  matches[4],
+		IdlName:  layout.IdlName,
 		Handlers: make([]string, 0),
 		ReqParam: getUriParam(matches[2]),
 	}
