@@ -103,7 +103,7 @@ const (
       }
 
       func ErrorPanic(c {{.Pkg.ContextType}}, err error) {{.Pkg.ReturnType}} {
-        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodePanic, err, "server panic")
+        {{.Pkg.Return}} errorResponse(c, {{.Pkg.StatusCodePackage}}.StatusInternalServerError, CodeServerPanic, err, "server panic")
       }
 
       // ErrorSendRequest 发送 http 请求失败
@@ -116,68 +116,67 @@ const (
 const (
 	Success = `package response
 
-      import (
-        "{{.Pkg.ContextImport}}"
-        "{{.Pkg.StatusCodeImport}}"
-      )
+        import (
+          "{{.Pkg.ContextImport}}"
+          "{{.Pkg.StatusCodeImport}}"
+        )
 
-      func success(c {{.Pkg.ContextType}}, data any, total int) {{.Pkg.ReturnType}} {
-        {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
-      }
+        func success(c {{.Pkg.ContextType}}, data any, total int) {{.Pkg.ReturnType}} {
+          {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
+        }
 
-      func Success(c {{.Pkg.ContextType}}) {{.Pkg.ReturnType}} {
-        {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, struct{}{}, 0)
-      }
-      func SuccessWithData(c {{.Pkg.ContextType}}, data any) {{.Pkg.ReturnType}} {
-        {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, 0)
-      }
-      func SuccessWithArrayData(c {{.Pkg.ContextType}}, data any, total int) {{.Pkg.ReturnType}} {
-        {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
-      }`
+        func Success(c {{.Pkg.ContextType}}) {{.Pkg.ReturnType}} {
+          {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, struct{}{}, 0)
+        }
+        func SuccessWithData(c {{.Pkg.ContextType}}, data any) {{.Pkg.ReturnType}} {
+          {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, 0)
+        }
+        func SuccessWithArrayData(c {{.Pkg.ContextType}}, data any, total int) {{.Pkg.ReturnType}} {
+          {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
+        }`
 
 	ServiceCode = `package response
-      const (
-        MsgSuccess = ""
-      )
+        const (
+          MsgSuccess = ""
+        )
 
-      const (
-        CodeSuccess = 200
-        CodeAccept  = 202
-      )
+        const (
+          CodeSuccess = 200
+          CodeAccept  = 202
+        )
 
-      // 系统相关错误码
-      const (
-        CodeNoSuchRoute = 1000 // 路由不存在
-        CodeRequestPara = 1001 // 请求参数错误
-        CodeForbidden   = 1002 // 无权访问
-      )
+        // 系统相关错误码
+        const (
+          CodeNoSuchRoute = 1000 // 路由不存在
+          CodeRequestPara = 1001 // 请求参数错误
+          CodeForbidden   = 1002 // 无权访问
+        )
 
-      // 业务相关错误码
-      const (
-        CodeNoSuchHost   = 2000 // 非法host
-        CodeNotLogin     = 2001 // 用户未登录
-        CodeInvalidToken = 2002 // 非法token
-      )
+        // 业务相关错误码
+        const (
+        CodeNotLogin     = iota + 2000 // 用户未登录
+        CodeNoSuchHost                 // 非法host
+        CodeInvalidToken               // 非法token
+        )
 
-      // SQL相关错误码
-      const (
-        CodeSqlSelect          = iota + 3000 // 查询失败
-        CodeSqlSelectNotFound                // 不存在该数据
-        CodeSqlModify                        // 修改失败
-        CodeSqlModifyDuplicate               // 数据冲突导致修改失败
-        CodeSqlCreate                        // 创建失败
-        CodeSqlCreateDuplicate               // 数据重复导致创建失败
-        CodeSqlDelete                        // 删除失败
-        CodeSqlDeleteForKey                  // 外键依赖导致删除失败
-      )
+        // SQL相关错误码
+        const (
+          CodeSqlSelect          = iota + 3000 // 查询失败
+          CodeSqlSelectNotFound                // 不存在该数据
+          CodeSqlModify                        // 修改失败
+          CodeSqlModifyDuplicate               // 数据冲突导致修改失败
+          CodeSqlCreate                        // 创建失败
+          CodeSqlCreateDuplicate               // 数据重复导致创建失败
+          CodeSqlDelete                        // 删除失败
+          CodeSqlDeleteForKey                  // 外键依赖导致删除失败
+        )
 
-      // error相关错误码
-      const (
-        CodeServerPanic = iota + 5000 // 发生panic
-        CodeUnknown                   // 未知错误
-		CodePanic                     // panic
-        CodeNotFound                  // 未找到
-        CodeSaveSession               // session保存错误
-        CodeSendRequest               // 发送http请求错误
-      )`
+        // error相关错误码
+        const (
+          CodeServerPanic = iota + 5000 // 发生panic
+          CodeUnknown                   // 未知错误
+          CodeNotFound                  // 未找到
+          CodeSaveSession               // session保存错误
+          CodeSendRequest               // 发送http请求错误
+        )`
 )
