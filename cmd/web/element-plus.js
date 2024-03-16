@@ -1,8 +1,8 @@
 /*! Element Plus v2.6.1 */
 
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('vue')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'vue'], factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('./vue')) :
+  typeof define === 'function' && define.amd ? define(['exports', './vue'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.ElementPlus = {}, global.Vue));
 })(this, (function (exports, vue) { 'use strict';
 

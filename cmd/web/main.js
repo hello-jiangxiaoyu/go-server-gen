@@ -6,6 +6,7 @@ const app = createApp({
     const tables = ref([])
     const selectTable = ref('')
     const columns = ref([])
+    const layoutContent = ref('')
     onMounted(()=>{
       Get('/api/tables').then(data => {
         tables.value = data
@@ -14,12 +15,21 @@ const app = createApp({
           setTableColumns(data[0])
         }
       }).catch(e => PopError(e))
+
+      Get('/api/layout').then(data => {
+        layoutContent.value = data.layout
+      }).catch(e => PopError(e))
     })
 
+    const isColumnDisabled = (column, typ) => {
+      if (column.key === 'PRI' && typ === 'search') {
+        return false
+      }
+      return column.key === 'PRI' || column.field === 'deleted_at' || column.field === 'updated_by' || column.field === 'updated_at' || column.field === 'created_at'
+    }
     const setTableColumns = (table) => {
       Get(`/api/tables/${table}/columns`).then(data => {
         columns.value = data
-        console.log("columns: ", data)
       }).catch(e => PopError(e))
     }
     const onTableMenuClick = (table) => {
@@ -30,9 +40,13 @@ const app = createApp({
       setTableColumns(table)
     }
 
+    const onSubmit = () => {
+      console.log(layoutContent.value)
+    }
+
     // ============= 数据表处理 =============
     return {
-      selectTable, columns, onTableMenuClick, tables
+      tables, columns, selectTable, layoutContent, onTableMenuClick, isColumnDisabled, onSubmit
     }
   }
 })

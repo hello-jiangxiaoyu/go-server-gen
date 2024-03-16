@@ -43,8 +43,9 @@
       </el-menu>
     </div>
     <div style="width: 90vw; padding: 10px">
-      <div>
-        <span>mysql {{selectTable}}表</span>
+      <div style="display: flex">
+        <h1>mysql {{selectTable}}表</h1>
+        <el-button @click="onSubmit" type="primary" style="margin-top: 30px; margin-left: 30px">代码生成</el-button>
       </div>
       <table>
         <thead>
@@ -66,21 +67,31 @@
           <td>{{item.field}}</td>
           <td>{{item.type}}</td>
           <td>
-            <select v-model="item.viewType" style="width: 150px; height: 30px" >
-              <option value="spider" style="min-height: 30px">Spider</option>
-              <option value="goldfish" style="min-height: 30px">Goldfish</option>
+            <select v-model="item.viewType" style="width: 150px; height: 30px" :disabled="isColumnDisabled(item)" >
+              <option value="string" >string</option>
+              <option value="number" >number</option>
+              <option value="text" >text</option>
+              <option value="json" >json</option>
+              <option value="switch" >switch</option>
+              <option value="select" >select</option>
+              <option value="date" >date</option>
+              <option value="time" >time</option>
+              <option value="datetime" >datetime</option>
+              <option value="image" >image</option>
             </select>
           </td>
-          <td><el-switch v-model="item.canCreate" /></td>
-          <td><el-switch v-model="item.canEdit" /></td>
-          <td><el-switch v-model="item.canSearch" /></td>
-          <td><el-switch v-model="item.required" /></td>
+          <td><el-switch v-model="item.canCreate" :disabled="isColumnDisabled(item)" /></td>
+          <td><el-switch v-model="item.canEdit" :disabled="isColumnDisabled(item)" /></td>
+          <td><el-switch v-model="item.canSearch" :disabled="isColumnDisabled(item, 'search')" /></td>
+          <td><el-switch v-model="item.required" :disabled="isColumnDisabled(item)" /></td>
           <td>
             <el-input :placeholder="item.field" v-mode="item.placeholder" />
           </td>
         </tr>
         </tbody>
       </table>
+      <h4>layout模板</h4>
+      <el-input type="textarea" :autosize="{ minRows: 8, maxRows: 20 }" v-model="layoutContent"></el-input>
     </div>
   </main>
 </div>

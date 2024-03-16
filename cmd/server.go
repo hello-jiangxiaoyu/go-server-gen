@@ -25,7 +25,7 @@ func StartWebServer(_ *cobra.Command, _ []string) {
 		c.JSON(http.StatusNotFound, map[string]any{"msg": "no such router"})
 	})
 	registerApi(r)
-	r.Use(StaticWebFile("web")) // 其他静态资源
+	r.Use(StaticWebFile("cmd/web")) // 其他静态资源
 	if err = r.Run(":8080"); err != nil {
 		os.Exit(1)
 	}
