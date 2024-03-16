@@ -121,7 +121,7 @@ const (
           "{{.Pkg.StatusCodeImport}}"
         )
 
-        func success(c {{.Pkg.ContextType}}, data any, total int) {{.Pkg.ReturnType}} {
+        func success(c {{.Pkg.ContextType}}, data any, total int64) {{.Pkg.ReturnType}} {
           {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
         }
 
@@ -131,7 +131,7 @@ const (
         func SuccessWithData(c {{.Pkg.ContextType}}, data any) {{.Pkg.ReturnType}} {
           {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, 0)
         }
-        func SuccessWithArrayData(c {{.Pkg.ContextType}}, data any, total int) {{.Pkg.ReturnType}} {
+        func SuccessWithArrayData(c {{.Pkg.ContextType}}, data any, total int64) {{.Pkg.ReturnType}} {
           {{.Pkg.Return}} response(c, {{.Pkg.StatusCodePackage}}.StatusOK, CodeSuccess, nil, MsgSuccess, data, total)
         }`
 

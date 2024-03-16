@@ -9,6 +9,7 @@ import (
 
 var defaultFuncMap = template.FuncMap{
 	"hasPrefix":      strings.HasPrefix, // 是否包含前缀
+	"hasSuffix":      strings.HasSuffix, // 是否包含后缀
 	"join":           strings.Join,      // 切片
 	"lowercaseFirst": LowercaseFirst,    // 首字母小写
 	"uppercaseFirst": UppercaseFirst,    // 首字母大写

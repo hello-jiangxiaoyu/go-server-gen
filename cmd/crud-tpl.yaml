@@ -1,7 +1,11 @@
 messages: |-
   type {{uppercaseFirst .ServiceName}}Req struct {
-      {{.ServiceName}}ID  int64  `uri:"{{lowercaseFirst .ServiceName}}ID" path:"{{lowercaseFirst .ServiceName}}ID"`
-      Name  string  `json:"name"`
+      {{uppercaseFirst .ServiceName}}ID    int64       `uri:"{{lowercaseFirst .ServiceName}}ID" path:"{{lowercaseFirst .ServiceName}}ID"`
+      {{uppercaseFirst .ServiceName}}IDs   []int64     `json:"{{lowercaseFirst .ServiceName}}IDs"`
+      Name                  string      `json:"name"`
+      PageNumber            int         `json:"-" query:"pageNumber"`
+      PageSize              int         `json:"-" query:"pageSize"`
+      Operator              models.User `json:"-" swaggerignore:"true"`
   }
 
 
@@ -14,3 +18,4 @@ services:
       - GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Get{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
       - PUT("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Update{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
       - DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Delete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
+      - DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", BatchDelete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req

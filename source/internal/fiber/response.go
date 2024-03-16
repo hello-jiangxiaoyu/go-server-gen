@@ -10,7 +10,7 @@ import (
 type ArrayResponse struct {
 	Code  int    `json:"code"`
 	Msg   string `json:"msg,omitempty"`
-	Total int    `json:"total,omitempty"`
+	Total int64  `json:"total,omitempty"`
 	Data  any    `json:"data,omitempty"`
 }
 
@@ -26,7 +26,7 @@ func WrapError(err1 error, err2 error) error {
 	return errors.New(err2.Error() + ": " + err1.Error())
 }
 
-func response(c *fiber.Ctx, code int, errCode int, err error, msg string, data any, total int) error {
+func response(c *fiber.Ctx, code int, errCode int, err error, msg string, data any, total int64) error {
 	c.Response().Header.Add("X-Request-Id", c.Get("requestID"))
 	c.Locals("code", errCode)
 	return WrapError(err, c.Status(code).JSON(&ArrayResponse{Code: errCode, Msg: msg, Data: data, Total: total}))

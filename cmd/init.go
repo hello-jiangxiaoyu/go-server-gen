@@ -13,10 +13,10 @@ var (
 
 	CreateProjectName = ""
 	CrudServiceName   = ""
-	CrudRouterPrefix  = ""
+	RouterPrefix      = ""
 )
 
-func InitCommand(rootCmd, newCmd, updateCmd, crudCmd *cobra.Command) {
+func InitCommand(rootCmd, newCmd, updateCmd, crudCmd, serverCmd *cobra.Command) {
 	// 创建项目 new cmd
 	newCmd.PersistentFlags().StringVarP(&IdlPath, "idl", "i", "", "idl path")
 	newCmd.PersistentFlags().StringVarP(&ServerType, "server", "s", "gin", "server type")
@@ -35,11 +35,11 @@ func InitCommand(rootCmd, newCmd, updateCmd, crudCmd *cobra.Command) {
 
 	// 添加crud
 	crudCmd.PersistentFlags().StringVarP(&ServerType, "server", "s", "", "server type")
-	crudCmd.PersistentFlags().StringVarP(&CrudRouterPrefix, "prefix", "p", "", "crud router prefix")
+	crudCmd.PersistentFlags().StringVarP(&RouterPrefix, "prefix", "p", "", "crud router prefix")
 	crudCmd.PersistentFlags().StringVarP(&OutputDir, "output", "o", "", "output dir")
 	crudCmd.PersistentFlags().StringVar(&LayoutPath, "layout", "", "layout path")
 	crudCmd.PersistentFlags().StringVar(&LogType, "log", "zap", "log type")
 	crudCmd.PersistentFlags().BoolVar(&ForceWrite, "force", false, "force write")
 
-	rootCmd.AddCommand(newCmd, updateCmd, crudCmd)
+	rootCmd.AddCommand(newCmd, updateCmd, crudCmd, serverCmd)
 }

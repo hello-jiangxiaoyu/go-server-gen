@@ -10,11 +10,11 @@ import (
 type ArrayResponse struct {
 	Code  int    `json:"code"`
 	Msg   string `json:"msg,omitempty"`
-	Total int    `json:"total,omitempty"`
+	Total int64  `json:"total,omitempty"`
 	Data  any    `json:"data,omitempty"`
 }
 
-func response(c *app.RequestContext, code int, errCode int, err error, msg string, data any, total int) {
+func response(c *app.RequestContext, code int, errCode int, err error, msg string, data any, total int64) {
 	c.Header("X-Request-Id", c.GetString("requestID"))
 	c.JSON(code, &ArrayResponse{Code: errCode, Msg: msg, Total: total, Data: data})
 

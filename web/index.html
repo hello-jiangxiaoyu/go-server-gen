@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>后台管理</title>
+  <link rel="stylesheet" href="element-plus.css" />
+  <script src="vue.js"></script>
+  <script src="element-plus.js"></script>
+  <style>
+    body, main{
+        margin: 0;
+        padding: 0;
+        display: flex;
+    }
+  </style>
+</head>
+
+<body>
+<div id="app">
+  <main style="height: 100vh">
+    <div>
+      <el-menu
+          :default-active="selectTable"
+          :collapse="true"
+          style="height: 100%;"
+      >
+        <template v-for="table in tables" :key="table">
+          <el-menu-item :index="table" @click="onTableMenuClick(table)">{{ table }}</el-menu-item>
+        </template>
+      </el-menu>
+    </div>
+    <div style="width: 90vw">
+      <el-table :data="tableData" border style="width: 100%">
+        <el-table-column type="selection" width="55" />
+        <el-table-column prop="date" label="Date" width="180" />
+        <el-table-column prop="name" label="Name" width="180" />
+        <el-table-column prop="address" label="Address" />
+        <el-table-column align="right">
+          <template #default="scope">
+            <el-button size="small" type="primary" text @click="console.log(scope.$index)">编辑</el-button>
+            <el-button size="small" type="danger" text>删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </main>
+</div>
+<script src="main.js" type="module"></script>
+</body>
+</html>

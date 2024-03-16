@@ -30,7 +30,7 @@ func CreateCrudGroup(_ *cobra.Command, args []string) {
 	body, err := utils.ParseTemplate(CrudTemplate, map[string]any{
 		"ProjectName": projectName,
 		"ServiceName": CrudServiceName,
-		"Prefix":      CrudRouterPrefix,
+		"Prefix":      RouterPrefix,
 	})
 	if err != nil {
 		utils.Log("Failed to parse crud template: ", err.Error())

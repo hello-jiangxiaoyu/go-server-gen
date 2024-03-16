@@ -43,8 +43,13 @@ func main() {
 		Short: "Create a new crud api",
 		Run:   cmd.CreateCrudGroup,
 	}
+	serverCmd := &cobra.Command{
+		Use:   "server",
+		Short: "web server",
+		Run:   cmd.StartWebServer,
+	}
 
-	cmd.InitCommand(rootCmd, newCmd, updateCmd, crudCmd)
+	cmd.InitCommand(rootCmd, newCmd, updateCmd, crudCmd, serverCmd)
 	if err := rootCmd.Execute(); err != nil {
 		println(err.Error())
 		os.Exit(1)
