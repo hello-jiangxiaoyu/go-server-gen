@@ -11,12 +11,6 @@ import (
 	"strings"
 )
 
-type Column struct {
-	Field string `json:"Field"`
-	Type  string `json:"Type"`
-	Key   string `json:"Key"`
-}
-
 func StartWebServer(_ *cobra.Command, _ []string) {
 	var err error
 	gin.SetMode(gin.ReleaseMode)

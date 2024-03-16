@@ -32,7 +32,7 @@ const app = createApp({
 
     // ============= 数据表处理 =============
     return {
-      selectTable, columns, tables, tableData, onTableMenuClick
+      selectTable, columns, onTableMenuClick, tables
     }
   }
 })
@@ -43,18 +43,7 @@ function PopError(e) {
     type: 'error'
   })
 }
-const tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-02',
-    name: 'Tom',
-    address: '12345678890',
-  },
-]
+
 // ============== fetch 请求封装 ==============
 async function fetchData(uri, method, data) {
   let err = '';

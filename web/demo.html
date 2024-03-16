@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>后台管理</title>
+  <link rel="stylesheet" href="https://unpkg.com/element-plus@2.6.1/dist/index.css" />
+  <script src="https://unpkg.com/vue@3.4.21/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/element-plus@2.6.1/dist/index.full.js"></script>
+  <style>
+      body, main{
+          margin: 0;
+          padding: 0;
+          display: flex;
+      }
+  </style>
+</head>
+
+<body>
+<div id="app">
+  <main style="height: 100vh">
+    <div style="width: 90vw">
+      <el-table :data="tableData" border style="width: 100%">
+        <el-table-column type="selection" width="55" />
+        <el-table-column prop="date" label="Date" width="180" />
+        <el-table-column prop="name" label="Name" width="180" />
+        <el-table-column prop="address" label="Address" />
+        <el-table-column align="right">
+          <template #default="scope">
+            <el-button size="small" type="primary" text @click="console.log(scope.$index)">编辑</el-button>
+            <el-button size="small" type="danger" text>删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+  </main>
+</div>
+<script type="module">
+  const { createApp, ref, onMounted } = Vue
+  const tableData = [
+    {
+      date: '2016-05-03',
+      name: 'Tom',
+      address: '2222222222',
+    },
+    {
+      date: '2016-05-02',
+      name: 'Tom',
+      address: '1111111111',
+    },
+  ]
+  const app = createApp({
+    setup() {
+      return {tableData}
+    }
+  })
+  app.use(ElementPlus);
+  app.mount('#app')
+</script>
+</body>
+</html>

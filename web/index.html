@@ -13,6 +13,18 @@
         padding: 0;
         display: flex;
     }
+    table {
+        width: 100%;
+        border-collapse: collapse; /* 合并相邻边框 */
+    }
+    th, td {
+        border: 1px solid black; /* 设置边框样式 */
+        padding: 8px; /* 设置单元格内边距 */
+        text-align: left; /* 文本左对齐 */
+    }
+    option {
+        font-size: 20px; /* 调整字体大小 */
+    }
   </style>
 </head>
 
@@ -30,19 +42,45 @@
         </template>
       </el-menu>
     </div>
-    <div style="width: 90vw">
-      <el-table :data="tableData" border style="width: 100%">
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="date" label="Date" width="180" />
-        <el-table-column prop="name" label="Name" width="180" />
-        <el-table-column prop="address" label="Address" />
-        <el-table-column align="right">
-          <template #default="scope">
-            <el-button size="small" type="primary" text @click="console.log(scope.$index)">编辑</el-button>
-            <el-button size="small" type="danger" text>删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <div style="width: 90vw; padding: 10px">
+      <div>
+        <span>mysql {{selectTable}}表</span>
+      </div>
+      <table>
+        <thead>
+        <tr>
+          <th>序号</th>
+          <th>列名</th>
+          <th>数据类型</th>
+          <th>视图类型</th>
+          <th>新建</th>
+          <th>修改</th>
+          <th>搜索</th>
+          <th>必填</th>
+          <th>占位符</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(item, index) in columns" :key="item.Field">
+          <td>{{index}}</td>
+          <td>{{item.field}}</td>
+          <td>{{item.type}}</td>
+          <td>
+            <select v-model="item.viewType" style="width: 150px; height: 30px" >
+              <option value="spider" style="min-height: 30px">Spider</option>
+              <option value="goldfish" style="min-height: 30px">Goldfish</option>
+            </select>
+          </td>
+          <td><el-switch v-model="item.canCreate" /></td>
+          <td><el-switch v-model="item.canEdit" /></td>
+          <td><el-switch v-model="item.canSearch" /></td>
+          <td><el-switch v-model="item.required" /></td>
+          <td>
+            <el-input :placeholder="item.field" v-mode="item.placeholder" />
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </main>
 </div>
