@@ -22,9 +22,6 @@
         padding: 8px; /* 设置单元格内边距 */
         text-align: left; /* 文本左对齐 */
     }
-    option {
-        font-size: 20px; /* 调整字体大小 */
-    }
     .el-menu-item.is-active {
         background-color: #d4e7fc !important;
     }
@@ -38,14 +35,14 @@
       <el-menu
           :default-active="selectTable"
           :collapse="true"
-          style="height: 100%; width: 100px"
+          style="height: 100%; width: 90px"
       >
-        <template v-for="table in tables" :key="table">
+        <template v-for="table in tableList" :key="table">
           <el-menu-item :index="table" @click="onTableMenuClick(table)">{{ table }}</el-menu-item>
         </template>
       </el-menu>
     </div>
-    <div style="width: 90vw; padding: 10px; margin-left: 20px;">
+    <div style="padding: 10px; margin-left: 20px;">
       <div style="display: flex">
         <h1>mysql {{selectTable}}表</h1>
         <el-button @click="onSubmit" type="primary" style="margin-top: 30px; margin-left: 30px">生成代码</el-button>
@@ -56,9 +53,9 @@
         <tr>
           <th>序号</th>
           <th>列名</th>
+          <th>DB数据类型</th>
           <th>label</th>
           <th>label宽度</th>
-          <th>数据类型</th>
           <th>视图类型</th>
           <th>扩展信息</th>
           <th>新建</th>
@@ -70,25 +67,25 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(item, index) in columns" :key="item.Field">
+        <tr v-for="(item, index) in columnList" :key="item.Field">
           <td>{{index}}</td>
           <td><el-input v-model="item.column"/></td>
-          <td><el-input v-model="item.label"/></td>
-          <td><el-input-number v-model="item.labelWidth"/></td>
           <td><el-input v-model="item.type"/></td>
-          <td style="width: 160px">
-            <select v-model="item.viewType" style="width: 150px; height: 30px" :disabled="isColumnDisabled(item)" >
-              <option value="string" >string</option>
-              <option value="number" >number</option>
-              <option value="text" >text</option>
-              <option value="json" >json</option>
-              <option value="switch" >switch</option>
-              <option value="select" >select</option>
-              <option value="date" >date</option>
-              <option value="time" >time</option>
-              <option value="datetime" >datetime</option>
-              <option value="image" >image</option>
-            </select>
+          <td><el-input v-model="item.label"/></td>
+          <td style="width: 120px"><el-input-number style="width: 120px" v-model="item.labelWidth"/></td>
+          <td style="width: 120px">
+            <el-select
+                v-model="item.viewType"
+                clearable
+                :placeholder="item.column"
+                style="width: 120px"
+            >
+              <el-option
+                  v-for="item in selectOptions"
+                  :key="item"
+                  :value="item"
+              />
+            </el-select>
           </td>
           <td><el-input ></el-input></td>
           <td><el-switch v-model="item.canCreate" :disabled="isColumnDisabled(item)" /></td>
@@ -105,6 +102,6 @@
     </div>
   </main>
 </div>
-<script src="main.js" type="module"></script>
+<script src="./main.js" type="module"></script>
 </body>
 </html>

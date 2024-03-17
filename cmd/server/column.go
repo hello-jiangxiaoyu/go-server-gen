@@ -17,42 +17,19 @@ func GetTableColumns(c *gin.Context) {
 	for _, v := range columns {
 		item := ViewColumn{
 			Column:      v.Field,
-			Label:       v.Field,
+			Label:       getLabelByField(v.Field),
 			LabelWidth:  100,
 			Type:        v.Type,
 			Key:         v.Key,
 			Placeholder: v.Field,
 			Required:    false,
-			ViewType:    "string",
+			ViewType:    getViewTypeByDbType(v.Type),
 		}
 
 		if v.Field == "description" {
-			item.Label = "描述"
 			item.ViewType = "text"
-		} else if v.Field == "avatar" {
-			item.Label = "头像"
-		} else if v.Field == "gender" {
-			item.Label = "性别"
-		} else if v.Field == "name" {
-			item.Label = "名称"
-		} else if v.Field == "phone" {
-			item.Label = "手机号"
-		}
-
-		if v.Field == "avatar" || strings.HasSuffix(v.Field, "image") || strings.HasSuffix(v.Field, "picture") {
+		} else if v.Field == "avatar" || strings.HasSuffix(v.Field, "image") || strings.HasSuffix(v.Field, "picture") {
 			item.ViewType = "image"
-		} else if v.Type == "tinyint(1)" {
-			item.ViewType = "switch"
-		} else if v.Type == "int" || v.Type == "bigint" {
-			item.ViewType = "number"
-		} else if v.Type == "timestamp" {
-			item.ViewType = "datetime"
-		} else if v.Type == "date" {
-			item.ViewType = "date"
-		} else if v.Type == "json" {
-			item.ViewType = "json"
-		} else if v.Type == "char(1)" {
-			item.ViewType = "select"
 		}
 
 		if v.Key == "PRI" {
@@ -62,18 +39,50 @@ func GetTableColumns(c *gin.Context) {
 			item.CanEdit = true
 		}
 
-		switch v.Field {
-		case "created_at":
-			item.Label = "创建时间"
-		case "updated_at":
-			item.Label = "更新时间"
-		case "updated_by":
-			item.Label = "操作人"
-		case "deleted_at":
-			item.Label = "删除时间"
-		}
-
 		viewColumn = append(viewColumn, item)
 	}
 	c.JSON(http.StatusOK, viewColumn)
+}
+
+func getLabelByField(columnName string) string {
+	dic := map[string]string{
+		"name":        "名称",
+		"username":    "账号",
+		"password":    "密码",
+		"description": "描述",
+		"avatar":      "头像",
+		"gender":      "性别",
+		"phone":       "手机号",
+		"addr":        "地址",
+		"address":     "地址",
+		"role_id":     "角色id",
+		"user_id":     "用户id",
+		"created_at":  "创建时间",
+		"updated_at":  "更新时间",
+		"updated_by":  "操作人",
+		"deleted_at":  "删除时间",
+	}
+	res, ok := dic[columnName]
+	if !ok {
+		return columnName
+	}
+	return res
+}
+
+func getViewTypeByDbType(columnName string) string {
+	dic := map[string]string{
+		"tinyint(1)": "switch",
+		"int":        "number",
+		"bigint":     "number",
+		"timestamp":  "datetime",
+		"date":       "date",
+		"json":       "json",
+		"char(1)":    "select",
+	}
+
+	res, ok := dic[columnName]
+	if !ok {
+		return "string"
+	}
+	return res
 }

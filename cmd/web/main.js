@@ -1,17 +1,19 @@
-const { createApp, ref, onMounted } = Vue
+const {createApp, ref, onMounted} = Vue
+
+const selectOptions = ['string', 'number', 'text', 'json', 'switch', 'select', 'date', 'time', 'datetime', 'image']
 
 // ============== Vue =============
 const app = createApp({
   setup() {
-    const tables = ref([])
+    const tableList = ref([])
     const selectTable = ref('')
-    const columns = ref([])
+    const columnList = ref([])
     const layoutContent = ref('')
 
     // ============= 初始化 =============
-    onMounted(()=>{
+    onMounted(() => {
       Get('/api/tables').then(data => {
-        tables.value = data
+        tableList.value = data
         if (data.length > 0) {
           selectTable.value = data[0]
           setTableColumns(data[0])
@@ -24,7 +26,7 @@ const app = createApp({
     }
     const setTableColumns = (table) => {
       Get(`/api/tables/${table}/columns`).then(data => {
-        columns.value = data
+        columnList.value = data
       }).catch(e => PopError(e))
     }
 
@@ -38,11 +40,11 @@ const app = createApp({
     }
 
     const onSubmit = () => {
-      Post(`/api/tables/${selectTable.value}/generate`, columns.value).then(()=>PopSuccess('生成成功')).catch(e=>PopError(e))
+      Post(`/api/tables/${selectTable.value}/generate`, columnList.value).then(() => PopSuccess('生成成功')).catch(e => PopError(e))
     }
 
     const onAddColumn = () => {
-      columns.value.push({
+      columnList.value.push({
         column: 'new_column',
         label: 'new_column',
         labelWidth: 100,
@@ -51,12 +53,14 @@ const app = createApp({
         placeholder: ''
       })
     }
-    const onDeleteColumn = (column) => {
-      console.log(column)
+    const onDeleteColumn = (name) => {
+      const data = columnList.value.filter(column => column.column !== name)
+      console.log("data: ", data, name)
+      columnList.value = data
     }
 
     return {
-      tables, columns, selectTable, layoutContent,
+      tableList, columnList, selectTable, layoutContent, selectOptions,
       onTableMenuClick, isColumnDisabled, onSubmit, onAddColumn, onDeleteColumn
     }
   }
@@ -70,6 +74,7 @@ function PopSuccess(msg) {
     type: 'success',
   })
 }
+
 function PopError(e) {
   ElementPlus.ElMessage({
     message: e.toString(),
@@ -80,9 +85,11 @@ function PopError(e) {
 async function Get(uri) {
   return fetchData(uri, 'GET')
 }
+
 async function Post(uri, data) {
   return fetchData(uri, 'POST', JSON.stringify(data))
 }
+
 async function Put(uri, data) {
   return fetchData(uri, 'PUT', JSON.stringify(data))
 }

@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -70,5 +71,46 @@ func StaticWebFile() gin.HandlerFunc {
 			return false
 		})
 		c.Abort()
+	}
+}
+
+// StaticWebFile2 web网页代理
+func StaticWebFile2() gin.HandlerFunc {
+	root := "cmd/web"
+	type localFileSystem struct {
+		http.FileSystem
+		root    string
+		indexes bool
+	}
+	fs := &localFileSystem{
+		FileSystem: gin.Dir(root, false),
+		root:       root,
+		indexes:    false,
+	}
+	fileServer := http.FileServer(fs)
+
+	return func(c *gin.Context) {
+		if strings.HasPrefix(c.Request.URL.Path, "/api") {
+			return
+		}
+
+		if p := strings.TrimPrefix(c.Request.URL.Path, "/"); len(p) < len(c.Request.URL.Path) {
+			name := path.Join(fs.root, p)
+			stats, err := os.Stat(name)
+			if err != nil {
+				return
+			}
+			if stats.IsDir() {
+				if !fs.indexes {
+					index := path.Join(name, "index.html")
+					if _, err = os.Stat(index); err != nil {
+						return
+					}
+				}
+			}
+			req := c.Request.Clone(c)
+			fileServer.ServeHTTP(c.Writer, req)
+			c.Abort()
+		}
 	}
 }
