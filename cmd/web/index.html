@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>后台管理</title>
-  <link rel="stylesheet" href="element-plus.css" />
-  <script src="vue.js"></script>
-  <script src="element-plus.js"></script>
+  <link rel="stylesheet" href="./element-plus.css" />
+  <script src="./vue.js"></script>
+  <script src="./element-plus.js"></script>
   <style>
     body, main{
         margin: 0;
@@ -25,6 +25,9 @@
     option {
         font-size: 20px; /* 调整字体大小 */
     }
+    .el-menu-item.is-active {
+        background-color: #d4e7fc !important;
+    }
   </style>
 </head>
 
@@ -35,38 +38,45 @@
       <el-menu
           :default-active="selectTable"
           :collapse="true"
-          style="height: 100%;"
+          style="height: 100%; width: 100px"
       >
         <template v-for="table in tables" :key="table">
           <el-menu-item :index="table" @click="onTableMenuClick(table)">{{ table }}</el-menu-item>
         </template>
       </el-menu>
     </div>
-    <div style="width: 90vw; padding: 10px">
+    <div style="width: 90vw; padding: 10px; margin-left: 20px;">
       <div style="display: flex">
         <h1>mysql {{selectTable}}表</h1>
-        <el-button @click="onSubmit" type="primary" style="margin-top: 30px; margin-left: 30px">代码生成</el-button>
+        <el-button @click="onSubmit" type="primary" style="margin-top: 30px; margin-left: 30px">生成代码</el-button>
+        <el-button @click="onAddColumn" type="primary" style="margin-top: 30px; margin-left: 30px">添加列</el-button>
       </div>
       <table>
         <thead>
         <tr>
           <th>序号</th>
           <th>列名</th>
+          <th>label</th>
+          <th>label宽度</th>
           <th>数据类型</th>
           <th>视图类型</th>
+          <th>扩展信息</th>
           <th>新建</th>
           <th>修改</th>
           <th>搜索</th>
           <th>必填</th>
           <th>占位符</th>
+          <th>操作</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="(item, index) in columns" :key="item.Field">
           <td>{{index}}</td>
-          <td>{{item.field}}</td>
-          <td>{{item.type}}</td>
-          <td>
+          <td><el-input v-model="item.column"/></td>
+          <td><el-input v-model="item.label"/></td>
+          <td><el-input-number v-model="item.labelWidth"/></td>
+          <td><el-input v-model="item.type"/></td>
+          <td style="width: 160px">
             <select v-model="item.viewType" style="width: 150px; height: 30px" :disabled="isColumnDisabled(item)" >
               <option value="string" >string</option>
               <option value="number" >number</option>
@@ -80,18 +90,18 @@
               <option value="image" >image</option>
             </select>
           </td>
+          <td><el-input ></el-input></td>
           <td><el-switch v-model="item.canCreate" :disabled="isColumnDisabled(item)" /></td>
           <td><el-switch v-model="item.canEdit" :disabled="isColumnDisabled(item)" /></td>
-          <td><el-switch v-model="item.canSearch" :disabled="isColumnDisabled(item, 'search')" /></td>
-          <td><el-switch v-model="item.required" :disabled="isColumnDisabled(item)" /></td>
+          <td><el-switch v-model="item.canSearch" /></td>
+          <td><el-switch v-model="item.required" /></td>
           <td>
-            <el-input :placeholder="item.field" v-mode="item.placeholder" />
+            <el-input :placeholder="item.column" v-mode="item.placeholder" />
           </td>
+          <td><el-button type="danger" @click="()=>onDeleteColumn(item.column)">删除</el-button></td>
         </tr>
         </tbody>
       </table>
-      <h4>layout模板</h4>
-      <el-input type="textarea" :autosize="{ minRows: 8, maxRows: 20 }" v-model="layoutContent"></el-input>
     </div>
   </main>
 </div>

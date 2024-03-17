@@ -14,6 +14,7 @@ var (
 	CreateProjectName = ""
 	CrudServiceName   = ""
 	RouterPrefix      = ""
+	GormDSN           = ""
 )
 
 func InitCommand(rootCmd, newCmd, updateCmd, crudCmd, serverCmd *cobra.Command) {
@@ -40,6 +41,9 @@ func InitCommand(rootCmd, newCmd, updateCmd, crudCmd, serverCmd *cobra.Command) 
 	crudCmd.PersistentFlags().StringVar(&LayoutPath, "layout", "", "layout path")
 	crudCmd.PersistentFlags().StringVar(&LogType, "log", "zap", "log type")
 	crudCmd.PersistentFlags().BoolVar(&ForceWrite, "force", false, "force write")
+
+	serverCmd.PersistentFlags().StringVar(&LayoutPath, "layout", "", "layout path")
+	serverCmd.PersistentFlags().StringVar(&GormDSN, "dsn", "", "mysql dsn")
 
 	rootCmd.AddCommand(newCmd, updateCmd, crudCmd, serverCmd)
 }

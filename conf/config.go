@@ -17,7 +17,7 @@ var (
 	TsFetchYaml []byte
 
 	IdlName    = "idl"
-	layoutYaml []byte
+	LayoutYaml []byte
 )
 
 func GetConfig(serverType, logType, layoutPath, idlPath string) (LayoutConfig, Idl, error) {
@@ -41,17 +41,17 @@ func GetConfig(serverType, logType, layoutPath, idlPath string) (LayoutConfig, I
 
 func GetLayoutConfig(serverType, logType, layoutPath string) (layoutConf LayoutConfig, err error) {
 	if layoutPath == "" {
-		layoutYaml = GinYaml
+		LayoutYaml = GinYaml
 	} else if layoutPath == "__ts" {
-		layoutYaml = TsFetchYaml
+		LayoutYaml = TsFetchYaml
 	} else {
-		layoutYaml, err = os.ReadFile(layoutPath)
+		LayoutYaml, err = os.ReadFile(layoutPath)
 		if err != nil {
 			return LayoutConfig{}, err
 		}
 	}
 
-	if err = yaml.Unmarshal(layoutYaml, &layoutConf); err != nil {
+	if err = yaml.Unmarshal(LayoutYaml, &layoutConf); err != nil {
 		return LayoutConfig{}, err
 	}
 
