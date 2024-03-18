@@ -28,16 +28,16 @@ func UpdateProject(_ *cobra.Command, args []string) {
 	}
 
 	// 使用数据解析模板
-	code := make(map[string]writer.WriteCode)
-	if err = parse.GenServiceCode(layout, services, code); err != nil {
+	codeMap := make(map[string]writer.WriteCode)
+	if err = parse.GenServiceCode(layout, services, codeMap); err != nil {
 		os.Exit(1)
 	}
-	if err = parse.GenMessageCode(layout, messages, code); err != nil {
+	if err = parse.GenMessageCode(layout, messages, codeMap); err != nil {
 		os.Exit(1)
 	}
 
 	// 将代码写入文件
-	if err = writer.Write(code); err != nil {
+	if err = writer.Write(codeMap); err != nil {
 		utils.Log("write error: ", err.Error())
 		os.Exit(1)
 	}
@@ -51,14 +51,17 @@ func checkUpdateCmdArgs(args []string) {
 		os.Exit(1)
 	}
 	IdlPath = args[0]
-	if WithTs {
-		LayoutPath = "__ts"
+	autoModifyArgs()
+	if ServerType == "" && LayoutPath == "" {
+		utils.Log("server type is empty")
+		os.Exit(1)
 	}
+}
 
+func autoModifyArgs() {
 	goMod, err := os.ReadFile("go.mod")
 	if err != nil {
-		utils.Log("failed to read go.mod: ", err.Error())
-		os.Exit(1)
+		return
 	}
 
 	if ServerType == "" {
@@ -71,10 +74,6 @@ func checkUpdateCmdArgs(args []string) {
 		} else if strings.Contains(string(goMod), "github.com/cloudwego/hertz") {
 			ServerType = "hertz"
 		}
-	}
-	if ServerType == "" && LayoutPath == "" {
-		utils.Log("server type is empty")
-		os.Exit(1)
 	}
 	if OutputDir != "" && !strings.HasSuffix(OutputDir, "/") && !strings.HasSuffix(OutputDir, "\\") {
 		OutputDir += "/"

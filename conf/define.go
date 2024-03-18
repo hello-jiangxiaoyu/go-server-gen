@@ -9,6 +9,7 @@ type (
 	}
 	Idl struct {
 		Messages string    `yaml:"messages"`
+		Ts       string    `yaml:"ts"`
 		Services []Service `yaml:"services"`
 	}
 )
@@ -24,11 +25,11 @@ type (
 		Body       string `yaml:"body"`        // 文件内容
 	}
 	LayoutConfig struct {
-		Pkg             map[string]string `yaml:"pkg"`      // 全局变量
-		ApiTemplate     []Template        `yaml:"api"`      // api模板配置（todo: 实现api级别模板解析）
-		ServiceTemplate []Template        `yaml:"service"`  // service模板配置
-		GlobalTemplate  []Template        `yaml:"global"`   // global模板配置
-		MessageTemplate []Template        `yaml:"messages"` // 请求参数模板配置
+		Pkg             map[string]any `yaml:"pkg"`      // 全局变量
+		ApiTemplate     []Template     `yaml:"api"`      // api模板配置（todo: 实现api级别模板解析）
+		ServiceTemplate []Template     `yaml:"service"`  // service模板配置
+		GlobalTemplate  []Template     `yaml:"global"`   // global模板配置
+		MessageTemplate []Template     `yaml:"messages"` // 请求参数模板配置
 
 		ProjectName string `yaml:"-"` // 项目名
 		IdlName     string `yaml:"-"` // idl名

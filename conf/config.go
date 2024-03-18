@@ -16,52 +16,72 @@ var (
 	//go:embed ts-fetch.yaml
 	TsFetchYaml []byte
 
-	IdlName    = "idl"
+	IdlName    = ""
 	LayoutYaml []byte
+	IdlYaml    []byte
 )
 
-func GetConfig(serverType, logType, layoutPath, idlPath string) (LayoutConfig, Idl, error) {
-	var apiConf Idl
-	idlYaml, err := os.ReadFile(idlPath)
-	if err != nil {
-		return LayoutConfig{}, Idl{}, err
-	}
-	if err = yaml.Unmarshal(idlYaml, &apiConf); err != nil {
-		return LayoutConfig{}, Idl{}, err
-	}
-
-	IdlName = getFileName(idlPath)
-	layoutConf, err := GetLayoutConfig(serverType, logType, layoutPath)
-	if err != nil {
-		return LayoutConfig{}, Idl{}, err
-	}
-
-	return layoutConf, apiConf, nil
-}
-
-func GetLayoutConfig(serverType, logType, layoutPath string) (layoutConf LayoutConfig, err error) {
-	if layoutPath == "" {
+func ReadConfig(layoutPath, idlPath string) (err error) {
+	if len(layoutPath) == 0 {
 		LayoutYaml = GinYaml
 	} else if layoutPath == "__ts" {
 		LayoutYaml = TsFetchYaml
 	} else {
 		LayoutYaml, err = os.ReadFile(layoutPath)
 		if err != nil {
-			return LayoutConfig{}, err
+			return utils.WithMessage(err, layoutPath)
 		}
 	}
 
-	if err = yaml.Unmarshal(LayoutYaml, &layoutConf); err != nil {
+	if len(idlPath) > 0 {
+		IdlYaml, err = os.ReadFile(idlPath)
+		if err != nil {
+			return utils.WithMessage(err, idlPath)
+		}
+	}
+	return nil
+}
+
+func GetConfig(serverType, logType, layoutPath, idlPath string) (LayoutConfig, Idl, error) {
+	if err := ReadConfig(layoutPath, idlPath); err != nil {
+		return LayoutConfig{}, Idl{}, err
+	}
+	var apiConf Idl
+	if err := yaml.Unmarshal(IdlYaml, &apiConf); err != nil {
+		return LayoutConfig{}, Idl{}, err
+	}
+	var layoutConf LayoutConfig
+	if err := yaml.Unmarshal(LayoutYaml, &layoutConf); err != nil {
+		return LayoutConfig{}, Idl{}, err
+	}
+	if err := ModifyConfig(&layoutConf, serverType, logType); err != nil {
+		return LayoutConfig{}, Idl{}, err
+	}
+	return layoutConf, apiConf, nil
+}
+
+func GetLayoutConfig(serverType, logType, layoutPath string) (LayoutConfig, error) {
+	if err := ReadConfig(layoutPath, ""); err != nil {
 		return LayoutConfig{}, err
 	}
+	var layoutConf LayoutConfig
+	if err := yaml.Unmarshal(LayoutYaml, &layoutConf); err != nil {
+		return LayoutConfig{}, err
+	}
+	if err := ModifyConfig(&layoutConf, serverType, logType); err != nil {
+		return LayoutConfig{}, err
+	}
+	return layoutConf, nil
+}
 
+func ModifyConfig(layoutConf *LayoutConfig, serverType, logType string) error {
 	if layoutConf.Pkg == nil {
-		layoutConf.Pkg = make(map[string]string)
+		layoutConf.Pkg = make(map[string]any)
 	}
 
 	projectName, err := utils.GetProjectName()
 	if err != nil {
-		return LayoutConfig{}, err
+		return err
 	}
 	layoutConf.ProjectName = projectName
 	layoutConf.IdlName = IdlName
@@ -73,7 +93,7 @@ func GetLayoutConfig(serverType, logType, layoutPath string) (layoutConf LayoutC
 			layoutConf.Pkg[key] = value
 		}
 	}
-	return layoutConf, nil
+	return nil
 }
 
 func getFileName(path string) string {

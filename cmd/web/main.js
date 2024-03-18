@@ -40,7 +40,8 @@ const app = createApp({
     }
 
     const onSubmit = () => {
-      Post(`/api/tables/${selectTable.value}/generate`, columnList.value).then(() => PopSuccess('生成成功')).catch(e => PopError(e))
+      Post(`/api/tables/${selectTable.value}/generate`, columnList.value)
+        .then(() => PopSuccess('生成成功')).catch(e => PopError(e))
     }
 
     const onAddColumn = () => {

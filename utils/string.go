@@ -1,19 +1,10 @@
 package utils
 
 import (
-	"regexp"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 )
-
-// SplitCamelCase 驼峰字符串拆分成单词
-func SplitCamelCase(str string) []string {
-	re := regexp.MustCompile(`[A-Za-z][^A-Z]*`)
-	words := re.FindAllString(str, -1)
-	for i, word := range words {
-		words[i] = strings.ToLower(word)
-	}
-	return words
-}
 
 // ConvertToWord 驼峰字符串拆分成句子
 func ConvertToWord(obj string, mid string) string {
@@ -34,24 +25,23 @@ func ConvertToWord(obj string, mid string) string {
 	return content
 }
 
-// DeduplicateStrings 字符串数组去重并去除空字符串
-func DeduplicateStrings(arr []string) []string {
-	visited := make(map[string]bool)
-	result := make([]string, 0)
-	for _, str := range arr {
-		if str == "" {
-			continue
-		}
-		if !visited[str] {
-			visited[str] = true
-			result = append(result, str)
-		}
+// SnakeToLowerCamelCase converts a snake_case string to lowerCamelCase.
+func SnakeToLowerCamelCase(s string) string {
+	parts := strings.Split(s, "_")
+	for i := 1; i < len(parts); i++ {
+		r, size := utf8.DecodeRuneInString(parts[i])
+		parts[i] = string(unicode.ToLower(r)) + parts[i][size:]
 	}
 
-	return result
+	return strings.Join(parts, "")
 }
 
 // RemoveSpace 删除字符串中的空格
 func RemoveSpace(obj string) string {
 	return strings.ReplaceAll(obj, " ", "")
+}
+
+func GetFirstSplit(obj, sep string) string {
+	res := strings.Split(obj, sep)
+	return res[0]
 }

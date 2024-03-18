@@ -6,10 +6,9 @@ var (
 	LayoutPath = ""
 	IdlPath    = ""
 	ServerType = ""
-	LogType    = "zap"
+	LogType    = ""
 	OutputDir  = ""
 	ForceWrite = false
-	WithTs     = false
 
 	CreateProjectName = ""
 	CrudServiceName   = ""
@@ -32,7 +31,6 @@ func InitCommand(rootCmd, newCmd, updateCmd, crudCmd, serverCmd *cobra.Command) 
 	updateCmd.PersistentFlags().StringVarP(&OutputDir, "output", "o", "", "output dir")
 	updateCmd.PersistentFlags().StringVar(&LayoutPath, "layout", "", "layout path")
 	updateCmd.PersistentFlags().StringVar(&LogType, "log", "zap", "log type")
-	updateCmd.PersistentFlags().BoolVar(&WithTs, "ts", false, "gen ts client code")
 
 	// 添加crud
 	crudCmd.PersistentFlags().StringVarP(&ServerType, "server", "s", "", "server type")

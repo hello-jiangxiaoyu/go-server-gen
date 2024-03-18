@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-server-gen/parse"
 	"net/http"
 	"strings"
 )
@@ -10,12 +11,12 @@ import (
 func GetTableColumns(c *gin.Context) {
 	columns := make([]Column, 0)
 	if err := DB.Raw(`desc ` + c.Param("table")).Scan(&columns).Error; err != nil {
-		sendErrorResponse(c, err)
+		SendErrorResponse(c, err)
 		return
 	}
-	viewColumn := make([]ViewColumn, 0)
+	viewColumn := make([]parse.ViewColumn, 0)
 	for _, v := range columns {
-		item := ViewColumn{
+		item := parse.ViewColumn{
 			Column:      v.Field,
 			Label:       getLabelByField(v.Field),
 			LabelWidth:  100,
