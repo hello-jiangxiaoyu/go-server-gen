@@ -11,7 +11,6 @@ messages: |-
 
 services:
   - name: {{.ServiceName}}
-    middlewares: []
     apis:
       - GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", Get{{uppercaseFirst .ServiceName}}List)  // {{uppercaseFirst .ServiceName}}Req
       - POST("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", Create{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req

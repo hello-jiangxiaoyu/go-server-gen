@@ -1,6 +1,7 @@
 package parse
 
 import (
+	_ "embed"
 	"fmt"
 	"go-server-gen/conf"
 	"go-server-gen/utils"
@@ -21,38 +22,55 @@ type ViewColumn struct {
 	SelectOptions []string `json:"selectOptions"`
 }
 
-func GetIdlConfig(tableName string, columns []ViewColumn) conf.Idl {
+func GetIdlConfig(tableName string, columns []ViewColumn) (conf.IdlConfig, error) {
 	service := conf.Service{
-		Name:        tableName,
-		Middlewares: make([]string, 0),
-		Apis:        make([]string, 0),
+		Name: tableName,
+		Apis: make([]string, 0),
 	}
-	for _, api := range apiMap {
+	for _, api := range conf.ConstData.Api {
 		service.Apis = append(service.Apis, api)
 	}
 
-	_ = getGoFieldMap(columns)
-	msg := ""
-	return conf.Idl{
-		Messages: msg,
-		Ts:       "export interface FormStruct [" + convertToTs(columns) + "]",
+	return conf.IdlConfig{
+		Ts:       getTsArrayObject(columns),
+		Messages: getGoStructRows(tableName, columns),
 		Services: []conf.Service{service},
+	}, nil
+}
+
+func getGoStructRows(tableName string, columns []ViewColumn) string {
+	res := fmt.Sprintf("type %s struct{", utils.SnakeToUpperCamelCase(tableName))
+	for _, v := range conf.ConstData.GoStruct {
+		res += "\n" + v
 	}
-}
-
-var apiMap = map[string]string{
-	"get":         `GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", Get{{uppercaseFirst .ServiceName}}List)  // {{uppercaseFirst .ServiceName}}Req`,
-	"list":        `GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Get{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req`,
-	"create":      `POST("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", Create{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req`,
-	"update":      `PUT("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Update{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req`,
-	"delete":      `DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Delete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req`,
-	"batchDelete": `DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", BatchDelete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req`,
-}
-
-func convertToTs(columns []ViewColumn) string {
-	var res string
 	for _, v := range columns {
-		res += "\n{" + getTsColumns(v) + "\n},"
+		row := fmt.Sprintf("\n%s %s `%s`", UppercaseFirst(v.Column), getGoType(v.ViewType), getJson(v.Column))
+		res += row
+	}
+	return res + "\n}"
+}
+
+func getJson(column string) string {
+	return fmt.Sprintf(`json:"%s"`, utils.SnakeToLowerCamelCase(column))
+}
+
+func getGoType(viewType string) string {
+	switch viewType {
+	case "number":
+		return "int"
+	case "switch":
+		return "bool"
+	case "date", "time", "datetime":
+		return "time.Time"
+	}
+
+	return "string"
+}
+
+func getTsArrayObject(columns []ViewColumn) string {
+	res := ""
+	for _, v := range columns {
+		res += "{" + getTsColumns(v) + "\n},"
 	}
 	return res
 }
@@ -79,45 +97,4 @@ func getTsColumns(column ViewColumn) string {
 	}
 
 	return res
-}
-
-func getGoFieldMap(columns []ViewColumn) map[string]string {
-	res := map[string]string{
-		"All":    "",
-		"Edit":   "",
-		"Create": "",
-		"Search": "",
-	}
-	for _, v := range columns {
-		row := fmt.Sprintf("\n%s %s `%s`", utils.UppercaseFirst(v.Column), getGoType(v.ViewType), getJson(v.Column))
-		res["All"] += row
-		if v.CanEdit {
-			res["Edit"] += row
-		}
-		if v.CanCreate {
-			res["Create"] += row
-		}
-		if v.CanSearch {
-			res["Search"] += row
-		}
-	}
-
-	return res
-}
-
-func getJson(column string) string {
-	return fmt.Sprintf(`json:"%s"`, utils.SnakeToLowerCamelCase(column))
-}
-
-func getGoType(viewType string) string {
-	switch viewType {
-	case "number":
-		return "int"
-	case "switch":
-		return "bool"
-	case "date", "time", "datetime":
-		return "time.Time"
-	}
-
-	return "string"
 }

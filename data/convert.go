@@ -6,7 +6,7 @@ import (
 )
 
 // ConfigToData 配置转数据
-func ConfigToData(layout conf.LayoutConfig, idl conf.Idl) ([]Service, map[string]Message, error) {
+func ConfigToData(layout conf.LayoutConfig, idl conf.IdlConfig) ([]Service, map[string]Message, error) {
 	msg, err := getMessage(idl.Messages)
 	if err != nil {
 		return nil, nil, err

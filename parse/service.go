@@ -39,7 +39,7 @@ func parseGlobal(services []data.Service, tpl conf.Template) (writer.WriteCode, 
 	}
 	handlers := make(map[string]string)
 	for _, service := range services {
-		funcName, handler, err := utils.ParseSource(tpl.HandlerKey, tpl.Handler, service)
+		funcName, handler, err := ParseSource(tpl.HandlerKey, tpl.Handler, service)
 		if err != nil {
 			utils.Logf("failed to parse service handler: %s\n%s\n%s", err.Error(), tpl.HandlerKey, tpl.Handler)
 			return writer.WriteCode{}, err
@@ -49,7 +49,7 @@ func parseGlobal(services []data.Service, tpl conf.Template) (writer.WriteCode, 
 
 	globalData := services[0]
 	globalData.Handlers = handlers
-	file, body, err := utils.ParseSource(tpl.Path, tpl.Body, globalData)
+	file, body, err := ParseSource(tpl.Path, tpl.Body, globalData)
 	if err != nil {
 		utils.Log("failed to phase "+tpl.Path+" body: ", err.Error())
 		return writer.WriteCode{}, err
@@ -67,7 +67,7 @@ func parseGlobal(services []data.Service, tpl conf.Template) (writer.WriteCode, 
 func parseService(service data.Service, tpl conf.Template) (writer.WriteCode, error) {
 	handlers := make(map[string]string)
 	for _, api := range service.Apis {
-		funcName, handler, err := utils.ParseSource(tpl.HandlerKey, tpl.Handler, api)
+		funcName, handler, err := ParseSource(tpl.HandlerKey, tpl.Handler, api)
 		if err != nil {
 			utils.Log("failed to parse api handler: ", err.Error())
 			return writer.WriteCode{}, err
@@ -75,7 +75,7 @@ func parseService(service data.Service, tpl conf.Template) (writer.WriteCode, er
 		handlers[funcName] = handler
 	}
 	service.Handlers = handlers
-	file, body, err := utils.ParseSource(tpl.Path, tpl.Body, service)
+	file, body, err := ParseSource(tpl.Path, tpl.Body, service)
 	if err != nil {
 		utils.Log("failed to parse api body: "+tpl.Path+": ", err.Error())
 		return writer.WriteCode{}, err

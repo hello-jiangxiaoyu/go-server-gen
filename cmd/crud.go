@@ -2,6 +2,7 @@ package cmd
 
 import (
 	_ "embed"
+	"go-server-gen/parse"
 	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"os"
@@ -27,7 +28,7 @@ func CreateCrudGroup(_ *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	body, err := utils.ParseTemplate(CrudTemplate, map[string]any{
+	body, err := parse.ParseTemplate(CrudTemplate, map[string]any{
 		"ProjectName": projectName,
 		"ServiceName": CrudServiceName,
 		"Prefix":      RouterPrefix,

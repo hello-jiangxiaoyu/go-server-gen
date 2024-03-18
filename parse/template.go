@@ -1,8 +1,9 @@
-package utils
+package parse
 
 import (
 	"bytes"
 	"fmt"
+	"go-server-gen/utils"
 	"go/format"
 	"regexp"
 	"strings"
@@ -14,7 +15,7 @@ func ParseTemplate(tpl string, data any) (string, error) {
 	var buf bytes.Buffer
 	t, err := template.New("gen").Funcs(defaultFuncMap).Parse(tpl)
 	if err != nil {
-		return "", WithMessage(err, "invalid template config")
+		return "", utils.WithMessage(err, "invalid template config")
 	}
 	if err = t.Execute(&buf, data); err != nil {
 		return "", err
@@ -31,7 +32,7 @@ func ParseSource(key, body string, data any) (string, string, error) {
 	if strings.Contains(key, ".go") { // 格式化go代码
 		codeBody, err := format.Source([]byte(RemoveDuplicateImport(body)))
 		if err != nil {
-			return "", "", WithMessage(err, "go syntax err: "+body)
+			return "", "", utils.WithMessage(err, "go syntax err: "+body)
 		}
 		body = string(codeBody)
 	}

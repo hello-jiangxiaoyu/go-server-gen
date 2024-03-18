@@ -54,7 +54,11 @@ func GenCode(c *gin.Context) {
 	}
 
 	// 获取配置文件
-	idl := parse.GetIdlConfig(c.Param("table"), req)
+	idl, err := parse.GetIdlConfig(c.Param("table"), req)
+	if err != nil {
+		server.SendErrorResponse(c, err)
+		return
+	}
 	layout, _, err := conf.GetConfig(ServerType, LogType, LayoutPath, IdlPath)
 	if err != nil {
 		server.SendErrorResponse(c, err)

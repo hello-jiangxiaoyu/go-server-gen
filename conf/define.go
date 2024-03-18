@@ -3,14 +3,17 @@ package conf
 // IDL配置文件
 type (
 	Service struct {
-		Name        string   `yaml:"name"`
-		Middlewares []string `yaml:"middlewares"` // 中间件名称
-		Apis        []string `yaml:"apis"`
+		Name string   `yaml:"name"`
+		Apis []string `yaml:"apis"`
 	}
-	Idl struct {
+	IdlConfig struct {
 		Messages string    `yaml:"messages"`
 		Ts       string    `yaml:"ts"`
 		Services []Service `yaml:"services"`
+	}
+	ConstStruct struct {
+		Api      map[string]string `yaml:"api"`
+		GoStruct map[string]string `yaml:"go-struct"`
 	}
 )
 
@@ -25,11 +28,12 @@ type (
 		Body       string `yaml:"body"`        // 文件内容
 	}
 	LayoutConfig struct {
-		Pkg             map[string]any `yaml:"pkg"`      // 全局变量
-		ApiTemplate     []Template     `yaml:"api"`      // api模板配置（todo: 实现api级别模板解析）
-		ServiceTemplate []Template     `yaml:"service"`  // service模板配置
-		GlobalTemplate  []Template     `yaml:"global"`   // global模板配置
-		MessageTemplate []Template     `yaml:"messages"` // 请求参数模板配置
+		Data            ConstStruct       `yaml:"-"`
+		Pkg             map[string]string `yaml:"pkg"`      // 全局变量
+		ApiTemplate     []Template        `yaml:"api"`      // api模板配置（todo: 实现api级别模板解析）
+		ServiceTemplate []Template        `yaml:"service"`  // service模板配置
+		GlobalTemplate  []Template        `yaml:"global"`   // global模板配置
+		MessageTemplate []Template        `yaml:"messages"` // 请求参数模板配置
 
 		ProjectName string `yaml:"-"` // 项目名
 		IdlName     string `yaml:"-"` // idl名

@@ -5,7 +5,6 @@ import (
 	"go-server-gen/conf"
 	"go-server-gen/utils"
 	"regexp"
-	"strings"
 )
 
 // 解析service
@@ -13,13 +12,12 @@ func getService(layout conf.LayoutConfig, services []conf.Service, msg map[strin
 	res := make([]Service, 0)
 	for _, svc := range services {
 		service := Service{
-			ServiceName:   svc.Name,
-			Middlewares:   svc.Middlewares,
-			Apis:          make([]Api, 0),
-			HasMiddleware: len(svc.Middlewares) != 0,
-			ProjectName:   layout.ProjectName,
-			IdlName:       layout.IdlName,
-			Pkg:           layout.Pkg,
+			ServiceName: svc.Name,
+			Apis:        make([]Api, 0),
+			ProjectName: layout.ProjectName,
+			IdlName:     layout.IdlName,
+			Pkg:         layout.Pkg,
+			MsgMap:      msg,
 		}
 
 		for _, apiStr := range svc.Apis {
@@ -29,11 +27,11 @@ func getService(layout conf.LayoutConfig, services []conf.Service, msg map[strin
 				return nil, err
 			}
 			api.ServiceName = svc.Name
+
 			if m, ok := msg[api.ReqName]; ok {
 				api.ReqParam = append(api.ReqParam, m.Param...)
 			}
 
-			service.HasMiddleware = service.HasMiddleware || api.HasMiddleware
 			service.Apis = append(service.Apis, api)
 		}
 		res = append(res, service)
@@ -43,7 +41,7 @@ func getService(layout conf.LayoutConfig, services []conf.Service, msg map[strin
 }
 
 var (
-	regApi    = regexp.MustCompile(`(\w+)\("(.+?)"(.*)\)\s*//\s*(.+)`) // GET("/api/login", GetAppList)  // LoginReq
+	regApi    = regexp.MustCompile(`(\w+)\("(.+?)",(.*)\)\s*//\s*(.+)`) // GET("/api/login", GetAppList)  // LoginReq
 	regDocUri = regexp.MustCompile(`:(\w+)`)
 )
 
@@ -56,28 +54,13 @@ func getApi(layout conf.LayoutConfig, obj string) (Api, error) {
 	res := Api{
 		Method:   matches[1],
 		Path:     matches[2],
+		Handler:  matches[3],
+		FuncName: matches[3],
 		ReqName:  matches[4],
 		IdlName:  layout.IdlName,
-		Handlers: make([]string, 0),
 		ReqParam: getUriParam(matches[2]),
 	}
-	handlers := strings.Split(matches[3], ",")
-	if len(handlers) == 0 {
-		return Api{}, errors.New("handler should not be empty")
-	}
-
-	var controllerFunc string
-	handlers = utils.DeduplicateStrings(handlers)
-	for _, handler := range handlers {
-		res.Handlers = append(res.Handlers, handler)
-		if strings.HasPrefix(handler, "middleware") {
-			res.HasMiddleware = true
-		} else {
-			controllerFunc = handler
-		}
-	}
-	res.FuncName = controllerFunc
-	res.Summary = utils.ConvertToWord(controllerFunc, " ")
+	res.Summary = utils.ConvertToWord(matches[3], " ")
 	res.Pkg = layout.Pkg
 	res.ProjectName = layout.ProjectName
 	res.IdlName = layout.IdlName

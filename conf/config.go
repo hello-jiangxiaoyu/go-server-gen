@@ -16,9 +16,15 @@ var (
 	//go:embed ts-fetch.yaml
 	TsFetchYaml []byte
 
+	//go:embed data.yaml
+	data []byte
+
 	IdlName    = ""
 	LayoutYaml []byte
+	Layout     LayoutConfig
 	IdlYaml    []byte
+	Idl        IdlConfig
+	ConstData  ConstStruct
 )
 
 func ReadConfig(layoutPath, idlPath string) (err error) {
@@ -42,41 +48,49 @@ func ReadConfig(layoutPath, idlPath string) (err error) {
 	return nil
 }
 
-func GetConfig(serverType, logType, layoutPath, idlPath string) (LayoutConfig, Idl, error) {
+func GetConfig(serverType, logType, layoutPath, idlPath string) (LayoutConfig, IdlConfig, error) {
 	if err := ReadConfig(layoutPath, idlPath); err != nil {
-		return LayoutConfig{}, Idl{}, err
+		return LayoutConfig{}, IdlConfig{}, err
 	}
-	var apiConf Idl
-	if err := yaml.Unmarshal(IdlYaml, &apiConf); err != nil {
-		return LayoutConfig{}, Idl{}, err
+
+	if err := yaml.Unmarshal(IdlYaml, &Idl); err != nil {
+		return LayoutConfig{}, IdlConfig{}, utils.WithMessage(err, "idl yaml unmarshal err")
 	}
-	var layoutConf LayoutConfig
-	if err := yaml.Unmarshal(LayoutYaml, &layoutConf); err != nil {
-		return LayoutConfig{}, Idl{}, err
+	if err := yaml.Unmarshal(LayoutYaml, &Layout); err != nil {
+		return LayoutConfig{}, IdlConfig{}, utils.WithMessage(err, "layout yaml unmarshal err")
 	}
-	if err := ModifyConfig(&layoutConf, serverType, logType); err != nil {
-		return LayoutConfig{}, Idl{}, err
+	if err := yaml.Unmarshal(data, &ConstData); err != nil {
+		return LayoutConfig{}, IdlConfig{}, utils.WithMessage(err, "data yaml unmarshal err")
 	}
-	return layoutConf, apiConf, nil
+
+	if err := ModifyConfig(&Layout, serverType, logType); err != nil {
+		return LayoutConfig{}, IdlConfig{}, err
+	}
+	return Layout, Idl, nil
 }
 
 func GetLayoutConfig(serverType, logType, layoutPath string) (LayoutConfig, error) {
 	if err := ReadConfig(layoutPath, ""); err != nil {
 		return LayoutConfig{}, err
 	}
-	var layoutConf LayoutConfig
-	if err := yaml.Unmarshal(LayoutYaml, &layoutConf); err != nil {
+
+	if err := yaml.Unmarshal(LayoutYaml, &Layout); err != nil {
+		return LayoutConfig{}, utils.WithMessage(err, "layout yaml unmarshal err")
+	}
+	if err := yaml.Unmarshal(data, &ConstData); err != nil {
+		return LayoutConfig{}, utils.WithMessage(err, "data yaml unmarshal err")
+	}
+
+	Layout.Data = ConstData
+	if err := ModifyConfig(&Layout, serverType, logType); err != nil {
 		return LayoutConfig{}, err
 	}
-	if err := ModifyConfig(&layoutConf, serverType, logType); err != nil {
-		return LayoutConfig{}, err
-	}
-	return layoutConf, nil
+	return Layout, nil
 }
 
 func ModifyConfig(layoutConf *LayoutConfig, serverType, logType string) error {
 	if layoutConf.Pkg == nil {
-		layoutConf.Pkg = make(map[string]any)
+		layoutConf.Pkg = make(map[string]string)
 	}
 
 	projectName, err := utils.GetProjectName()

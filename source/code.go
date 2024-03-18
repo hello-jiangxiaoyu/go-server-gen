@@ -3,6 +3,7 @@ package source
 import (
 	"embed"
 	"go-server-gen/conf"
+	"go-server-gen/parse"
 	"go-server-gen/source/internal"
 	"go-server-gen/utils"
 	"go-server-gen/writer"
@@ -11,7 +12,7 @@ import (
 
 type GlobalData struct {
 	ProjectName string
-	Pkg         map[string]any
+	Pkg         map[string]string
 }
 
 // GenPackageCode 生成默认代码
@@ -54,7 +55,7 @@ func GenPackageCode(layout conf.LayoutConfig, prefix string, overwrite bool) (ma
 		prefix + "pkg/utils/uuid.go":               GetEmbedContent("internal/utils/uuid.go"),
 	}
 	for fileName, body := range tplMap {
-		fileName, body, err = utils.ParseSource(fileName, body, GlobalData{ProjectName: projectName, Pkg: layout.Pkg})
+		fileName, body, err = parse.ParseSource(fileName, body, GlobalData{ProjectName: projectName, Pkg: layout.Pkg})
 		if err != nil {
 			return nil, err
 		}

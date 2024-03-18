@@ -1,6 +1,7 @@
-package utils
+package parse
 
 import (
+	"go-server-gen/conf"
 	"regexp"
 	"strings"
 )
@@ -10,11 +11,23 @@ var (
 	regDocUri  = regexp.MustCompile(`:(\w+)`) // 路由path转文档router
 )
 
-func Method(method string, ctxName string) string {
+func GetGoMethod(method string, ctxName string) string {
 	if ctxName != "*fiber.Ctx" {
 		return method
 	}
 	return UppercaseFirst(strings.ToLower(method))
+}
+
+func GetGoHandleFuncParam(serverType string) string {
+	svc, ok := conf.PkgMap[serverType]
+	if !ok {
+		return ""
+	}
+
+	if serverType != "hertz" {
+		return "_ context.Context, " + svc["ContextType"]
+	}
+	return svc["ContextType"]
 }
 
 func GetGoLastSplit(obj, sep string) string {

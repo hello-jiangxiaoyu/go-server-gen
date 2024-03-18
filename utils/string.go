@@ -25,10 +25,21 @@ func ConvertToWord(obj string, mid string) string {
 	return content
 }
 
-// SnakeToLowerCamelCase converts a snake_case string to lowerCamelCase.
+// SnakeToLowerCamelCase 小驼峰
 func SnakeToLowerCamelCase(s string) string {
 	parts := strings.Split(s, "_")
 	for i := 1; i < len(parts); i++ {
+		r, size := utf8.DecodeRuneInString(parts[i])
+		parts[i] = string(unicode.ToLower(r)) + parts[i][size:]
+	}
+
+	return strings.Join(parts, "")
+}
+
+// SnakeToUpperCamelCase 大驼峰
+func SnakeToUpperCamelCase(s string) string {
+	parts := strings.Split(s, "_")
+	for i := 0; i < len(parts); i++ {
 		r, size := utf8.DecodeRuneInString(parts[i])
 		parts[i] = string(unicode.ToLower(r)) + parts[i][size:]
 	}

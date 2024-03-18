@@ -34,9 +34,6 @@ global:
       import (
           "{{.Pkg.EngineImport}}"
           "{{.ProjectName}}/{{.Pkg.Controller}}"
-          {{- if .HasMiddleware }}
-          "{{.ProjectName}}/biz/middleware"
-          {{- end}}
       )
       {{- range $_, $Code := .Handlers }}
       {{$Code}}
@@ -44,21 +41,10 @@ global:
     handler-key: "New{{uppercaseFirst .ServiceName}}Router"
     handler: |
       func New{{uppercaseFirst .ServiceName}}Router(e {{.Pkg.EngineType}}) {
-          {{.ServiceName | lowercaseFirst}} := e.Group(""
-      {{- range $_, $md := .Middlewares -}}
-      , {{$md}}
-      {{- end -}}
-      )
+          {{.ServiceName | lowercaseFirst}} := e.Group("")
           {
               {{- range $_, $Api := .Apis}}
-              {{$Api.ServiceName | lowercaseFirst}}.{{method $Api.Method $Api.Pkg.ContextType}}("{{$Api.Path}}"
-              {{- range $_, $Handler := $Api.Handlers -}}
-              {{- if hasPrefix $Handler "middleware" -}}
-              , {{$Handler}}()
-              {{- else -}}
-              , {{getGoLastSplit $.Pkg.Controller "/"}}.{{$Handler}}
-              {{- end -}}
-              {{- end}})
+              {{$Api.ServiceName | lowercaseFirst}}.{{getGoMethod $Api.Method $Api.Pkg.ContextType}}("{{$Api.Path}}", {{getGoLastSplit $.Pkg.Controller "/"}}.{{$Api.Handler}})
               {{- end}}
           }
       }
@@ -134,7 +120,7 @@ service:
 
 
 messages:
-  - name: model
+  - name: request
     path: "{{.Pkg.Req}}/{{.IdlName}}.go"
     write: append
     body: |-

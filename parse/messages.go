@@ -11,14 +11,14 @@ func GenMessageCode(layout conf.LayoutConfig, messages map[string]data.Message, 
 	for _, tpl := range layout.MessageTemplate {
 		handlers := make(map[string]string)
 		for k, msg := range messages {
-			_, handler, err := utils.ParseSource("", tpl.Handler, msg)
+			_, handler, err := ParseSource("", tpl.Handler, msg)
 			if err != nil {
 				utils.Log("parse message handler err: ", err.Error())
 				return err
 			}
 			handlers[k] = handler
 		}
-		file, body, err := utils.ParseSource(tpl.Path, tpl.Body, map[string]any{
+		file, body, err := ParseSource(tpl.Path, tpl.Body, map[string]any{
 			"ProjectName": layout.ProjectName,
 			"IdlName":     layout.IdlName,
 			"Pkg":         layout.Pkg,
