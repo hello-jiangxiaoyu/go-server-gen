@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	//go:embed layout.yaml
+	//go:embed gin.yaml
 	GinYaml []byte
 
 	//go:embed ts-fetch.yaml

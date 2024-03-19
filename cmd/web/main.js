@@ -9,6 +9,7 @@ const app = createApp({
     const selectTable = ref('')
     const columnList = ref([])
     const layoutContent = ref('')
+    const apis = ref({get: true, list: true, create: true, update: true, delete: true, batchDelete: true})
 
     // ============= 初始化 =============
     onMounted(() => {
@@ -40,7 +41,7 @@ const app = createApp({
     }
 
     const onSubmit = () => {
-      Post(`/api/tables/${selectTable.value}/generate`, columnList.value)
+      Post(`/api/tables/${selectTable.value}/generate`, {columns: columnList.value, apis: apis.value})
         .then(() => PopSuccess('生成成功')).catch(e => PopError(e))
     }
 
@@ -61,7 +62,7 @@ const app = createApp({
     }
 
     return {
-      tableList, columnList, selectTable, layoutContent, selectOptions,
+      tableList, columnList, selectTable, layoutContent, apis, selectOptions,
       onTableMenuClick, isColumnDisabled, onSubmit, onAddColumn, onDeleteColumn
     }
   }

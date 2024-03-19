@@ -8,6 +8,7 @@ import (
 	"go-server-gen/conf"
 	"go-server-gen/data"
 	"go-server-gen/parse"
+	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -47,25 +48,35 @@ func StartWebServer(_ *cobra.Command, _ []string) {
 }
 
 func GenCode(c *gin.Context) {
-	req := make([]parse.ViewColumn, 0)
+	req := parse.GenRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
+		server.SendErrorResponse(c, err)
+		return
+	}
+	projectName, err := utils.GetProjectName()
+	if err != nil {
 		server.SendErrorResponse(c, err)
 		return
 	}
 
 	// 获取配置文件
-	idl, err := parse.GetIdlConfig(c.Param("table"), req)
-	if err != nil {
-		server.SendErrorResponse(c, err)
-		return
-	}
 	layout, _, err := conf.GetConfig(ServerType, LogType, LayoutPath, IdlPath)
 	if err != nil {
 		server.SendErrorResponse(c, err)
 		return
 	}
 
+	req.TableName = c.Param("table")
+	req.RouterPrefix = RouterPrefix
+	req.ProjectName = projectName
+	idl, err := parse.GetIdlConfig(req)
+	if err != nil {
+		server.SendErrorResponse(c, err)
+		return
+	}
+
 	// 生成数据
+	layout.IdlName = c.Param("table")
 	services, messages, err := data.ConfigToData(layout, idl)
 	if err != nil {
 		server.SendErrorResponse(c, err)
@@ -88,6 +99,7 @@ func GenCode(c *gin.Context) {
 		server.SendErrorResponse(c, err)
 		return
 	}
+
 	c.JSON(http.StatusOK, struct{}{})
 }
 

@@ -30,7 +30,7 @@ func SnakeToLowerCamelCase(s string) string {
 	parts := strings.Split(s, "_")
 	for i := 1; i < len(parts); i++ {
 		r, size := utf8.DecodeRuneInString(parts[i])
-		parts[i] = string(unicode.ToLower(r)) + parts[i][size:]
+		parts[i] = string(unicode.ToUpper(r)) + parts[i][size:]
 	}
 
 	return strings.Join(parts, "")
@@ -41,10 +41,24 @@ func SnakeToUpperCamelCase(s string) string {
 	parts := strings.Split(s, "_")
 	for i := 0; i < len(parts); i++ {
 		r, size := utf8.DecodeRuneInString(parts[i])
-		parts[i] = string(unicode.ToLower(r)) + parts[i][size:]
+		parts[i] = string(unicode.ToUpper(r)) + parts[i][size:]
 	}
 
 	return strings.Join(parts, "")
+}
+
+// LowercaseFirst 首字母小写
+func LowercaseFirst(obj string) string {
+	runes := []rune(obj)
+	runes[0] = unicode.ToLower(runes[0])
+	return string(runes)
+}
+
+// UppercaseFirst 首字母大写
+func UppercaseFirst(obj string) string {
+	runes := []rune(obj)
+	runes[0] = unicode.ToUpper(runes[0])
+	return string(runes)
 }
 
 // RemoveSpace 删除字符串中的空格

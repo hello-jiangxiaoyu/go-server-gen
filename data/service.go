@@ -26,9 +26,10 @@ func getService(layout conf.LayoutConfig, services []conf.Service, msg map[strin
 				utils.Log("get api err: ", err.Error(), api)
 				return nil, err
 			}
-			api.ServiceName = svc.Name
 
+			api.ServiceName = svc.Name
 			if m, ok := msg[api.ReqName]; ok {
+				api.Msg = m
 				api.ReqParam = append(api.ReqParam, m.Param...)
 			}
 

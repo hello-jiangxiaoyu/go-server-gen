@@ -1,9 +1,10 @@
 pkg:
   Controller: biz/controller
   Service: biz/service
-  Req:  biz/model
+  Req:  biz/request
   Resp: pkg/response
   Bind: biz/controller/internal
+  Model: biz/sections/models
   Biz:  biz
 
 global:
@@ -125,6 +126,7 @@ messages:
     write: append
     body: |-
       package {{getGoLastSplit $.Pkg.Req "/"}}
+      
       {{- range $_, $Code := .Handlers }}
       {{$Code}}
       {{ end }}

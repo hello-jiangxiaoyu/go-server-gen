@@ -2,6 +2,7 @@ package parse
 
 import (
 	"go-server-gen/conf"
+	"go-server-gen/utils"
 	"regexp"
 	"strings"
 )
@@ -15,7 +16,7 @@ func GetGoMethod(method string, ctxName string) string {
 	if ctxName != "*fiber.Ctx" {
 		return method
 	}
-	return UppercaseFirst(strings.ToLower(method))
+	return utils.UppercaseFirst(strings.ToLower(method))
 }
 
 func GetGoHandleFuncParam(serverType string) string {
