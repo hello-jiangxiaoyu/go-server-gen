@@ -66,12 +66,11 @@
           <th>label</th>
           <th>label宽度</th>
           <th>视图类型</th>
-          <th>扩展信息</th>
           <th>新建</th>
           <th>修改</th>
           <th>搜索</th>
           <th>必填</th>
-          <th>占位符</th>
+          <th>placeholder</th>
           <th>操作</th>
         </tr>
         </thead>
@@ -96,7 +95,6 @@
               />
             </el-select>
           </td>
-          <td><el-input ></el-input></td>
           <td><el-switch v-model="item.canCreate" :disabled="isColumnDisabled(item)" /></td>
           <td><el-switch v-model="item.canEdit" :disabled="isColumnDisabled(item)" /></td>
           <td><el-switch v-model="item.canSearch" /></td>

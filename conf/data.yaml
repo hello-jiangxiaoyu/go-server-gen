@@ -4,16 +4,16 @@ api:
   list: GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Get{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
   update: PUT("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Update{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
   delete: DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Delete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
-  batch-delete: DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", BatchDelete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
+  batchDelete: DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", BatchDelete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
 
-go-struct:
+goStruct:
   id: |-
     {{uppercaseFirst .ServiceName}}ID    int64       `uri:"{{lowercaseFirst .ServiceName}}ID" path:"{{lowercaseFirst .ServiceName}}ID"`
   ids: |-
     {{uppercaseFirst .ServiceName}}IDs  []int64     `json:"{{lowercaseFirst .ServiceName}}IDs"`
-  page-number: |-
+  pageNumber: |-
     PageNumber  int         `json:"-" query:"pageNumber"`
-  page-size: |-
+  pageSize: |-
     PageSize      int         `json:"-" query:"pageSize"`
   operator: |-
     Operator       models.User `json:"-" swaggerignore:"true"`

@@ -82,19 +82,19 @@ service:
     handler-key: "{{.FuncName}}"
     handler: |-
       {{ if eq .Method "GET" -}}
-      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " false }}): Promise<Root<object>> {
+      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " }}): Promise<Root<object>> {
         return await {{.Method}}<object>(`{{.Path | getTsRouter}}`);
       }
       {{ else if eq .Method "PUT" -}}
-      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}data: object): Promise<Root<object>> {
+      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " }}data: object): Promise<Root<object>> {
         return await {{.Method}}(`{{.Path | getTsRouter}}`, data);
       }
       {{ else if eq .Method "POST" -}}
-      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}data: object): Promise<Root<object>> {
+      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " }}data: object): Promise<Root<object>> {
         return await {{.Method}}<object>(`{{.Path | getTsRouter}}`, data);
       }
       {{ else if eq .Method "DELETE" -}}
-      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " false }}): Promise<Root<object>> {
+      export async function {{.FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " }}): Promise<Root<object>> {
         return await {{.Method}}(`{{.Path | getTsRouter}}`);
       }
       {{ else -}}

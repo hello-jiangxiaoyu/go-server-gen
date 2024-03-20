@@ -13,7 +13,7 @@ type (
 	}
 	ConstStruct struct {
 		Api      map[string]string `yaml:"api"`
-		GoStruct map[string]string `yaml:"go-struct"`
+		GoStruct map[string]string `yaml:"goStruct"`
 	}
 )
 

@@ -17,14 +17,13 @@ func GetTableColumns(c *gin.Context) {
 	viewColumn := make([]parse.ViewColumn, 0)
 	for _, v := range columns {
 		item := parse.ViewColumn{
-			Column:      v.Field,
-			Label:       getLabelByField(v.Field),
-			LabelWidth:  100,
-			Type:        v.Type,
-			Key:         v.Key,
-			Placeholder: v.Field,
-			Required:    false,
-			ViewType:    getViewTypeByDbType(v.Type),
+			Column:     v.Field,
+			Label:      getLabelByField(v.Field),
+			LabelWidth: 0,
+			Type:       v.Type,
+			Key:        v.Key,
+			Required:   false,
+			ViewType:   getViewTypeByDbType(v.Type),
 		}
 
 		if v.Field == "description" {

@@ -63,6 +63,7 @@ func GetIdlConfig(req GenRequest) (conf.IdlConfig, error) {
 		"ServiceName": req.TableName,
 		"Prefix":      req.RouterPrefix,
 	})
+	println(fmt.Sprintf("const tableStruct: Array<ItfTableStruct<User>> = [\n%s\n]\n", ts))
 	return conf.IdlConfig{
 		Ts:       ts,
 		Messages: msg,
@@ -104,30 +105,36 @@ func getGoType(viewType string) string {
 func getTsArrayObject(columns []ViewColumn) string {
 	res := ""
 	for _, v := range columns {
-		res += "{" + getTsColumns(v) + "\n},"
+		res += "{" + getTsColumns(v) + "\n  },"
 	}
 	return res
 }
 
 func getTsColumns(column ViewColumn) string {
-	res := "\ncolumn: '" + column.Column + "',"
-	res += "\nlabel: '" + column.Label + "',"
+	res := fmt.Sprintf("\n\tcolumn: '%s',", column.Column)
+	res += fmt.Sprintf("\n\tlabel: '%s',", column.Label)
 
 	if column.CanEdit {
-		res += "\neditable: true,"
+		res += "\n\teditable: true,"
 	}
 	if column.CanSearch {
-		res += "\nsearchable: true,"
+		res += "\n\tsearchable: true,"
 	}
 	if column.CanCreate {
-		res += "\ncanCreate: true,"
+		res += "\n\tcanCreate: true,"
 	}
 	if column.Required {
-		res += "\nrequire: true,"
+		res += "\n\trequire: true,"
 	}
 
+	if len(column.ViewType) > 0 {
+		res += fmt.Sprintf("\n\tviewType: '%s',", column.ViewType)
+	}
+	if column.LabelWidth > 0 {
+		res += fmt.Sprintf("\n\tlabelWidth: %d,", column.LabelWidth)
+	}
 	if len(column.Placeholder) > 0 {
-		res += "\nplaceholder: '" + column.Placeholder + "',"
+		res += fmt.Sprintf("\n\tplaceholder: '%s',", column.Placeholder)
 	}
 
 	return res
