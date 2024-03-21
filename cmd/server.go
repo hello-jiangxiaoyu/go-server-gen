@@ -43,15 +43,16 @@ func StartWebServer(_ *cobra.Command, _ []string) {
 	}
 
 	// 启动web服务
+	println("RouterPrefix: ", RouterPrefix)
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	r.GET("/api/tables", server.GetTableList)
+	r.GET("/api/tables", server.GetTableList(RouterPrefix))
 	r.GET("/api/tables/:table/columns", server.GetTableColumns)
 	r.POST("/api/tables/:table/generate", GenCode)
 	r.Use(server.StaticWebFile(&code)) // 其他静态资源
 
-	println("\n\nLocal:	http://localhost:8080\n")
-	if err = r.Run(":8080"); err != nil {
+	println("\n\nLocal:	http://localhost:1900\n")
+	if err = r.Run(":1900"); err != nil {
 		os.Exit(1)
 	}
 }
@@ -91,9 +92,9 @@ func GenCode(c *gin.Context) {
 	}
 
 	// 将代码写入文件
-	//if err = writer.Write(codeMap); err != nil {
-	//	server.SendErrorResponse(c, err)
-	//	return
-	//}
+	if err = writer.Write(codeMap); err != nil {
+		server.SendErrorResponse(c, err)
+		return
+	}
 	c.JSON(http.StatusOK, codeMap)
 }

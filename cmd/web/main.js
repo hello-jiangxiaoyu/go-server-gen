@@ -2,6 +2,10 @@ const {createApp, ref, onMounted} = Vue
 
 const selectOptions = ['string', 'number', 'text', 'json', 'switch', 'select', 'date', 'time', 'datetime', 'image']
 
+const isColumnDisabled = (column) => {
+  return column.column === 'deleted_at' || column.column === 'updated_by' || column.column === 'updated_at' || column.column === 'created_at'
+}
+
 // ============== Vue =============
 const app = createApp({
   setup() {
@@ -15,17 +19,15 @@ const app = createApp({
     // ============= 初始化 =============
     onMounted(() => {
       Get('/api/tables').then(data => {
-        tableList.value = data
-        if (data.length > 0) {
-          selectTable.value = data[0]
-          setTableColumns(data[0])
+        tableList.value = data.tables
+        if (data.tables.length > 0) {
+          selectTable.value = data.tables[0]
+          setTableColumns(data.tables[0])
+          routerPrefix.value = data.routerPrefix.trim()
         }
       }).catch(e => PopError(e))
     })
 
-    const isColumnDisabled = (column) => {
-      return column.column === 'deleted_at' || column.column === 'updated_by' || column.column === 'updated_at' || column.column === 'created_at'
-    }
     const setTableColumns = (table) => {
       Get(`/api/tables/${table}/columns`).then(data => {
         columnList.value = data
@@ -33,7 +35,7 @@ const app = createApp({
     }
 
     // ============= 事件操作 =============
-    const onTableMenuClick = (table) => {
+    const onTableMenuClick = (table) => { // 切换数据库表
       if (selectTable.value === table) {
         return
       }
@@ -41,12 +43,13 @@ const app = createApp({
       setTableColumns(table)
     }
 
+    // 生成代码
     const onSubmit = () => {
-      console.log("routerPrefix: ", routerPrefix.value)
       Post(`/api/tables/${selectTable.value}/generate`, {columns: columnList.value, apis: apis.value, routerPrefix: routerPrefix.value})
         .then(() => PopSuccess('生成成功')).catch(e => PopError(e))
     }
 
+    // 添加列
     const onAddColumn = () => {
       columnList.value.push({
         column: 'new_column',
@@ -57,6 +60,8 @@ const app = createApp({
         placeholder: ''
       })
     }
+
+    // 删除列
     const onDeleteColumn = (name) => {
       const data = columnList.value.filter(column => column.column !== name)
       console.log("data: ", data, name)

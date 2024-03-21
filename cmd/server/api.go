@@ -20,11 +20,16 @@ func SendErrorResponse(c *gin.Context, err error) {
 	c.AbortWithStatusJSON(http.StatusInternalServerError, map[string]any{"msg": err.Error()})
 }
 
-func GetTableList(c *gin.Context) {
-	result := make([]string, 0)
-	if err := DB.Raw("SHOW TABLES;").Scan(&result).Error; err != nil {
-		SendErrorResponse(c, err)
-		return
+func GetTableList(routerPrefix string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		result := make([]string, 0)
+		if err := DB.Raw("SHOW TABLES;").Scan(&result).Error; err != nil {
+			SendErrorResponse(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, map[string]any{
+			"tables":       result,
+			"routerPrefix": routerPrefix,
+		})
 	}
-	c.JSON(http.StatusOK, result)
 }

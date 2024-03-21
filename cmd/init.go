@@ -34,7 +34,7 @@ func InitCommand(rootCmd, newCmd, updateCmd, crudCmd, serverCmd *cobra.Command) 
 
 	// 添加crud
 	crudCmd.PersistentFlags().StringVarP(&ServerType, "server", "s", "", "server type")
-	crudCmd.PersistentFlags().StringVarP(&RouterPrefix, "prefix", "p", "", "crud router prefix")
+	crudCmd.PersistentFlags().StringVar(&RouterPrefix, "prefix", "", "crud router prefix")
 	crudCmd.PersistentFlags().StringVarP(&OutputDir, "output", "o", "", "output dir")
 	crudCmd.PersistentFlags().StringVar(&LayoutPath, "layout", "", "layout path")
 	crudCmd.PersistentFlags().StringVar(&LogType, "log", "zap", "log type")
@@ -42,6 +42,7 @@ func InitCommand(rootCmd, newCmd, updateCmd, crudCmd, serverCmd *cobra.Command) 
 
 	serverCmd.PersistentFlags().StringVar(&LayoutPath, "layout", "", "layout path")
 	serverCmd.PersistentFlags().StringVar(&GormDSN, "dsn", "", "mysql dsn")
+	serverCmd.PersistentFlags().StringVarP(&RouterPrefix, "prefix", "p", "", "crud router prefix")
 
 	rootCmd.AddCommand(newCmd, updateCmd, crudCmd, serverCmd)
 }

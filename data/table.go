@@ -152,6 +152,7 @@ func genTsTableStruct(req GenRequest) string {
 		}
 		res += "  {" + tsColumn + "\n  },\n"
 	}
+	println(res + "]")
 	return res + "]"
 }
 
