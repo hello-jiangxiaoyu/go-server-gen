@@ -6,16 +6,16 @@ import (
 )
 
 // ConfigToData 配置转数据
-func ConfigToData(layout conf.LayoutConfig, idl conf.IdlConfig) ([]Service, map[string]Message, error) {
-	msg, err := getMessage(idl.Messages)
+func ConfigToData(layout conf.LayoutConfig, idl conf.IdlConfig) ([]Service, error) {
+	msg, err := getMessage(idl)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	groups, err := getService(layout, idl.Services, msg)
+	groups, err := GetServiceData(layout, idl.Services, msg)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return groups, msg, nil
+	return groups, nil
 }
 
 // 根据变量名推测变量类型

@@ -22,7 +22,7 @@ func UpdateProject(_ *cobra.Command, args []string) {
 	}
 
 	// 生成数据
-	services, messages, err := data.ConfigToData(layout, idl)
+	services, err := data.ConfigToData(layout, idl)
 	if err != nil {
 		os.Exit(1)
 	}
@@ -30,9 +30,6 @@ func UpdateProject(_ *cobra.Command, args []string) {
 	// 使用数据解析模板
 	codeMap := make(map[string]writer.WriteCode)
 	if err = parse.GenServiceCode(layout, services, codeMap); err != nil {
-		os.Exit(1)
-	}
-	if err = parse.GenMessageCode(layout, messages, codeMap); err != nil {
 		os.Exit(1)
 	}
 

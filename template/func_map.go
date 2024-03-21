@@ -1,4 +1,4 @@
-package parse
+package template
 
 import (
 	"go-server-gen/utils"
@@ -9,14 +9,18 @@ import (
 var defaultFuncMap = template.FuncMap{
 	"hasPrefix": strings.HasPrefix, // 是否包含前缀
 	"hasSuffix": strings.HasSuffix, // 是否包含后缀
+	"contains":  strings.Contains,  // 包含
 	"join":      strings.Join,      // 切片
 
-	"lowercaseFirst": utils.LowercaseFirst, // 首字母小写
-	"uppercaseFirst": utils.UppercaseFirst, // 首字母大写
-	"removeSpace":    utils.RemoveSpace,    // 去除空格
-	"convertToWord":  utils.ConvertToWord,  // 字符串拆分拼接
-	"getFirstSplit":  utils.GetFirstSplit,  // 获取第一个单词
-	"mapJoin":        utils.MapJoin,        // map拼接
+	"lowercaseFirst":        utils.LowercaseFirst,        // 首字母小写
+	"uppercaseFirst":        utils.UppercaseFirst,        // 首字母大写
+	"snakeToUpperCamelCase": utils.SnakeToUpperCamelCase, // 蛇形转大驼峰
+	"snakeToLowerCamelCase": utils.SnakeToLowerCamelCase, // 蛇形转小驼峰
+
+	"removeSpace":   utils.RemoveSpace,   // 去除空格
+	"convertToWord": utils.ConvertToWord, // 字符串拆分拼接
+	"getFirstSplit": utils.GetFirstSplit, // 获取第一个单词
+	"mapJoin":       utils.MapJoin,       // map拼接
 
 	"removeSuffix": RemoveSuffix,
 

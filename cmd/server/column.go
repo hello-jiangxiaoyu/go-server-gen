@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-server-gen/parse"
+	"go-server-gen/data"
 	"net/http"
 	"strings"
 )
@@ -14,16 +14,18 @@ func GetTableColumns(c *gin.Context) {
 		SendErrorResponse(c, err)
 		return
 	}
-	viewColumn := make([]parse.ViewColumn, 0)
+	viewColumn := make([]data.ViewColumn, 0)
 	for _, v := range columns {
-		item := parse.ViewColumn{
+		item := data.ViewColumn{
 			Column:     v.Field,
-			Label:      getLabelByField(v.Field),
 			LabelWidth: 0,
 			Type:       v.Type,
 			Key:        v.Key,
 			Required:   false,
+			Label:      getLabelByField(v.Field),
 			ViewType:   getViewTypeByDbType(v.Type),
+			GoType:     getGoTypeByDbType(v.Type),
+			TsType:     getTsTypeByDbType(v.Type),
 		}
 
 		if v.Field == "description" {
@@ -82,6 +84,41 @@ func getViewTypeByDbType(columnName string) string {
 	}
 
 	res, ok := dic[columnName]
+	if !ok {
+		return "string"
+	}
+	return res
+}
+
+func getGoTypeByDbType(typeName string) string {
+	dic := map[string]string{
+		"tinyint(1)": "bool",
+		"int":        "int",
+		"bigint":     "int64",
+		"timestamp":  "time.Time",
+		"date":       "time.Time",
+		"json":       "string",
+		"char(1)":    "string",
+	}
+
+	res, ok := dic[typeName]
+	if !ok {
+		return "string"
+	}
+	return res
+}
+func getTsTypeByDbType(typeName string) string {
+	dic := map[string]string{
+		"tinyint(1)": "boolean",
+		"int":        "number",
+		"bigint":     "number",
+		"timestamp":  "Date",
+		"date":       "Date",
+		"json":       "string",
+		"char(1)":    "string",
+	}
+
+	res, ok := dic[typeName]
 	if !ok {
 		return "string"
 	}

@@ -57,7 +57,7 @@ func StartWebServer(_ *cobra.Command, _ []string) {
 }
 
 func GenCode(c *gin.Context) {
-	req := parse.GenRequest{}
+	req := data.GenRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		server.SendErrorResponse(c, err)
 		return
@@ -75,17 +75,9 @@ func GenCode(c *gin.Context) {
 	}
 
 	req.TableName = c.Param("table")
-	req.RouterPrefix = RouterPrefix
 	req.ProjectName = projectName
-	idl, err := parse.GetIdlConfig(req) // 自动生成idl文件
-	if err != nil {
-		server.SendErrorResponse(c, err)
-		return
-	}
-
-	// 生成中间数据
-	layout.IdlName = c.Param("table")
-	services, messages, err := data.ConfigToData(layout, idl)
+	layout.IdlName = req.TableName
+	services, err := data.GenServiceByTable(req, layout) // 自动生成idl文件
 	if err != nil {
 		server.SendErrorResponse(c, err)
 		return
@@ -93,19 +85,15 @@ func GenCode(c *gin.Context) {
 
 	// 使用数据解析模板
 	codeMap := make(map[string]writer.WriteCode)
-	if err = parse.GenServiceCode(layout, services, codeMap); err != nil {
-		server.SendErrorResponse(c, err)
-		return
-	}
-	if err = parse.GenMessageCode(layout, messages, codeMap); err != nil {
+	if err = parse.GenServiceCode(layout, []data.Service{services}, codeMap); err != nil {
 		server.SendErrorResponse(c, err)
 		return
 	}
 
 	// 将代码写入文件
-	if err = writer.Write(codeMap); err != nil {
-		server.SendErrorResponse(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, struct{}{})
+	//if err = writer.Write(codeMap); err != nil {
+	//	server.SendErrorResponse(c, err)
+	//	return
+	//}
+	c.JSON(http.StatusOK, codeMap)
 }

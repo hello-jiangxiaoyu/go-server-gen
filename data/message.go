@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"go-server-gen/conf"
 	"go-server-gen/utils"
 	"go/format"
 	"regexp"
@@ -13,40 +14,29 @@ var (
 	regQueryTag     = regexp.MustCompile(`(?:query|formData):"([^"]+)"`) // 获取go结构体uri tag
 )
 
-func getMessage(msg string) (map[string]Message, error) {
+func getMessage(idl conf.IdlConfig) (map[string]Message, error) {
 	res := make(map[string]Message)
-	messages, err := splitMessage(msg)
+	messages, err := splitGoMessage(idl.Messages)
 	if err != nil {
 		return nil, err
 	}
 	for structName, structBody := range messages {
-		queryMatches := regQueryTag.FindAllStringSubmatch(structBody, -1)
-		queries := make(map[string]string)
-		for _, match := range queryMatches {
-			queries[match[1]] = strings.Split(match[0], ":")[0]
-		}
-
-		param := make([]Param, 0)
-		for queryName, queryType := range queries {
-			param = append(param, Param{
-				Name:        queryName,
-				From:        queryType,
-				Type:        getDocType(queryName),
-				Required:    "false",
-				Description: queryName,
-			})
-		}
 		res[structName] = Message{
 			Name:   structName,
-			Param:  param,
+			Lang:   "go",
 			Source: structBody,
 		}
+	}
+	res["__ts"] = Message{
+		Name:   "__ts",
+		Lang:   "ts",
+		Source: idl.Ts,
 	}
 
 	return res, nil
 }
 
-func splitMessage(msgCode string) (map[string]string, error) {
+func splitGoMessage(msgCode string) (map[string]string, error) {
 	code, err := format.Source([]byte(msgCode))
 	if err != nil {
 		utils.Log("split message err: ", err.Error())

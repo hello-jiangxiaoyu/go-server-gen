@@ -51,6 +51,26 @@ global:
           }
       }
 
+  - name: request
+    path: "{{.Pkg.Req}}/{{.IdlName}}.go"
+    write: append
+    body: |-
+      package {{getGoLastSplit $.Pkg.Req "/"}}
+      
+      import (
+        "{{.ProjectName}}/{{.Pkg.Model}}"
+      )
+      {{- range $_, $Code := .Handlers }}
+      {{$Code}}
+      {{ end }}
+    handler-key: "{{uppercaseFirst .ServiceName}}"
+    handler: |-
+      {{- range $_, $Msg := .MsgMap }}
+      {{ if eq $Msg.Lang "go" -}}
+      {{$Msg.Source}}
+      {{- end}}
+      {{ end }}
+
 
 service:
   - name: controller
@@ -162,24 +182,24 @@ service:
     write: append
     handler-key: "{{.FuncName}}"
     handler: |-
-      {{ if hasPrefix .FuncName "Get" -}}
+      {{ if hasSuffix .FuncName "List" -}}
       export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " false }}): Promise<Root<{{uppercaseFirst .ServiceName}}>> {
-        return await {{.Method}}<object>(`{{.Path | getTsRouter}}`);
+        return await {{.Method}}<{{snakeToUpperCamelCase .ServiceName}}>(`{{.Path | getTsRouter}}`);
       }
-      {{ else if hasSuffix .FuncName "List" -}}
-      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " false }}): Promise<Root<{{uppercaseFirst .ServiceName}}[]>> {
-        return await {{.Method}}<object>(`{{.Path | getTsRouter}}`);
+      {{ else if hasPrefix .FuncName "Get" -}}
+      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " false }}): Promise<Root<{{snakeToUpperCamelCase .ServiceName}}[]>> {
+        return await {{.Method}}<{{snakeToUpperCamelCase .ServiceName}}[]>(`{{.Path | getTsRouter}}`);
       }
       {{ else if hasPrefix .FuncName "Update" -}}
-      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}, data: object): Promise<Root<object>> {
+      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}data: object): Promise<Root<object>> {
         return await {{.Method}}(`{{.Path | getTsRouter}}`, data);
       }
       {{ else if hasPrefix .FuncName "Create" -}}
-      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}, data: object): Promise<Root<{{uppercaseFirst .ServiceName}}>> {
-        return await {{.Method}}<object>(`{{.Path | getTsRouter}}`, data);
+      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}data: object): Promise<Root<{{snakeToUpperCamelCase .ServiceName}}>> {
+        return await POST<{{snakeToUpperCamelCase .ServiceName}}>(`{{.Path | getTsRouter}}`, data);
       }
       {{ else if hasPrefix .FuncName "BatchDelete" -}}
-      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}, data: object): Promise<Root<object>> {
+      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}data: object): Promise<Root<object>> {
         return await {{.Method}}(`{{.Path | getTsRouter}}`, data);
       }
       {{ else if hasPrefix .FuncName "Delete" -}}
@@ -190,24 +210,12 @@ service:
       {{ end }}
     body: |-
       import {type Root, GET, POST, PUT, DELETE} from "./common"
-      export interface {{removeSuffix (uppercaseFirst .ServiceName) "s"}} {}
+      
+      {{ range $Key, $Msg := .MsgMap }}
+      {{- if eq $Key "__tsInterface" -}}
+      {{$Msg.Source}}
+      {{- end}}
+      {{- end }}
       {{ range $_, $Code := .Handlers }}
       {{$Code}}
       {{- end }}
-
-messages:
-  - name: request
-    path: "{{.Pkg.Req}}/{{.IdlName}}.go"
-    write: append
-    body: |-
-      package {{getGoLastSplit $.Pkg.Req "/"}}
-      
-      import (
-        "{{.ProjectName}}/{{.Pkg.Model}}"
-      )
-      {{- range $_, $Code := .Handlers }}
-      {{$Code}}
-      {{ end }}
-    handler: |-
-      {{.Source}}
-

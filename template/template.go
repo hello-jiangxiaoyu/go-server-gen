@@ -1,4 +1,4 @@
-package parse
+package template
 
 import (
 	"bytes"

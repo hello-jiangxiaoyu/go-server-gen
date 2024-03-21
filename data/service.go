@@ -5,10 +5,11 @@ import (
 	"go-server-gen/conf"
 	"go-server-gen/utils"
 	"regexp"
+	"strings"
 )
 
-// 解析service
-func getService(layout conf.LayoutConfig, services []conf.Service, msg map[string]Message) ([]Service, error) {
+// GetServiceData 解析service
+func GetServiceData(layout conf.LayoutConfig, services []conf.Service, msg map[string]Message) ([]Service, error) {
 	res := make([]Service, 0)
 	for _, svc := range services {
 		service := Service{
@@ -28,9 +29,8 @@ func getService(layout conf.LayoutConfig, services []conf.Service, msg map[strin
 			}
 
 			api.ServiceName = svc.Name
-			if m, ok := msg[api.ReqName]; ok {
-				api.Msg = m
-				api.ReqParam = append(api.ReqParam, m.Param...)
+			if m, ok := msg[api.ReqName]; ok && m.Lang == "go" {
+				api.ReqParam = getParamList(m.Source, api.FuncName)
 			}
 
 			service.Apis = append(service.Apis, api)
@@ -82,4 +82,26 @@ func getUriParam(path string) []Param {
 		})
 	}
 	return res
+}
+
+func getParamList(structBody, funcName string) []Param {
+	queryMatches := regQueryTag.FindAllStringSubmatch(structBody, -1)
+	queries := make(map[string]string)
+	if strings.HasSuffix(funcName, "List") {
+		for _, match := range queryMatches {
+			queries[match[1]] = strings.Split(match[0], ":")[0]
+		}
+	}
+
+	params := make([]Param, 0)
+	for queryName, queryType := range queries {
+		params = append(params, Param{
+			Name:        queryName,
+			From:        queryType,
+			Type:        getDocType(queryName),
+			Required:    "false",
+			Description: queryName,
+		})
+	}
+	return params
 }

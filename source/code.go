@@ -3,8 +3,8 @@ package source
 import (
 	"embed"
 	"go-server-gen/conf"
-	"go-server-gen/parse"
 	"go-server-gen/source/internal"
+	"go-server-gen/template"
 	"go-server-gen/utils"
 	"go-server-gen/writer"
 	"strings"
@@ -55,7 +55,7 @@ func GenPackageCode(layout conf.LayoutConfig, prefix string, overwrite bool) (ma
 		prefix + "pkg/utils/uuid.go":               GetEmbedContent("internal/utils/uuid.go"),
 	}
 	for fileName, body := range tplMap {
-		fileName, body, err = parse.ParseSource(fileName, body, GlobalData{ProjectName: projectName, Pkg: layout.Pkg})
+		fileName, body, err = template.ParseSource(fileName, body, GlobalData{ProjectName: projectName, Pkg: layout.Pkg})
 		if err != nil {
 			return nil, err
 		}
