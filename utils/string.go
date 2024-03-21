@@ -42,8 +42,15 @@ func SnakeToUpperCamelCase(s string) string {
 	for i := 0; i < len(parts); i++ {
 		r, size := utf8.DecodeRuneInString(parts[i])
 		parts[i] = string(unicode.ToUpper(r)) + parts[i][size:]
-	}
 
+		if parts[i] == "Id" {
+			parts[i] = "ID"
+		} else if parts[i] == "Url" {
+			parts[i] = "URL"
+		} else if parts[i] == "Json" {
+			parts[i] = "JSON"
+		}
+	}
 	return strings.Join(parts, "")
 }
 

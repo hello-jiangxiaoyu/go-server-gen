@@ -1,16 +1,16 @@
 api:
-  get: GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", Get{{uppercaseFirst .ServiceName}}List)  // {{uppercaseFirst .ServiceName}}Req
-  create: POST("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", Create{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
-  list: GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Get{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
-  update: PUT("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Update{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
-  delete: DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Delete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
-  batchDelete: DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", BatchDelete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}Req
+  get: GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", Get{{uppercaseFirst .ServiceName}}List)  // {{uppercaseFirst .ServiceName}}
+  create: POST("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", Create{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}
+  list: GET("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Get{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}
+  update: PUT("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Update{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}
+  delete: DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}/:{{lowercaseFirst .ServiceName}}ID", Delete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}
+  batchDelete: DELETE("{{.Prefix}}/{{lowercaseFirst .ServiceName}}", BatchDelete{{uppercaseFirst .ServiceName}})  // {{uppercaseFirst .ServiceName}}
 
 goStruct:
   id: |-
-    {{uppercaseFirst .ServiceName}}ID    int64       `uri:"{{lowercaseFirst .ServiceName}}ID" path:"{{lowercaseFirst .ServiceName}}ID"`
+    {{removeSuffix (uppercaseFirst .ServiceName) "s"}}ID    int64       `uri:"{{lowercaseFirst .ServiceName}}ID" path:"{{lowercaseFirst .ServiceName}}ID"`
   ids: |-
-    {{uppercaseFirst .ServiceName}}IDs  []int64     `json:"{{lowercaseFirst .ServiceName}}IDs"`
+    {{removeSuffix (uppercaseFirst .ServiceName) "s"}}IDs  []int64     `json:"{{lowercaseFirst .ServiceName}}IDs"`
   pageNumber: |-
     PageNumber  int         `json:"-" query:"pageNumber"`
   pageSize: |-

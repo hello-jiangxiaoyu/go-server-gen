@@ -18,10 +18,19 @@ var defaultFuncMap = template.FuncMap{
 	"getFirstSplit":  utils.GetFirstSplit,  // 获取第一个单词
 	"mapJoin":        utils.MapJoin,        // map拼接
 
+	"removeSuffix": RemoveSuffix,
+
 	"getPathPara":    GetPathPara,      // 获取路径中的参数
 	"getDocRouter":   GetSwaggerRouter, // 转文档Router
 	"getGoLastSplit": GetGoLastSplit,   // 获取go import最后一个单词，排除version
 	"getGoMethod":    GetGoMethod,      // Go method方法特殊处理
 	"getTsRouter":    GetTsRouter,      // 转ts路径
 	"getTsType":      GetTsType,        // 根据名字推测ts类型
+}
+
+func RemoveSuffix(s string, suf string) string {
+	if len(suf) > 0 && strings.HasSuffix(s, suf) {
+		return s[:len(s)-len(suf)]
+	}
+	return s
 }

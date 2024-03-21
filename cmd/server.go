@@ -16,6 +16,10 @@ import (
 	"os"
 )
 
+//go:embed web
+var code embed.FS
+var projectName string
+
 func StartWebServer(_ *cobra.Command, _ []string) {
 	if len(GormDSN) == 0 {
 		println("dsn is required")
@@ -30,6 +34,11 @@ func StartWebServer(_ *cobra.Command, _ []string) {
 	autoModifyArgs()
 	if err = conf.ReadConfig(LayoutPath, ""); err != nil {
 		println("ReadConfig err: ", err.Error())
+		os.Exit(1)
+	}
+	projectName, err = utils.GetProjectName()
+	if err != nil {
+		println("get project name err: ", err.Error())
 		os.Exit(1)
 	}
 
@@ -53,13 +62,12 @@ func GenCode(c *gin.Context) {
 		server.SendErrorResponse(c, err)
 		return
 	}
-	projectName, err := utils.GetProjectName()
-	if err != nil {
+
+	// 获取配置文件
+	if err := conf.ReadConfig(LayoutPath, ""); err != nil {
 		server.SendErrorResponse(c, err)
 		return
 	}
-
-	// 获取配置文件
 	layout, _, err := conf.GetConfig(ServerType, LogType, LayoutPath, IdlPath)
 	if err != nil {
 		server.SendErrorResponse(c, err)
@@ -69,13 +77,13 @@ func GenCode(c *gin.Context) {
 	req.TableName = c.Param("table")
 	req.RouterPrefix = RouterPrefix
 	req.ProjectName = projectName
-	idl, err := parse.GetIdlConfig(req)
+	idl, err := parse.GetIdlConfig(req) // 自动生成idl文件
 	if err != nil {
 		server.SendErrorResponse(c, err)
 		return
 	}
 
-	// 生成数据
+	// 生成中间数据
 	layout.IdlName = c.Param("table")
 	services, messages, err := data.ConfigToData(layout, idl)
 	if err != nil {
@@ -99,9 +107,5 @@ func GenCode(c *gin.Context) {
 		server.SendErrorResponse(c, err)
 		return
 	}
-
 	c.JSON(http.StatusOK, struct{}{})
 }
-
-//go:embed web
-var code embed.FS
