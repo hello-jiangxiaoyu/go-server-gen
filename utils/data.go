@@ -15,12 +15,12 @@ func SplitCamelCase(str string) []string {
 	return words
 }
 
-func MapJoin(obj map[string]string, mid, sep string) string {
+func MapJoin(obj map[string]string, mid, sep string, withEnd bool) string {
 	res := ""
 	for key, value := range obj {
 		res += key + mid + value + sep
 	}
-	if len(res) > len(sep) {
+	if len(res) > len(sep) && !withEnd {
 		res = res[:len(res)-len(sep)]
 	}
 	return res

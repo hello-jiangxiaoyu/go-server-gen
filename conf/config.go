@@ -13,9 +13,6 @@ var (
 	//go:embed gin.yaml
 	GinYaml []byte
 
-	//go:embed ts-fetch.yaml
-	TsFetchYaml []byte
-
 	//go:embed data.yaml
 	data []byte
 
@@ -30,8 +27,6 @@ var (
 func ReadConfig(layoutPath, idlPath string) (err error) {
 	if len(layoutPath) == 0 {
 		LayoutYaml = GinYaml
-	} else if layoutPath == "__ts" {
-		LayoutYaml = TsFetchYaml
 	} else {
 		LayoutYaml, err = os.ReadFile(layoutPath)
 		if err != nil {

@@ -8,9 +8,9 @@ api:
 
 goStruct:
   id: |-
-    {{removeSuffix (uppercaseFirst .ServiceName) "s"}}ID    int64       `uri:"{{lowercaseFirst .ServiceName}}ID" path:"{{lowercaseFirst .ServiceName}}ID"`
+    {{removeSuffix (uppercaseFirst .ServiceName) "s"}}ID    int64       `json:"-" uri:"{{lowercaseFirst .ServiceName}}ID" path:"{{lowercaseFirst .ServiceName}}ID"`
   ids: |-
-    {{removeSuffix (uppercaseFirst .ServiceName) "s"}}IDs  []int64     `json:"{{lowercaseFirst .ServiceName}}IDs"`
+    {{removeSuffix (uppercaseFirst .ServiceName) "s"}}IDs  []int64     `json:"{{lowercaseFirst .ServiceName}}IDs,omitempty"`
   pageNumber: |-
     PageNumber  int         `json:"-" query:"pageNumber"`
   pageSize: |-

@@ -163,33 +163,34 @@ service:
     handler-key: "{{.FuncName}}"
     handler: |-
       {{ if hasPrefix .FuncName "Get" -}}
-      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " }}): Promise<Root<{{uppercaseFirst .ServiceName}}>> {
+      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " false }}): Promise<Root<{{uppercaseFirst .ServiceName}}>> {
         return await {{.Method}}<object>(`{{.Path | getTsRouter}}`);
       }
       {{ else if hasSuffix .FuncName "List" -}}
-      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " }}): Promise<Root<{{uppercaseFirst .ServiceName}}[]>> {
+      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " false }}): Promise<Root<{{uppercaseFirst .ServiceName}}[]>> {
         return await {{.Method}}<object>(`{{.Path | getTsRouter}}`);
       }
       {{ else if hasPrefix .FuncName "Update" -}}
-      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " }}, data: object): Promise<Root<object>> {
+      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}, data: object): Promise<Root<object>> {
         return await {{.Method}}(`{{.Path | getTsRouter}}`, data);
       }
       {{ else if hasPrefix .FuncName "Create" -}}
-      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " }}, data: object): Promise<Root<{{uppercaseFirst .ServiceName}}>> {
+      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}, data: object): Promise<Root<{{uppercaseFirst .ServiceName}}>> {
         return await {{.Method}}<object>(`{{.Path | getTsRouter}}`, data);
       }
       {{ else if hasPrefix .FuncName "BatchDelete" -}}
-      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " }}, data: object): Promise<Root<object>> {
+      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " true }}, data: object): Promise<Root<object>> {
         return await {{.Method}}(`{{.Path | getTsRouter}}`, data);
       }
       {{ else if hasPrefix .FuncName "Delete" -}}
-      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " }}): Promise<Root<object>> {
+      export async function {{lowercaseFirst .FuncName}}({{ mapJoin (getPathPara .Path) ": " ", " false }}): Promise<Root<object>> {
         return await {{.Method}}(`{{.Path | getTsRouter}}`);
       }
       {{ else -}}
       {{ end }}
     body: |-
-      import {Root, GET, POST, PUT, DELETE} from "./request"
+      import {type Root, GET, POST, PUT, DELETE} from "./common"
+      export interface {{removeSuffix (uppercaseFirst .ServiceName) "s"}} {}
       {{ range $_, $Code := .Handlers }}
       {{$Code}}
       {{- end }}

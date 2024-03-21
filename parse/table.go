@@ -86,7 +86,7 @@ func getGoStructRows(tableName string, columns []ViewColumn) string {
 }
 
 func getJson(column string) string {
-	return fmt.Sprintf(`json:"%s"`, utils.SnakeToLowerCamelCase(column))
+	return fmt.Sprintf(`json:"%s,omitempty"`, utils.SnakeToLowerCamelCase(column))
 }
 
 func getGoType(viewType string) string {
