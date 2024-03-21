@@ -46,14 +46,18 @@
       <!-- 操作 -->
       <div style="display: flex">
         <h1>mysql {{selectTable}}表</h1>
-        <el-button @click="onSubmit" type="primary" style="margin-top: 30px; margin-left: 30px">生成代码</el-button>
         <el-checkbox  v-model="apis.get" style="margin-top: 30px; margin-left: 30px">get</el-checkbox>
         <el-checkbox  v-model="apis.list" style="margin-top: 30px">list</el-checkbox>
         <el-checkbox  v-model="apis.create" style="margin-top: 30px">create</el-checkbox>
         <el-checkbox  v-model="apis.update" style="margin-top: 30px">update</el-checkbox>
         <el-checkbox  v-model="apis.delete" style="margin-top: 30px">delete</el-checkbox>
         <el-checkbox  v-model="apis.batchDelete" style="margin-top: 30px">batchDelete</el-checkbox>
-        <el-button @click="onAddColumn" style="margin-top: 30px; margin-left: 30px">添加列</el-button>
+      </div>
+      <div style="display: flex; margin-bottom: 20px">
+        <span>路由前缀:</span>
+        <el-input v-model="routerPrefix" style="margin-left: 15px; height: 30px; width: 130px" placeholder="路由前缀"></el-input>
+        <el-button @click="onSubmit" type="primary" style="margin-left: 30px">生成代码</el-button>
+        <el-button @click="onAddColumn" style="margin-left: 30px">添加列</el-button>
       </div>
 
       <!-- 数据库表 -->

@@ -23,11 +23,12 @@ func GenServiceByTable(req GenRequest, layout conf.LayoutConfig) (Service, error
 
 	modelName := utils.UppercaseFirst(req.TableName)
 	service := Service{
-		ServiceName: req.TableName,
-		Apis:        make([]Api, 0),
-		ProjectName: layout.ProjectName,
-		IdlName:     layout.IdlName,
-		Pkg:         layout.Pkg,
+		RouterPrefix: req.RouterPrefix,
+		ServiceName:  req.TableName,
+		Apis:         make([]Api, 0),
+		ProjectName:  layout.ProjectName,
+		IdlName:      layout.IdlName,
+		Pkg:          layout.Pkg,
 		MsgMap: map[string]Message{
 			modelName:       msg,
 			"__tsInterface": {Source: genTsTableInterface(req), Lang: "ts"},
@@ -52,9 +53,10 @@ func GenServiceByTable(req GenRequest, layout conf.LayoutConfig) (Service, error
 			return Service{}, utils.WithMessage(err, "get init api err")
 		}
 
-		api.ServiceName = req.TableName
 		api.Msg = msg
 		api.MsgMap = service.MsgMap
+		api.RouterPrefix = service.RouterPrefix
+		api.ServiceName = req.TableName
 		api.BodyColumns = getApiBodyColumns(k, req)
 		if k == "list" {
 			api.ReqParam = append(api.ReqParam,

@@ -31,28 +31,30 @@ type (
 		Description string // 参数描述
 	}
 	Api struct {
-		ServiceName string             // API所属service名
-		Method      string             // HTTP方法
-		Path        string             // 接口路径
-		Summary     string             // swagger 文档summary
-		FuncName    string             // 接口业务处理函数名
-		ReqName     string             // 请求参数名
-		Handler     string             // 接口处理者，包含中间件
-		ReqParam    []Param            // swagger请求参数详情
-		ProjectName string             // 当前项目名称，go mod name
-		IdlName     string             // idl name
-		Msg         Message            // msg
-		MsgMap      map[string]Message // 参数表
-		BodyColumns []ViewColumn       // body 参数
-		Pkg         map[string]string  // layout定义的全局变量
+		ServiceName  string             // API所属service名
+		RouterPrefix string             // 路由前缀
+		Method       string             // HTTP方法
+		Path         string             // 接口路径
+		Summary      string             // swagger 文档summary
+		FuncName     string             // 接口业务处理函数名
+		ReqName      string             // 请求参数名
+		Handler      string             // 接口处理者，包含中间件
+		ReqParam     []Param            // swagger请求参数详情
+		ProjectName  string             // 当前项目名称，go mod name
+		IdlName      string             // idl name
+		Msg          Message            // msg
+		MsgMap       map[string]Message // 参数表
+		BodyColumns  []ViewColumn       // body 参数
+		Pkg          map[string]string  // layout定义的全局变量
 	}
 	Service struct {
-		ServiceName string             // 当前service名称
-		ProjectName string             // 当前项目名称，go mod name
-		IdlName     string             // idl name
-		Pkg         map[string]string  // 全局变量
-		Apis        []Api              // 接口列表
-		MsgMap      map[string]Message // 参数表
-		Handlers    map[string]string  // apis 解析后的结果
+		RouterPrefix string             // 路由前缀
+		ServiceName  string             // 当前service名称
+		ProjectName  string             // 当前项目名称，go mod name
+		IdlName      string             // idl name
+		Pkg          map[string]string  // 全局变量
+		Apis         []Api              // 接口列表
+		MsgMap       map[string]Message // 参数表
+		Handlers     map[string]string  // apis 解析后的结果
 	}
 )
